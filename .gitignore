@@ -1,0 +1,4 @@
+*.o
+*.gch
+felinks
+.deps
