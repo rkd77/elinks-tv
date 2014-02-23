@@ -10,39 +10,35 @@
 /* Contrary to a standard gettext interface, we pass destination charset and
  * language (in form of struct terminal) directly with each call, allowing to
  * easily multiplex between several terminals. */
-
-#include "intl/gettext/libgettext.h"
+#define Uses TVIntl
+#include <tv.h>
 
 #include "config/options.h"
 #include "intl/charsets.h"
 #include "terminal/terminal.h"
 
 /* no-op - just for marking */
-#define N_(msg) (gettext_noop(msg))
-
-#ifndef CONFIG_SMALL
-#define N__(msg) (gettext_noop(msg))
-#else
-#define N__(msg) (NULL)
-#endif
-
+#define N_(msg) (__(msg))
+#define N__(msg) (__(msg))
 
 /* The intl/gettext/libgettext.h header nukes gettext functions but not the _()
  * function so make sure it is also just a noop when NLS is disabled. */
 #ifndef CONFIG_NLS
+
+#undef _
 
 /* In order to make it able to compile using -Werror this has to be a function
  * so that local @term variables will not be reported as unused. */
 static inline unsigned char *
 _(unsigned char *msg, struct terminal *term)
 {
-	return gettext_noop(msg);
+	return gettext(msg);
 }
 
 static inline unsigned char *
 n_(unsigned char *msg1, unsigned char *msg2, unsigned long int n, struct terminal *term)
 {
-	return gettext_noop(msg1);
+	return __(msg1);
 }
 
 static inline void

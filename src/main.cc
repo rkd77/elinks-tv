@@ -80,6 +80,7 @@
 #define Uses_TSubMenu
 #define Uses_TWindow
 #define Uses_TVCodePage
+#define Uses_TVIntl
 #include <tv.h>
 
 static bool linux_console_8859_2 = false;
@@ -1582,7 +1583,8 @@ int main(int argc, char **argv)
 	av = argv;
 
 	if (linux_console_8859_2) TFelinks::oldCPCallBack = TVCodePage::SetCallBack(TFelinks::cpCallBack);
-
+	BINDTEXTDOMAIN("elinks", LOCALEDIR);
+	TEXTDOMAIN("elinks");
 	main2(argc, argv);
 	select_loop_prepare();
 	TFelinks app;
