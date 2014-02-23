@@ -11,6 +11,29 @@
 #include <termios.h>
 #include <unistd.h>
 
+#define Uses_TApplication
+#define Uses_TButton
+#define Uses_TDeskTop
+#define Uses_TDialog
+#define Uses_TEditor
+#define Uses_TFrame
+#define Uses_TKeys
+#define Uses_TKeys_Extended
+#define Uses_TMenuBar
+#define Uses_TMenuBox
+#define Uses_TMenuItem
+#define Uses_TMenuSubItem
+#define Uses_MsgBox
+#define Uses_TScrollBar
+#define Uses_TStaticText
+#define Uses_TStatusDef
+#define Uses_TStatusItem
+#define Uses_TStatusLine
+#define Uses_TSubMenu
+#define Uses_TWindow
+#define Uses_TVCodePage
+#define Uses_TVIntl
+#include <tv.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -59,29 +82,6 @@
 #include "viewer/text/vs.h"
 #include "viewer/text/view.h"
 
-#define Uses_TApplication
-#define Uses_TButton
-#define Uses_TDeskTop
-#define Uses_TDialog
-#define Uses_TEditor
-#define Uses_TFrame
-#define Uses_TKeys
-#define Uses_TKeys_Extended
-#define Uses_TMenuBar
-#define Uses_TMenuBox
-#define Uses_TMenuItem
-#define Uses_TMenuSubItem
-#define Uses_MsgBox
-#define Uses_TScrollBar
-#define Uses_TStaticText
-#define Uses_TStatusDef
-#define Uses_TStatusItem
-#define Uses_TStatusLine
-#define Uses_TSubMenu
-#define Uses_TWindow
-#define Uses_TVCodePage
-#define Uses_TVIntl
-#include <tv.h>
 
 static bool linux_console_8859_2 = false;
 static bool initNext = false;
@@ -756,86 +756,108 @@ TStatusLine* TFelinks::initStatusLine(TRect r)
 	*new TStatusItem(0, kbF9, cmMenu));
 }
 
+static char *tylda(char *msgid)
+{
+	static char bufor[1024];
+	int i;
+
+	char *text = _(msgid);
+
+	for (i = 0; *text && (i < 1023); ++i)
+	{
+		bufor[i] = *text++;
+		if (bufor[i] == '~')
+		{
+			++i;
+			bufor[i] = *text++;
+			++i;
+			bufor[i] = '~';
+		}
+	}
+	bufor[i] = '\0';
+	return bufor;
+}
+
 TMenuBar* TFelinks::initMenuBar(TRect r)
 {
 	r.b.y = r.a.y + 1;    // set bottom line 1 line below top line
 	return new TMenuBar( r,
-	*new TSubMenu( "~F~ile", kbAlF )+
-		*new TMenuItem( "Open ~n~ew window", cmNewWindow, 0, hcNoContext, "" )+
-		*new TMenuItem( "Open new ~t~ab",  cmMyNewTab,  0, hcNoContext, "t" ) +
-		*new TMenuItem( "Open new tab in backgroun~d~",  cmMyNewTabBackground,  0, hcNoContext, "" )+
-		*new TMenuItem( "~G~oto url",  cmGotoUrl,  0, hcNoContext, "g" ) +
-		*new TMenuItem( "Go ~b~ack",  cmGoBack,  0, hcNoContext, "Left" ) +
-		*new TMenuItem( "Go ~f~orward",  cmGoForward, 0, hcNoContext, "u" ) +
-		*new TMenuItem( "~H~istory",  cmHistory, 0, hcNoContext, "" ) +
-		*new TMenuItem( "~U~nhistory",  cmUnHistory, 0, hcNoContext, "" ) +
+	*new TSubMenu( tylda("~File"), kbAlF )+
+		*new TMenuItem( tylda("Open ~new window"), cmNewWindow, 0, hcNoContext, "" )+
+		*new TMenuItem( tylda("Open new ~tab"),  cmMyNewTab,  0, hcNoContext, "t" ) +
+		*new TMenuItem( tylda("Open new tab in backgroun~d"),  cmMyNewTabBackground,  0, hcNoContext, "" )+
+		*new TMenuItem( tylda("~Go to URL"),  cmGotoUrl,  0, hcNoContext, "g" ) +
+		*new TMenuItem( tylda("Go ~back"),  cmGoBack,  0, hcNoContext, "Left" ) +
+		*new TMenuItem( tylda("Go ~forward"),  cmGoForward, 0, hcNoContext, "u" ) +
+		*new TMenuItem( tylda("~History"),  cmHistory, 0, hcNoContext, "" ) +
+		*new TMenuItem( tylda("~Unhistory"),  cmUnHistory, 0, hcNoContext, "" ) +
 		newLine()+
-		*new TMenuItem( "~S~ave as",  cmSaveAs, 0, hcNoContext, "" ) +
-		*new TMenuItem( "Save UR~L~ as",  cmSaveUrlAs,  0, hcNoContext, "L" ) +
-		*new TMenuItem( "Sa~v~e formatted document",  cmSaveFormatted,  0, hcNoContext, "" ) +
-		*new TMenuItem( "Bookm~a~rk document",  cmSaveFormatted, 0, hcNoContext, "a" ) +
+		*new TMenuItem( tylda("~Save as"),  cmSaveAs, 0, hcNoContext, "" ) +
+		*new TMenuItem( tylda("Save UR~L as"),  cmSaveUrlAs,  0, hcNoContext, "L" ) +
+		*new TMenuItem( tylda("Sa~ve formatted document"),  cmSaveFormatted,  0, hcNoContext, "" ) +
+		*new TMenuItem( tylda("Bookm~ark document"),  cmSaveFormatted, 0, hcNoContext, "a" ) +
 		newLine()+
-		*new TMenuItem( "~K~ill background connections",  cmKillBackgroundConnections,  0, hcNoContext, "" ) +
-		*new TMenuItem( "Flush all ~c~aches",  cmFlushAllCaches,  0, hcNoContext, "" ) +
-		*new TMenuItem( "Resource ~i~info",  cmResourceInfo,  0, hcNoContext, "" ) +
+		*new TMenuItem( tylda("~Kill background connections"),  cmKillBackgroundConnections,  0, hcNoContext, "" ) +
+		*new TMenuItem( tylda("Flush all ~caches"),  cmFlushAllCaches,  0, hcNoContext, "" ) +
+		*new TMenuItem( tylda("Resource ~info"),  cmResourceInfo,  0, hcNoContext, "" ) +
 		newLine()+
-		*new TMenuItem( "~O~S shell",  cmOSShell,  0, hcNoContext, "" ) +
-		*new TMenuItem( "Resize t~e~rminal",  cmResizeTerminal,  0, hcNoContext, "" ) +
+		*new TMenuItem( tylda("~OS shell"),  cmOSShell,  0, hcNoContext, "" ) +
+		*new TMenuItem( tylda("Resize t~erminal"),  cmResizeTerminal,  0, hcNoContext, "" ) +
 		newLine() +
-		*new TMenuItem( "E~x~it", cmQuit2, 0, hcNoContext, "q" )+
+		*new TMenuItem( tylda("E~xit"), cmQuit2, 0, hcNoContext, "q" )+
 #if 1
-	*new TSubMenu( "~V~iew", kbAlV ) +
-		*new TMenuItem( "~S~earch", cmSearch, 0, hcNoContext, "/" ) +
-		*new TMenuItem( "Search ~b~ackward", cmSearchBackward, 0, hcNoContext, "?" ) +
-		*new TMenuItem( "Find ~n~ext", cmFindNext, 0, hcNoContext, "n" ) +
-		*new TMenuItem( "Find ~p~revious", cmFindPrevious, 0, hcNoContext, "N" ) +
-		*new TMenuItem( "T~y~peahead search", cmTypeaheadSearch, 0, hcNoContext, "#" ) +
+	*new TSubMenu( tylda("~View"), kbAlV ) +
+		*new TMenuItem( tylda("~Search"), cmSearch, 0, hcNoContext, "/" ) +
+		*new TMenuItem( tylda("Search ~backward"), cmSearchBackward, 0, hcNoContext, "?" ) +
+		*new TMenuItem( tylda("Find ~next"), cmFindNext, 0, hcNoContext, "n" ) +
+		*new TMenuItem( tylda("Find ~previous"), cmFindPrevious, 0, hcNoContext, "N" ) +
+		*new TMenuItem( tylda("T~ypeahead search"), cmTypeaheadSearch, 0, hcNoContext, "#" ) +
 		newLine() +
-		*new TMenuItem( "Toggle ~H~TML/plain", cmToggleHtml, 0, hcNoContext, "\\" ) +
-		*new TMenuItem( "Toggle i~m~ages", cmToggleImages, 0, hcNoContext, "*" ) +
-		*new TMenuItem( "Toggle ~l~ink numbering", cmToggleLinkNumbering, 0, hcNoContext, "." ) +
-		*new TMenuItem( "Toggle ~d~ocument colors", cmToggleDocumentColors, 0, hcNoContext, "%" ) +
-		*new TMenuItem( "~W~rap text on/off", cmToggleWrap, 0, hcNoContext, "w" ) +
+		*new TMenuItem( tylda("Toggle ~HTML/plain"), cmToggleHtml, 0, hcNoContext, "\\" ) +
+		*new TMenuItem( tylda("Toggle i~mages"), cmToggleImages, 0, hcNoContext, "*" ) +
+		*new TMenuItem( tylda("Toggle ~link numbering"), cmToggleLinkNumbering, 0, hcNoContext, "." ) +
+		*new TMenuItem( tylda("Toggle ~document colors"), cmToggleDocumentColors, 0, hcNoContext, "%" ) +
+		*new TMenuItem( tylda("~Wrap text on/off"), cmToggleWrap, 0, hcNoContext, "w" ) +
 		newLine() +
-		*new TMenuItem( "Document ~i~nfo", cmDocumentInfo, 0, hcNoContext, "=" ) +
-		*new TMenuItem( "Rel~o~ad document", cmReloadDocument, 0, hcNoContext, "Ctrl-R" ) +
-		*new TMenuItem( "~R~erender document", cmRerenderDocument, 0, hcNoContext, "" ) +
-		*new TMenuItem( "Frame at full-screen", cmFrameFullScreen, 0, hcNoContext, "f" ) +
+		*new TMenuItem( tylda("Document ~info"), cmDocumentInfo, 0, hcNoContext, "=" ) +
+		*new TMenuItem( tylda("Rel~oad document"), cmReloadDocument, 0, hcNoContext, "Ctrl-R" ) +
+		*new TMenuItem( tylda("~Rerender document"), cmRerenderDocument, 0, hcNoContext, "" ) +
+		*new TMenuItem( tylda("Frame at ~full-screen"), cmFrameFullScreen, 0, hcNoContext, "f" ) +
 		newLine() +
-		*new TMenuItem( "Nex~t~ tab", cmNextTab, 0, hcNoContext, ">" ) +
-		*new TMenuItem( "Pre~v~ tab", cmPrevTab, 0, hcNoContext, "<" ) +
-		*new TMenuItem( "~C~lose tab", cmCloseTab, 0, hcNoContext, "c" ) +
-	*new TSubMenu( "~L~ink", kbAlL ) +
-		*new TMenuItem( "No link selected", cmLinkSelected, 0, hcNoContext, "" ) +
-	*new TSubMenu( "~T~ools", kbAlT ) +
-		*new TMenuItem( "Global ~h~istory", cmHistory2, 0, hcNoContext, "h" ) +
-		*new TMenuItem( "~B~ookmarks", cmBookmarks, 0, hcNoContext, "s" ) +
-		*new TMenuItem( "~C~ache", cmCache, 0, hcNoContext, "C" ) +
-		*new TMenuItem( "~D~ownloads", cmDownloads, 0, hcNoContext, "D" ) +
-		*new TMenuItem( "Coo~k~ies", cmCookies, 0, hcNoContext, "K" ) +
-		*new TMenuItem( "~F~orm history", cmFormHistory, 0, hcNoContext, "F" ) +
-		*new TMenuItem( "~A~uthentication", cmAuthentication, 0, hcNoContext, "" ) +
-	*new TSubMenu( "~S~etup", kbAlS ) +
-		*new TMenuItem( "~L~anguage", cmLanguage, 0, hcNoContext, "" ) +
-		*new TMenuItem( "C~h~aracter set", cmCharacterSet, 0, hcNoContext, "" ) +
-		*new TMenuItem( "~T~erminal options", cmTerminalOptions, 0, hcNoContext, "" ) +
-		*new TMenuItem( "File ~e~xtensions", cmFileExtensions, 0, hcNoContext, "" ) +
+		*new TMenuItem( tylda("Nex~t tab"), cmNextTab, 0, hcNoContext, ">" ) +
+		*new TMenuItem( tylda("Pre~v tab"), cmPrevTab, 0, hcNoContext, "<" ) +
+		*new TMenuItem( tylda("~Close tab"), cmCloseTab, 0, hcNoContext, "c" ) +
+	*new TSubMenu( tylda("~Link"), kbAlL ) +
+		*new TMenuItem( tylda("No link selected"), cmLinkSelected, 0, hcNoContext, "" ) +
+	*new TSubMenu( tylda("~Tools"), kbAlT ) +
+		*new TMenuItem( tylda("Global ~history"), cmHistory2, 0, hcNoContext, "h" ) +
+		*new TMenuItem( tylda("~Bookmarks"), cmBookmarks, 0, hcNoContext, "s" ) +
+		*new TMenuItem( tylda("~Cache"), cmCache, 0, hcNoContext, "C" ) +
+		*new TMenuItem( tylda("~Downloads"), cmDownloads, 0, hcNoContext, "D" ) +
+		*new TMenuItem( tylda("Coo~kies"), cmCookies, 0, hcNoContext, "K" ) +
+		*new TMenuItem( tylda("~Form history"), cmFormHistory, 0, hcNoContext, "F" ) +
+		*new TMenuItem( tylda("~Authentication"), cmAuthentication, 0, hcNoContext, "" ) +
+	*new TSubMenu( tylda("~Setup"), kbAlS ) +
+		*new TMenuItem( tylda("~Language"), cmLanguage, 0, hcNoContext, "" ) +
+		*new TMenuItem( tylda("C~haracter set"), cmCharacterSet, 0, hcNoContext, "" ) +
+		*new TMenuItem( tylda("~Terminal options"), cmTerminalOptions, 0, hcNoContext, "" ) +
+		*new TMenuItem( tylda("File ~extensions"), cmFileExtensions, 0, hcNoContext, "" ) +
 		newLine() +
-		*new TMenuItem( "~O~ptions manager", cmOptionsManager, 0, hcNoContext, "O" ) +
-		*new TMenuItem( "Keybinding manager", cmKeybindingManager, 0, hcNoContext, "k" ) +
-		*new TMenuItem( "~S~ave option", cmSaveOptions, 0, hcNoContext, "" ) +
-	*new TSubMenu( "~H~elp", kbAlH ) +
+		*new TMenuItem( tylda("~Options manager"), cmOptionsManager, 0, hcNoContext, "O" ) +
+		*new TMenuItem( tylda("Keybinding manager"), cmKeybindingManager, 0, hcNoContext, "k" ) +
+		*new TMenuItem( tylda("~Save options"), cmSaveOptions, 0, hcNoContext, "" ) +
+	*new TSubMenu( tylda("~Help"), kbAlH ) +
 		*new TMenuItem( "F~e~links homepage", cmHomePage, 0, hcNoContext, "" ) +
-		*new TMenuItem( "~D~ocumentation", cmDocumentation, 0, hcNoContext, "" ) +
-		*new TMenuItem( "~K~eys", cmKeys, 0, hcNoContext, "" ) +
-		*new TMenuItem( "LED ~i~ndicators", cmLedIndicators, 0, hcNoContext, "" ) +
+		*new TMenuItem( tylda("~Documentation"), cmDocumentation, 0, hcNoContext, "" ) +
+		*new TMenuItem( tylda("~Keys"), cmKeys, 0, hcNoContext, "" ) +
+		*new TMenuItem( tylda("LED ~indicators"), cmLedIndicators, 0, hcNoContext, "" ) +
 		newLine() +
-		*new TMenuItem( "~B~ugs information", cmBugs, 0, hcNoContext, "" ) +
+		*new TMenuItem( tylda("~Bugs information"), cmBugs, 0, hcNoContext, "" ) +
 		newLine() +
-		*new TMenuItem( "~C~opying", cmCopying, 0, hcNoContext, "" ) +
-		*new TMenuItem( "Autho~r~s", cmAuthors, 0, hcNoContext, "" ) +
+		*new TMenuItem( tylda("~Copying"), cmCopying, 0, hcNoContext, "" ) +
+		*new TMenuItem( tylda("Autho~rs"), cmAuthors, 0, hcNoContext, "" ) +
 #endif
-		*new TMenuItem( "~A~bout", cmAbout, 0, hcNoContext, "" )
+		*new TMenuItem( tylda("~About"), cmAbout, 0, hcNoContext, "" )
 	);
 }
 
