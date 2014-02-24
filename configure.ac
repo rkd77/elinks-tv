@@ -1675,12 +1675,12 @@ if test "x$ac_cv_c_compiler_gnu" = "xyes"; then
       CFLAGS="$CFLAGS -fno-strict-aliasing"
       ;;
     4.5*)
-      CFLAGS="$CFLAGS -fno-strict-aliasing -Wno-pointer-sign -Wno-enum-compare"
+      CFLAGS="$CFLAGS -fno-strict-aliasing -Wno-enum-compare"
       ;;
     4.*)
       # Do not show warnings related to (char * | unsigned char *) type
       # difference.
-      CFLAGS="$CFLAGS -fno-strict-aliasing -Wno-pointer-sign"
+      CFLAGS="$CFLAGS -fno-strict-aliasing"
       ;;
     *)
       # These should be ok using -Werror
