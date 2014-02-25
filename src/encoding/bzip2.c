@@ -92,7 +92,7 @@ bzip2_read(struct stream_encoded *stream, unsigned char *buf, int len)
 	if (data->last_read) return 0;
 
 	data->fbz_stream.avail_out = len;
-	data->fbz_stream.next_out = buf;
+	data->fbz_stream.next_out = (char *)buf;
 
 	do {
 		if (data->fbz_stream.avail_in == 0) {
@@ -109,7 +109,7 @@ bzip2_read(struct stream_encoded *stream, unsigned char *buf, int len)
 				return -1;
 			}
 
-			data->fbz_stream.next_in = data->buf;
+			data->fbz_stream.next_in = (char *)data->buf;
 			data->fbz_stream.avail_in = l;
 		}
 
@@ -142,7 +142,7 @@ bzip2_decode_buffer(struct stream_encoded *st, unsigned char *data, int len, int
 
 	*new_len = 0;	  /* default, left there if an error occurs */
 
-	stream->next_in = data;
+	stream->next_in = (char *)data;
 	stream->avail_in = len;
 	stream->total_out_lo32 = 0;
 	stream->total_out_hi32 = 0;
@@ -165,7 +165,7 @@ bzip2_decode_buffer(struct stream_encoded *st, unsigned char *data, int len, int
 		}
 
 		buffer		 = new_buffer;
-		stream->next_out  = buffer + stream->total_out_lo32;
+		stream->next_out  = (char *)(buffer + stream->total_out_lo32);
 		stream->avail_out = MAX_STR_LEN;
 
 		error = BZ2_bzDecompress(stream);
