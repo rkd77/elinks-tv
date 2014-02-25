@@ -32,7 +32,7 @@
 static inline unsigned char *
 _(unsigned char *msg, struct terminal *term)
 {
-	return gettext(msg);
+	return (unsigned char *)gettext((char *)msg);
 }
 
 static inline unsigned char *
