@@ -453,9 +453,9 @@ void TFelinks::aboutDlgBox()
 
 void *currentFWindow;
 
-char *getKeySequence(TEvent &event)
+static const char *getKeySequence(TEvent &event)
 {
-	char *buffer = NULL;
+	const char *buffer = NULL;
 
 	if (event.keyDown.charScan.charCode > 0)
 	{
@@ -756,7 +756,7 @@ TStatusLine* TFelinks::initStatusLine(TRect r)
 	*new TStatusItem(0, kbF9, cmMenu));
 }
 
-static char *tylda(char *msgid)
+static char *tylda(const char *msgid)
 {
 	static char bufor[1024];
 	int i;
