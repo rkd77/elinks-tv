@@ -56,7 +56,7 @@ add_snippets(struct ecmascript_interpreter *interpreter,
              LIST_OF(struct string_list_item) *doc_snippets,
              LIST_OF(struct string_list_item) *queued_snippets)
 {
-	struct string_list_item *doc_current = doc_snippets->next;
+	struct string_list_item *doc_current = (struct string_list_item *)doc_snippets->next;
 
 #ifdef CONFIG_LEDS
 	if (list_empty(*queued_snippets) && interpreter->vs->doc_view->session)
@@ -118,7 +118,7 @@ process_snippets(struct ecmascript_interpreter *interpreter,
                  struct string_list_item **current)
 {
 	if (!*current)
-		*current = snippets->next;
+		*current = (struct string_list_item *)snippets->next;
 	for (; *current != (struct string_list_item *) snippets;
 	     (*current) = (*current)->next) {
 		struct string *string = &(*current)->string;
@@ -520,7 +520,7 @@ render_document_frames(struct session *ses, int no_cache)
 static int
 comp_links(const void *v1, const void *v2)
 {
-	const struct link *l1 = v1, *l2 = v2;
+	const struct link *l1 = (const struct link *)v1, *l2 = (const struct link *)v2;
 
 	assert(l1 && l2);
 	if_assert_failed return 0;

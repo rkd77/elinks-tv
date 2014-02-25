@@ -64,7 +64,7 @@ add_dlg_button_do(struct dialog *dlg, unsigned char *text, int flags,
 	widget->info.button.truetextlen = textlen;
 
 	if (textlen > 1) {
-		unsigned char *pos = memchr(text, '~', textlen - 1);
+		unsigned char *pos = (unsigned char *)memchr(text, '~', textlen - 1);
 
 		if (pos) {
 			widget->info.button.hotkey_pos = pos - text;

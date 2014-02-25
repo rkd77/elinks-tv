@@ -64,7 +64,7 @@ check_heartbeats(void *data)
 				ecmascript_timeout_dialog(term, max_exec_time);
 			}
 
-                        JS_TriggerOperationCallback(hb->interpreter->backend_data);
+                        JS_TriggerOperationCallback((JSContext *)hb->interpreter->backend_data);
                 }
         }
 

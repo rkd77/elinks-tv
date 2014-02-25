@@ -148,7 +148,7 @@ static unicode_val_T jsval_to_accesskey(JSContext *ctx, jsval *vp);
 static struct form_state *
 input_get_form_state(JSContext *ctx, JSObject *jsinput)
 {
-	struct form_state *fs = JS_GetInstancePrivate(ctx, jsinput,
+	struct form_state *fs = (struct form_state *)JS_GetInstancePrivate(ctx, jsinput,
 						      (JSClass *) &input_class,
 						      NULL);
 
@@ -190,7 +190,7 @@ input_get_property(JSContext *ctx, JSObject *obj, jsid id, jsval *vp)
 	assert(JS_InstanceOf(ctx, parent_win, (JSClass *) &window_class, NULL));
 	if_assert_failed return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, parent_win,
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, parent_win,
 				   (JSClass *) &window_class, NULL);
 	doc_view = vs->doc_view;
 	document = doc_view->document;
@@ -342,7 +342,7 @@ input_set_property(JSContext *ctx, JSObject *obj, jsid id, JSBool strict, jsval 
 	assert(JS_InstanceOf(ctx, parent_win, (JSClass *) &window_class, NULL));
 	if_assert_failed return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, parent_win,
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, parent_win,
 				   (JSClass *) &window_class, NULL);
 	doc_view = vs->doc_view;
 	document = doc_view->document;
@@ -470,7 +470,7 @@ input_click(JSContext *ctx, uintN argc, jsval *rval)
 	assert(JS_InstanceOf(ctx, parent_win, (JSClass *) &window_class, NULL));
 	if_assert_failed return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, parent_win,
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, parent_win,
 				   (JSClass *) &window_class, NULL);
 	doc_view = vs->doc_view;
 	document = doc_view->document;
@@ -528,7 +528,7 @@ input_focus(JSContext *ctx, uintN argc, jsval *rval)
 	assert(JS_InstanceOf(ctx, parent_win, (JSClass *) &window_class, NULL));
 	if_assert_failed return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, parent_win,
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, parent_win,
 				   (JSClass *) &window_class, NULL);
 	doc_view = vs->doc_view;
 	document = doc_view->document;
@@ -564,7 +564,7 @@ input_select(JSContext *ctx, uintN argc, jsval *rval)
 static JSObject *
 get_input_object(JSContext *ctx, JSObject *jsform, struct form_state *fs)
 {
-	JSObject *jsinput = fs->ecmascript_obj;
+	JSObject *jsinput = (JSObject *)fs->ecmascript_obj;
 
 	if (jsinput) {
 		/* This assumes JS_GetInstancePrivate cannot GC.  */
@@ -594,7 +594,7 @@ get_input_object(JSContext *ctx, JSObject *jsform, struct form_state *fs)
 static void
 input_finalize(JSContext *ctx, JSObject *jsinput)
 {
-	struct form_state *fs = JS_GetInstancePrivate(ctx, jsinput,
+	struct form_state *fs = (struct form_state *)JS_GetInstancePrivate(ctx, jsinput,
 						      (JSClass *) &input_class,
 						      NULL);
 
@@ -615,7 +615,7 @@ input_finalize(JSContext *ctx, JSObject *jsinput)
 void
 spidermonkey_detach_form_state(struct form_state *fs)
 {
-	JSObject *jsinput = fs->ecmascript_obj;
+	JSObject *jsinput = (JSObject *)fs->ecmascript_obj;
 
 	if (jsinput) {
 		/* This assumes JS_GetInstancePrivate and JS_SetPrivate
@@ -639,7 +639,7 @@ spidermonkey_detach_form_state(struct form_state *fs)
 void
 spidermonkey_moved_form_state(struct form_state *fs)
 {
-	JSObject *jsinput = fs->ecmascript_obj;
+	JSObject *jsinput = (JSObject *)fs->ecmascript_obj;
 
 	if (jsinput) {
 		/* This assumes JS_SetPrivate cannot GC.  If it could,
@@ -746,7 +746,7 @@ form_elements_get_property(JSContext *ctx, JSObject *obj, jsid id, jsval *vp)
 	assert(JS_InstanceOf(ctx, parent_win, (JSClass *) &window_class, NULL));
 	if_assert_failed return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, parent_win,
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, parent_win,
 				   (JSClass *) &window_class, NULL);
 	doc_view = vs->doc_view;
 	document = doc_view->document;
@@ -818,7 +818,7 @@ form_elements_item2(JSContext *ctx, JSObject *obj, uintN argc, jsval *argv, jsva
 	assert(JS_InstanceOf(ctx, parent_win, (JSClass *) &window_class, NULL));
 	if_assert_failed return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, parent_win,
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, parent_win,
 				   (JSClass *) &window_class, NULL);
 	doc_view = vs->doc_view;
 	document = doc_view->document;
@@ -889,7 +889,7 @@ form_elements_namedItem2(JSContext *ctx, JSObject *obj, uintN argc, jsval *argv,
 	assert(JS_InstanceOf(ctx, parent_win, (JSClass *) &window_class, NULL));
 	if_assert_failed return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, parent_win,
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, parent_win,
 				   (JSClass *) &window_class, NULL);
 	doc_view = vs->doc_view;
 	document = doc_view->document;
@@ -1137,7 +1137,7 @@ form_set_property(JSContext *ctx, JSObject *obj, jsid id, JSBool strict, jsval *
 	assert(JS_InstanceOf(ctx, parent_win, (JSClass *) &window_class, NULL));
 	if_assert_failed return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, parent_win,
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, parent_win,
 				   (JSClass *) &window_class, NULL);
 	doc_view = vs->doc_view;
 	fv = form_get_form_view(ctx, obj, NULL);
@@ -1221,7 +1221,7 @@ form_reset(JSContext *ctx, uintN argc, jsval *rval)
 	assert(JS_InstanceOf(ctx, parent_win, (JSClass *) &window_class, NULL));
 	if_assert_failed return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, parent_win,
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, parent_win,
 				   (JSClass *) &window_class, NULL);
 	doc_view = vs->doc_view;
 	fv = form_get_form_view(ctx, obj, argv);
@@ -1262,7 +1262,7 @@ form_submit(JSContext *ctx, uintN argc, jsval *rval)
 	assert(JS_InstanceOf(ctx, parent_win, (JSClass *) &window_class, NULL));
 	if_assert_failed return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, parent_win,
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, parent_win,
 				   (JSClass *) &window_class, NULL);
 	doc_view = vs->doc_view;
 	ses = doc_view->session;
@@ -1282,7 +1282,7 @@ form_submit(JSContext *ctx, uintN argc, jsval *rval)
 JSObject *
 get_form_object(JSContext *ctx, JSObject *jsdoc, struct form_view *fv)
 {
-	JSObject *jsform = fv->ecmascript_obj;
+	JSObject *jsform = (JSObject *)fv->ecmascript_obj;
 
 	if (jsform) {
 		/* This assumes JS_GetInstancePrivate cannot GC.  */
@@ -1312,7 +1312,7 @@ get_form_object(JSContext *ctx, JSObject *jsdoc, struct form_view *fv)
 static void
 form_finalize(JSContext *ctx, JSObject *jsform)
 {
-	struct form_view *fv = JS_GetInstancePrivate(ctx, jsform,
+	struct form_view *fv = (struct form_view *)JS_GetInstancePrivate(ctx, jsform,
 						     (JSClass *) &form_class,
 						     NULL);
 
@@ -1333,7 +1333,7 @@ form_finalize(JSContext *ctx, JSObject *jsform)
 void
 spidermonkey_detach_form_view(struct form_view *fv)
 {
-	JSObject *jsform = fv->ecmascript_obj;
+	JSObject *jsform = (JSObject *)fv->ecmascript_obj;
 
 	if (jsform) {
 		/* This assumes JS_GetInstancePrivate and JS_SetPrivate
@@ -1434,7 +1434,7 @@ forms_get_property(JSContext *ctx, JSObject *obj, jsid id, jsval *vp)
 	assert(JS_InstanceOf(ctx, parent_win, (JSClass *) &window_class, NULL));
 	if_assert_failed return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, parent_win,
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, parent_win,
 				   (JSClass *) &window_class, NULL);
 	doc_view = vs->doc_view;
 	document = doc_view->document;
@@ -1499,7 +1499,7 @@ forms_item2(JSContext *ctx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 	assert(JS_InstanceOf(ctx, parent_win, (JSClass *) &window_class, NULL));
 	if_assert_failed return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, parent_win,
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, parent_win,
 				   (JSClass *) &window_class, NULL);
 
 	if (argc != 1)
@@ -1540,7 +1540,7 @@ forms_namedItem(JSContext *ctx, uintN argc, jsval *rval)
 	assert(JS_InstanceOf(ctx, parent_win, (JSClass *) &window_class, NULL));
 	if_assert_failed return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, parent_win,
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, parent_win,
 				   (JSClass *) &window_class, NULL);
 	doc_view = vs->doc_view;
 

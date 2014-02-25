@@ -183,7 +183,7 @@ switch_current_tab(struct session *ses, int direction)
 static void
 really_close_tab(void *ses_)
 {
-	struct session *ses = ses_;
+	struct session *ses = (struct session *)ses_;
 	struct terminal *term = ses->tab->term;
 	struct window *current_tab = get_current_tab(term);
 
@@ -223,7 +223,7 @@ close_tab(struct terminal *term, struct session *ses)
 static void
 really_close_tabs(void *ses_)
 {
-	struct session *ses = ses_;
+	struct session *ses = (struct session *)ses_;
 	struct terminal *term = ses->tab->term;
 	struct window *current_tab = get_current_tab(term);
 	struct window *tab;
@@ -278,7 +278,7 @@ open_uri_in_new_tab(struct session *ses, struct uri *uri, int in_background,
 void
 delayed_open(void *data)
 {
-	struct delayed_open *deo = data;
+	struct delayed_open *deo = (struct delayed_open *)data;
 
 	assert(deo);
 	open_uri_in_new_tab(deo->ses, deo->uri, 0, 0);

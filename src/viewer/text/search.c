@@ -431,7 +431,7 @@ struct is_in_range_regex_context {
 static void
 is_in_range_regex_match(struct regex_match_context *common_ctx, void *data)
 {
-	struct is_in_range_regex_context *ctx = data;
+	struct is_in_range_regex_context *ctx = (struct is_in_range_regex_context *)data;
 	int i;
 
 	if (common_ctx->s1[common_ctx->textlen].y < ctx->y || common_ctx->s1[common_ctx->textlen].y >= common_ctx->y2)
@@ -704,7 +704,7 @@ struct get_searched_regex_context {
 static void
 get_searched_regex_match(struct regex_match_context *common_ctx, void *data)
 {
-	struct get_searched_regex_context *ctx = data;
+	struct get_searched_regex_context *ctx = (struct get_searched_regex_context *)data;
 	int i;
 
 	for (i = 0; i < common_ctx->textlen; i++) {
@@ -1621,8 +1621,8 @@ struct search_dlg_hop {
 static widget_handler_status_T
 search_dlg_cancel(struct dialog_data *dlg_data, struct widget_data *widget_data)
 {
-	void (*fn)(void *) = widget_data->widget->data;
-	struct search_dlg_hop *hop = dlg_data->dlg->udata2;
+	void (*fn)(void *) = (void(*)(void *))widget_data->widget->data;
+	struct search_dlg_hop *hop = (struct search_dlg_hop *)dlg_data->dlg->udata2;
 	void *data = hop->data;
 
 	if (fn) fn(data);
@@ -1632,8 +1632,8 @@ search_dlg_cancel(struct dialog_data *dlg_data, struct widget_data *widget_data)
 static widget_handler_status_T
 search_dlg_ok(struct dialog_data *dlg_data, struct widget_data *widget_data)
 {
-	void (*fn)(void *, unsigned char *) = widget_data->widget->data;
-	struct search_dlg_hop *hop = dlg_data->dlg->udata2;
+	void (*fn)(void *, unsigned char *) = (void(*)(void *, unsigned char *))widget_data->widget->data;
+	struct search_dlg_hop *hop = (struct search_dlg_hop *)dlg_data->dlg->udata2;
 	void *data = hop->data;
 	unsigned char *text = dlg_data->widgets_data->cdata;
 

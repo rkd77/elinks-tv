@@ -142,7 +142,7 @@ abort_refreshed_msg_box_handler(struct dialog_data *dlg_data)
 static enum dlg_refresh_code
 refresh_msg_box(struct dialog_data *dlg_data, void *data)
 {
-	unsigned char *(*get_info)(struct terminal *, void *) = data;
+	unsigned char *(*get_info)(struct terminal *, void *) = (unsigned char *(*)(struct terminal *, void *))data;
 	void *msg_data = dlg_data->dlg->udata2;
 	unsigned char *info = get_info(dlg_data->win->term, msg_data);
 
@@ -178,7 +178,7 @@ refreshed_msg_box(struct terminal *term, enum msgbox_flags flags,
 	 * is freed. */
 	dlg_data->dlg->udata = info;
 	dlg_data->dlg->abort = abort_refreshed_msg_box_handler;
-	refresh_dialog(dlg_data, refresh_msg_box, get_info);
+	refresh_dialog(dlg_data, refresh_msg_box, (void *)get_info);
 }
 
 struct dialog_data *

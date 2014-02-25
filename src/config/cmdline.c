@@ -487,7 +487,7 @@ print_full_help_inner(struct option *tree, unsigned char *path,
 			continue;
 		}
 
-		help = gettext_nonempty(option_types[option->type].help_str);
+		help = (unsigned char *)gettext_nonempty(option_types[option->type].help_str);
 
 		if (type != OPT_TREE)
 			printf("    %s%s%s %s ",
@@ -557,7 +557,7 @@ print_full_help_inner(struct option *tree, unsigned char *path,
 				memcpy(savedpos, option->name, namelen + 1);
 				savedpos += namelen;
 
-				capt = gettext_nonempty(capt);
+				capt = (unsigned char *)gettext_nonempty(capt);
 				printf("  %s: (%s)", capt, saved);
 				break;
 			}
@@ -623,8 +623,8 @@ print_short_help(void)
 			continue;
 		}
 
-		capt = gettext_nonempty(option->capt);
-		help = gettext_nonempty(option_types[option->type].help_str);
+		capt = (unsigned char *)gettext_nonempty(option->capt);
+		help = (unsigned char *)gettext_nonempty(option_types[option->type].help_str);
 
 		/* When @help string is non empty align at least one space. */
 		len = ALIGN_WIDTH - len - strlen(help);

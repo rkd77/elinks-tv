@@ -98,7 +98,7 @@ document_get_property(JSContext *ctx, JSObject *obj, jsid id, jsval *vp)
 	assert(JS_InstanceOf(ctx, parent_win, (JSClass *) &window_class, NULL));
 	if_assert_failed return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, parent_win,
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, parent_win,
 				   (JSClass *) &window_class, NULL);
 	doc_view = vs->doc_view;
 	document = doc_view->document;
@@ -204,7 +204,7 @@ document_set_property(JSContext *ctx, JSObject *obj, jsid id, JSBool strict, jsv
 	assert(JS_InstanceOf(ctx, parent_win, (JSClass *) &window_class, NULL));
 	if_assert_failed return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, parent_win,
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, parent_win,
 				   (JSClass *) &window_class, NULL);
 	doc_view = vs->doc_view;
 	document = doc_view->document;
@@ -255,7 +255,7 @@ static JSBool
 document_write_do(JSContext *ctx, uintN argc, jsval *rval, int newline)
 {
 	jsval val;
-	struct ecmascript_interpreter *interpreter = JS_GetContextPrivate(ctx);
+	struct ecmascript_interpreter *interpreter = (struct ecmascript_interpreter *)JS_GetContextPrivate(ctx);
 	struct string *ret = interpreter->ret;
 	jsval *argv = JS_ARGV(ctx, rval);
 

@@ -62,7 +62,7 @@ static int js_module_init_ok;
 static void
 error_reporter(JSContext *ctx, const char *message, JSErrorReport *report)
 {
-	struct ecmascript_interpreter *interpreter = JS_GetContextPrivate(ctx);
+	struct ecmascript_interpreter *interpreter = (struct ecmascript_interpreter *)JS_GetContextPrivate(ctx);
 	struct session *ses = interpreter->vs->doc_view->session;
 	struct terminal *term;
 	unsigned char *strict, *exception, *warning, *error;
@@ -250,7 +250,7 @@ spidermonkey_put_interpreter(struct ecmascript_interpreter *interpreter)
 
 	assert(interpreter);
 	if (!js_module_init_ok) return;
-	ctx = interpreter->backend_data;
+	ctx = (JSContext *)interpreter->backend_data;
 	JS_DestroyContext(ctx);
 	interpreter->backend_data = NULL;
 }
@@ -265,7 +265,7 @@ spidermonkey_eval(struct ecmascript_interpreter *interpreter,
 
 	assert(interpreter);
 	if (!js_module_init_ok) return;
-	ctx = interpreter->backend_data;
+	ctx = (JSContext *)interpreter->backend_data;
 #if defined(CONFIG_ECMASCRIPT_SMJS_HEARTBEAT)
 	interpreter->heartbeat = add_heartbeat(interpreter);
 #elif defined(HAVE_JS_SETBRANCHCALLBACK)
@@ -290,7 +290,7 @@ spidermonkey_eval_stringback(struct ecmascript_interpreter *interpreter,
 
 	assert(interpreter);
 	if (!js_module_init_ok) return NULL;
-	ctx = interpreter->backend_data;
+	ctx = (JSContext *)interpreter->backend_data;
 	interpreter->ret = NULL;
 #if defined(CONFIG_ECMASCRIPT_SMJS_HEARTBEAT)
 	interpreter->heartbeat = add_heartbeat(interpreter);
@@ -325,7 +325,7 @@ spidermonkey_eval_boolback(struct ecmascript_interpreter *interpreter,
 
 	assert(interpreter);
 	if (!js_module_init_ok) return 0;
-	ctx = interpreter->backend_data;
+	ctx = (JSContext *)interpreter->backend_data;
 	interpreter->ret = NULL;
 	fun = JS_CompileFunction(ctx, NULL, "", 0, NULL, code->source,
 				 code->length, "", 0);

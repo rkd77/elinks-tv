@@ -301,7 +301,7 @@ ecmascript_set_action(unsigned char **action, unsigned char *string)
 static void
 ecmascript_timeout_handler(void *i)
 {
-	struct ecmascript_interpreter *interpreter = i;
+	struct ecmascript_interpreter *interpreter = (struct ecmascript_interpreter *)i;
 
 	assertm(interpreter->vs->doc_view != NULL,
 		"setTimeout: vs with no document (e_f %d)",

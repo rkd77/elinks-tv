@@ -98,11 +98,11 @@ unibar_get_property(JSContext *ctx, JSObject *obj, jsid id, jsval *vp)
 	assert(JS_InstanceOf(ctx, parent_win, (JSClass *) &window_class, NULL));
 	if_assert_failed return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, parent_win,
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, parent_win,
 				   (JSClass *) &window_class, NULL);
 	doc_view = vs->doc_view;
 	status = &doc_view->session->status;
-	bar = JS_GetPrivate(ctx, obj); /* from @menubar_class or @statusbar_class */
+	bar = (unsigned char *)JS_GetPrivate(ctx, obj); /* from @menubar_class or @statusbar_class */
 
 	if (!JSID_IS_INT(id))
 		return JS_TRUE;
@@ -157,11 +157,11 @@ unibar_set_property(JSContext *ctx, JSObject *obj, jsid id, JSBool strict, jsval
 	assert(JS_InstanceOf(ctx, parent_win, (JSClass *) &window_class, NULL));
 	if_assert_failed return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, parent_win,
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, parent_win,
 				   (JSClass *) &window_class, NULL);
 	doc_view = vs->doc_view;
 	status = &doc_view->session->status;
-	bar = JS_GetPrivate(ctx, obj); /* from @menubar_class or @statusbar_class */
+	bar = (unsigned char *)JS_GetPrivate(ctx, obj); /* from @menubar_class or @statusbar_class */
 
 	if (!JSID_IS_INT(id))
 		return JS_TRUE;

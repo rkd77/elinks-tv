@@ -113,7 +113,7 @@ struct scanner_info css_scanner_info = {
 	       && check_css_precedence(*(s), skipto)) {			\
 		if (isquote(*(s))) {					\
 			int size = (scanner)->end - (s);		\
-			unsigned char *end = memchr(s + 1, *(s), size);	\
+			unsigned char *end = (unsigned char *)memchr(s + 1, *(s), size);	\
 									\
 			if (end) (s) = end;				\
 		}							\
@@ -302,7 +302,7 @@ scan_css_token(struct scanner *scanner, struct scanner_token *token)
 	} else if (isquote(first_char)) {
 		/* TODO: Escaped delimiters --jonas */
 		int size = scanner->end - string;
-		unsigned char *string_end = memchr(string, first_char, size);
+		unsigned char *string_end = (unsigned char *)memchr(string, first_char, size);
 
 		if (string_end) {
 			/* We don't want the delimiters in the token */

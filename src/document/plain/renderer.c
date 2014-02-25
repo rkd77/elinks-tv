@@ -115,7 +115,7 @@ check_link_word(struct document *document, unsigned char *uri, int length,
 {
 	struct uri test;
 	unsigned char *where = NULL;
-	unsigned char *mailto = memchr(uri, '@', length);
+	unsigned char *mailto = (unsigned char *)memchr(uri, '@', length);
 	int keep = uri[length];
 	struct link *new_link;
 

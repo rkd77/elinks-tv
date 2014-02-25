@@ -67,7 +67,7 @@ void
 accept_cookie_dialog(struct session *ses, void *data)
 {
 	/* [gettext_accelerator_context(accept_cookie_dialog)] */
-	struct cookie *cookie = cookie_queries.next;
+	struct cookie *cookie = (struct cookie *)cookie_queries.next;
 	struct string string;
 
 	assert(ses);
@@ -134,12 +134,12 @@ get_cookie_text(struct listbox_item *item, struct terminal *term)
 {
 	/* Are we dealing with a folder? */
 	if (item->type == BI_FOLDER) {
-		struct cookie_server *server = item->udata;
+		struct cookie_server *server = (struct cookie_server *)item->udata;
 
 		return stracpy(server->host);
 
 	} else {
-		struct cookie *cookie = item->udata;
+		struct cookie *cookie = (struct cookie *)item->udata;
 
 		return stracpy(cookie->name);
 	}
@@ -148,7 +148,7 @@ get_cookie_text(struct listbox_item *item, struct terminal *term)
 static unsigned char *
 get_cookie_info(struct listbox_item *item, struct terminal *term)
 {
-	struct cookie *cookie = item->udata;
+	struct cookie *cookie = (struct cookie *)item->udata;
 	struct cookie_server *server;
 	struct string string;
 
@@ -172,7 +172,7 @@ get_cookie_root(struct listbox_item *item)
 	if (item->type == BI_FOLDER) {
 		return NULL;
 	} else {
-		struct cookie *cookie = item->udata;
+		struct cookie *cookie = (struct cookie *)item->udata;
 
 		return cookie->server->box_item;
 	}
@@ -187,7 +187,7 @@ can_delete_cookie(struct listbox_item *item)
 static void
 delete_cookie_item(struct listbox_item *item, int last)
 {
-	struct cookie *cookie = item->udata;
+	struct cookie *cookie = (struct cookie *)item->udata;
 
 	if (item->type == BI_FOLDER) {
 		struct listbox_item *next, *root = item;
@@ -249,7 +249,7 @@ static const struct listbox_ops cookies_listbox_ops = {
 static widget_handler_status_T
 set_cookie_name(struct dialog_data *dlg_data, struct widget_data *widget_data)
 {
-	struct cookie *cookie = dlg_data->dlg->udata;
+	struct cookie *cookie = (struct cookie *)dlg_data->dlg->udata;
 	unsigned char *value = widget_data->cdata;
 
 	if (!value || !cookie) return EVENT_NOT_PROCESSED;
@@ -261,7 +261,7 @@ set_cookie_name(struct dialog_data *dlg_data, struct widget_data *widget_data)
 static widget_handler_status_T
 set_cookie_value(struct dialog_data *dlg_data, struct widget_data *widget_data)
 {
-	struct cookie *cookie = dlg_data->dlg->udata;
+	struct cookie *cookie = (struct cookie *)dlg_data->dlg->udata;
 	unsigned char *value = widget_data->cdata;
 
 	if (!value || !cookie) return EVENT_NOT_PROCESSED;
@@ -273,7 +273,7 @@ set_cookie_value(struct dialog_data *dlg_data, struct widget_data *widget_data)
 static widget_handler_status_T
 set_cookie_domain(struct dialog_data *dlg_data, struct widget_data *widget_data)
 {
-	struct cookie *cookie = dlg_data->dlg->udata;
+	struct cookie *cookie = (struct cookie *)dlg_data->dlg->udata;
 	unsigned char *value = widget_data->cdata;
 
 	if (!value || !cookie) return EVENT_NOT_PROCESSED;
@@ -285,7 +285,7 @@ set_cookie_domain(struct dialog_data *dlg_data, struct widget_data *widget_data)
 static widget_handler_status_T
 set_cookie_expires(struct dialog_data *dlg_data, struct widget_data *widget_data)
 {
-	struct cookie *cookie = dlg_data->dlg->udata;
+	struct cookie *cookie = (struct cookie *)dlg_data->dlg->udata;
 	unsigned char *value = widget_data->cdata;
 	unsigned char *end;
 	long number;
@@ -305,7 +305,7 @@ set_cookie_expires(struct dialog_data *dlg_data, struct widget_data *widget_data
 static widget_handler_status_T
 set_cookie_secure(struct dialog_data *dlg_data, struct widget_data *widget_data)
 {
-	struct cookie *cookie = dlg_data->dlg->udata;
+	struct cookie *cookie = (struct cookie *)dlg_data->dlg->udata;
 	unsigned char *value = widget_data->cdata;
 	unsigned char *end;
 	long number;
@@ -387,7 +387,7 @@ push_edit_button(struct dialog_data *dlg_data, struct widget_data *button)
 
 	if (!box->sel) return EVENT_PROCESSED;
 	if (box->sel->type == BI_FOLDER) return EVENT_PROCESSED;
-	cookie = box->sel->udata;
+	cookie = (struct cookie *)box->sel->udata;
 	if (!cookie) return EVENT_PROCESSED;
 	build_edit_dialog(term, cookie);
 	return EVENT_PROCESSED;
@@ -405,9 +405,9 @@ push_add_button(struct dialog_data *dlg_data, struct widget_data *button)
 
 	if (box->sel->type == BI_FOLDER) {
 		assert(box->sel->depth == 0);
-		server = box->sel->udata;
+		server = (struct cookie_server *)box->sel->udata;
 	} else {
-		struct cookie *cookie = box->sel->udata;
+		struct cookie *cookie = (struct cookie *)box->sel->udata;
 
 		server = cookie->server;
 	}
@@ -432,7 +432,7 @@ push_add_button(struct dialog_data *dlg_data, struct widget_data *button)
 static void
 add_server_do(void *data)
 {
-	unsigned char *value = data;
+	unsigned char *value = (unsigned char *)data;
 	struct cookie *dummy_cookie;
 
 	if (!value) return;

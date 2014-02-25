@@ -49,8 +49,8 @@ tab_compl(struct dialog_data *dlg_data, unsigned char *item)
 static void
 menu_tab_compl(struct terminal *term, void *item_, void *dlg_data_)
 {
-	unsigned char *item = item_;
-	struct dialog_data *dlg_data = dlg_data_;
+	unsigned char *item = (unsigned char *)item_;
+	struct dialog_data *dlg_data = (struct dialog_data *)dlg_data_;
 
 	tab_compl_n(dlg_data, item, strlen(item));
 }
@@ -82,7 +82,7 @@ do_tab_compl(struct dialog_data *dlg_data,
 	if (n > 1) {
 		do_menu_selected(term, items, dlg_data, n - 1, 0);
 	} else {
-		if (n == 1) tab_compl(dlg_data, items->data);
+		if (n == 1) tab_compl(dlg_data, (unsigned char *)items->data);
 		mem_free(items);
 	}
 }
@@ -158,9 +158,9 @@ do_tab_compl_unambiguous(struct dialog_data *dlg_data,
 static void
 set_complete_file_menu(struct terminal *term, void *filename_, void *dlg_data_)
 {
-	struct dialog_data *dlg_data = dlg_data_;
+	struct dialog_data *dlg_data = (struct dialog_data *)dlg_data_;
 	struct widget_data *widget_data = selected_widget(dlg_data);
-	unsigned char *filename = filename_;
+	unsigned char *filename = (unsigned char *)filename_;
 	int filenamelen;
 
 	assert(widget_is_textfield(widget_data));
@@ -181,7 +181,7 @@ set_complete_file_menu(struct terminal *term, void *filename_, void *dlg_data_)
 static void
 tab_complete_file_menu(struct terminal *term, void *path_, void *dlg_data_)
 {
-	struct dialog_data *dlg_data = dlg_data_;
+	struct dialog_data *dlg_data = (struct dialog_data *)dlg_data_;
 	unsigned char *path = path_;
 
 	auto_complete_file(term, 0 /* no_elevator */, path,
@@ -276,7 +276,7 @@ add_to_input_history(struct input_history *history, unsigned char *data,
 			return;
 		}
 
-		entry = history->entries.prev;
+		entry = (struct input_history_entry *)history->entries.prev;
 		del_from_history_list(history, entry);
 		mem_free(entry);
 	}

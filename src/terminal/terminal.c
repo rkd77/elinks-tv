@@ -83,7 +83,7 @@ get_default_terminal(void)
 	if (list_empty(terminals))
 		return NULL;
 	else
-		return terminals.next;
+		return (struct terminal *)terminals.next;
 }
 
 extern connectTerminalToWindow(struct terminal *term);
@@ -213,7 +213,7 @@ void
 destroy_all_terminals(void)
 {
 	while (!list_empty(terminals))
-		destroy_terminal(terminals.next);
+		destroy_terminal((struct terminal *)terminals.next);
 }
 
 static void

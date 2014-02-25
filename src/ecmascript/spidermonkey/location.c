@@ -68,7 +68,7 @@ const spidermonkeyFunctionSpec history_funcs[] = {
 static JSBool
 history_back(JSContext *ctx, uintN argc, jsval *rval)
 {
-	struct ecmascript_interpreter *interpreter = JS_GetContextPrivate(ctx);
+	struct ecmascript_interpreter *interpreter = (struct ecmascript_interpreter *)JS_GetContextPrivate(ctx);
 	struct document_view *doc_view = interpreter->vs->doc_view;
 	struct session *ses = doc_view->session;
 
@@ -86,7 +86,7 @@ history_back(JSContext *ctx, uintN argc, jsval *rval)
 static JSBool
 history_forward(JSContext *ctx, uintN argc, jsval *rval)
 {
-	struct ecmascript_interpreter *interpreter = JS_GetContextPrivate(ctx);
+	struct ecmascript_interpreter *interpreter = (struct ecmascript_interpreter *)JS_GetContextPrivate(ctx);
 	struct document_view *doc_view = interpreter->vs->doc_view;
 	struct session *ses = doc_view->session;
 
@@ -100,7 +100,7 @@ history_forward(JSContext *ctx, uintN argc, jsval *rval)
 static JSBool
 history_go(JSContext *ctx, uintN argc, jsval *rval)
 {
-	struct ecmascript_interpreter *interpreter = JS_GetContextPrivate(ctx);
+	struct ecmascript_interpreter *interpreter = (struct ecmascript_interpreter *)JS_GetContextPrivate(ctx);
 	struct document_view *doc_view = interpreter->vs->doc_view;
 	struct session *ses = doc_view->session;
 	jsval *argv = JS_ARGV(ctx, rval);
@@ -168,7 +168,7 @@ location_get_property(JSContext *ctx, JSObject *obj, jsid id, jsval *vp)
 	assert(JS_InstanceOf(ctx, parent_win, (JSClass *) &window_class, NULL));
 	if_assert_failed return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, parent_win,
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, parent_win,
 				   (JSClass *) &window_class, NULL);
 
 	if (!JSID_IS_INT(id))
@@ -210,7 +210,7 @@ location_set_property(JSContext *ctx, JSObject *obj, jsid id, JSBool strict, jsv
 	assert(JS_InstanceOf(ctx, parent_win, (JSClass *) &window_class, NULL));
 	if_assert_failed return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, parent_win,
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, parent_win,
 				   (JSClass *) &window_class, NULL);
 	doc_view = vs->doc_view;
 
@@ -256,7 +256,7 @@ struct delayed_goto {
 static void
 delayed_goto(void *data)
 {
-	struct delayed_goto *deg = data;
+	struct delayed_goto *deg = (struct delayed_goto *)data;
 
 	assert(deg);
 	if (deg->vs->doc_view

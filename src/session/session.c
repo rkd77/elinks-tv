@@ -140,7 +140,7 @@ void
 done_saved_session_info(void)
 {
 	while (!list_empty(session_info))
-		done_session_info(session_info.next);
+		done_session_info((struct session_info *)session_info.next);
 }
 
 /** Timer callback for session_info.timer.  As explained in install_timer(),
@@ -486,7 +486,7 @@ void
 check_questions_queue(struct session *ses)
 {
 	while (!list_empty(questions_queue)) {
-		struct questions_entry *q = questions_queue.next;
+		struct questions_entry *q = (struct questions_entry *)questions_queue.next;
 
 		q->callback(ses, q->data);
 		del_from_list(q);
@@ -810,7 +810,7 @@ setup_first_session(struct session *ses, struct uri *uri)
 	if (first_use) {
 		/* Only open the goto URL dialog if no URI was passed on the
 		 * command line. */
-		void *handler = uri ? NULL : dialog_goto_url_open;
+		void *handler = (void *)(uri ? NULL : dialog_goto_url_open);
 
 		first_use = 0;
 
@@ -1118,7 +1118,7 @@ decode_session_info(struct terminal *term, struct terminal_info *info)
 
 	/* Extract multiple (possible) NUL terminated URIs */
 	while (len > 0) {
-		unsigned char *end = memchr(str, 0, len);
+		unsigned char *end = (unsigned char *)memchr(str, 0, len);
 		int urilength = end ? end - str : len;
 		struct uri *uri = NULL;
 		unsigned char *uristring = memacpy(str, urilength);
@@ -1208,7 +1208,7 @@ destroy_session(struct session *ses)
 	kill_timer(&ses->display_timer);
 
 	while (!list_empty(ses->type_queries))
-		done_type_query(ses->type_queries.next);
+		done_type_query((struct type_query *)ses->type_queries.next);
 
 	if (ses->download_uri) done_uri(ses->download_uri);
 	mem_free_if(ses->search_word);
@@ -1303,7 +1303,7 @@ set_session_referrer(struct session *ses, struct uri *referrer)
 static void
 tabwin_func(struct window *tab, struct term_event *ev)
 {
-	struct session *ses = tab->data;
+	struct session *ses = (struct session *)tab->data;
 
 	switch (ev->ev) {
 		case EVENT_ABORT:

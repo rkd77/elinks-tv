@@ -96,7 +96,7 @@ try_resolve_frame(struct document_view *doc_view, unsigned char *id)
 	if (target->vs.ecmascript_fragile)
 		ecmascript_reset_state(&target->vs);
 	if (!target->vs.ecmascript) return NULL;
-	return JS_GetGlobalObject(target->vs.ecmascript->backend_data);
+	return JS_GetGlobalObject((JSContext *)target->vs.ecmascript->backend_data);
 }
 
 #if 0
@@ -132,7 +132,7 @@ window_get_property(JSContext *ctx, JSObject *obj, jsid id, jsval *vp)
 	if (!JS_InstanceOf(ctx, obj, (JSClass *) &window_class, NULL))
 		return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, obj, (JSClass *) &window_class, NULL);
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, obj, (JSClass *) &window_class, NULL);
 
 	/* No need for special window.location measurements - when
 	 * location is then evaluated in string context, toString()
@@ -221,7 +221,7 @@ found_parent:
 			ecmascript_reset_state(top_view->vs);
 		if (!top_view->vs->ecmascript)
 			break;
-		newjsframe = JS_GetGlobalObject(top_view->vs->ecmascript->backend_data);
+		newjsframe = JS_GetGlobalObject((JSContext *)top_view->vs->ecmascript->backend_data);
 
 		/* Keep this unrolled this way. Will have to check document.domain
 		 * JS property. */
@@ -264,7 +264,7 @@ window_set_property(JSContext *ctx, JSObject *obj, jsid id, JSBool strict, jsval
 	if (!JS_InstanceOf(ctx, obj, (JSClass *) &window_class, NULL))
 		return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, obj, (JSClass *) &window_class, NULL);
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, obj, (JSClass *) &window_class, NULL);
 
 	if (JSID_IS_STRING(id)) {
 		if (!strcmp(jsid_to_string(ctx, &id), "location")) {
@@ -321,7 +321,7 @@ window_alert(JSContext *ctx, uintN argc, jsval *rval)
 
 	if (!JS_InstanceOf(ctx, obj, (JSClass *) &window_class, argv)) return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, obj, (JSClass *) &window_class, argv);
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, obj, (JSClass *) &window_class, argv);
 
 	if (argc != 1)
 		return JS_TRUE;
@@ -356,7 +356,7 @@ window_open(JSContext *ctx, uintN argc, jsval *rval)
 
 	if (!JS_InstanceOf(ctx, obj, (JSClass *) &window_class, argv)) return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, obj, (JSClass *) &window_class, argv);
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, obj, (JSClass *) &window_class, argv);
 	doc_view = vs->doc_view;
 	ses = doc_view->session;
 
@@ -454,7 +454,7 @@ static JSBool
 window_setTimeout(JSContext *ctx, uintN argc, jsval *rval)
 {
 	jsval *argv = JS_ARGV(ctx, rval);
-	struct ecmascript_interpreter *interpreter = JS_GetContextPrivate(ctx);
+	struct ecmascript_interpreter *interpreter = (struct ecmascript_interpreter *)JS_GetContextPrivate(ctx);
 	unsigned char *code;
 	int timeout;
 
