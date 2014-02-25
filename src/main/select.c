@@ -104,7 +104,7 @@ register_bottom_half_do(select_handler_T fn, void *data)
 		if (bh->fn == fn && bh->data == data)
 			return 0;
 
-	bh = mem_alloc(sizeof(*bh));
+	bh = (struct bottom_half *)mem_alloc(sizeof(*bh));
 	if (!bh) return -1;
 	bh->fn = fn;
 	bh->data = data;

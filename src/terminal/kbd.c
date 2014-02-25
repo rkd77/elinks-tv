@@ -124,7 +124,7 @@ itrm_queue_event(struct itrm *itrm, unsigned char *data, int len)
 
 	if (w < len) {
 		int left = len - w;
-		unsigned char *c = mem_realloc(itrm->out.queue.data,
+		unsigned char *c = (unsigned char *)mem_realloc(itrm->out.queue.data,
 					       itrm->out.queue.len + left);
 
 		if (!c) {
@@ -332,10 +332,10 @@ handle_trm(int std_in, int std_out, int sock_in, int sock_out, int ctl_in,
 		info.magic = INTERLINK_NORMAL_MAGIC;
 	}
 
-	itrm = mem_calloc(1, sizeof(*itrm));
+	itrm = (struct itrm *)mem_calloc(1, sizeof(*itrm));
 	if (!itrm) return NULL;
 
-	itrm->in.queue.data = mem_calloc(1, ITRM_IN_QUEUE_SIZE);
+	itrm->in.queue.data = (unsigned char *)mem_calloc(1, ITRM_IN_QUEUE_SIZE);
 	if (!itrm->in.queue.data) {
 		mem_free(itrm);
 		return NULL;
@@ -663,7 +663,7 @@ has_nul_byte:
 		del_len = delete_.length;
 		param_len = path_len + del_len + 3;
 
-		param = mem_alloc(param_len);
+		param = (unsigned char *)mem_alloc(param_len);
 		if (!param) goto nasty_thing;
 
 		param[0] = fg;

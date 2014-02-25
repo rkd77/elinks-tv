@@ -703,7 +703,7 @@ add_file_cmd_to_str(struct connection *conn)
 	 * simplified a little by allocating this initial structure on
 	 * the stack, but it's several kilobytes long so that might be
 	 * risky.  */
-	ftp = mem_calloc(1, sizeof(*ftp));
+	ftp = (struct ftp_connection_info *)mem_calloc(1, sizeof(*ftp));
 	if (!ftp) {
 		abort_connection(conn, connection_state(S_OUT_OF_MEM));
 		goto ret;
@@ -808,7 +808,7 @@ add_file_cmd_to_str(struct connection *conn)
 	ftp->opc = ftp->pending_commands;
 
 	/* 1 byte is already reserved for cmd_buffer in struct ftp_connection_info. */
-	ftp = mem_realloc(ftp, sizeof(*ftp) + command.length);
+	ftp = (struct ftp_connection_info *)mem_realloc(ftp, sizeof(*ftp) + command.length);
 	if (!ftp) {
 		abort_connection(conn, connection_state(S_OUT_OF_MEM));
 		goto ret;

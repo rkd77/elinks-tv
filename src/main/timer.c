@@ -83,7 +83,7 @@ install_timer(timer_id_T *id, milliseconds_T delay, void (*func)(void *), void *
 
 	assert(id && delay > 0);
 
-	new_timer = mem_alloc(sizeof(*new_timer));
+	new_timer = (struct timer *)mem_alloc(sizeof(*new_timer));
 	*id = (timer_id_T) new_timer; /* TIMER_ID_UNDEF is NULL */
 	if (!new_timer) return;
 

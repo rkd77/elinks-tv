@@ -110,7 +110,7 @@ copy_vs(struct view_state *dst, struct view_state *src)
 
 	init_list(dst->forms);
 	foreach (fv, src->forms) {
-		struct form_view *newfv = mem_calloc(1, sizeof(*newfv));
+		struct form_view *newfv = (struct form_view *)mem_calloc(1, sizeof(*newfv));
 
 		if (!newfv) continue;
 		newfv->form_num = fv->form_num;
@@ -119,7 +119,7 @@ copy_vs(struct view_state *dst, struct view_state *src)
 	}
 
 	if (src->form_info_len) {
-		dst->form_info = mem_alloc(src->form_info_len
+		dst->form_info = (struct form_state *)mem_alloc(src->form_info_len
 					   * sizeof(*src->form_info));
 		if (dst->form_info) {
 			int i;

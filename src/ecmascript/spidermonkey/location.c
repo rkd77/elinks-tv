@@ -286,7 +286,7 @@ location_goto(struct document_view *doc_view, unsigned char *url)
 	mem_free(new_abs_url);
 	if (!new_uri)
 		return;
-	deg = mem_calloc(1, sizeof(*deg));
+	deg = (struct delayed_goto *)mem_calloc(1, sizeof(*deg));
 	if (!deg) {
 		done_uri(new_uri);
 		return;

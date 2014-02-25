@@ -152,7 +152,7 @@ init_mailcap_entry(unsigned char *command, int priority)
 	struct mailcap_entry *entry;
 	int commandlen = strlen(command);
 
-	entry = mem_calloc(1, sizeof(*entry) + commandlen);
+	entry = (struct mailcap_entry *)mem_calloc(1, sizeof(*entry) + commandlen);
 	if (!entry) return NULL;
 
 	memcpy(entry->command, command, commandlen);
@@ -172,7 +172,7 @@ add_mailcap_entry(struct mailcap_entry *entry, unsigned char *type, int typelen)
 	/* First check if the type is already checked in */
 	item = get_hash_item(mailcap_map, type, typelen);
 	if (!item) {
-		mitem = mem_alloc(sizeof(*mitem) + typelen);
+		mitem = (struct mailcap_hash_item *)mem_alloc(sizeof(*mitem) + typelen);
 		if (!mitem) {
 			done_mailcap_entry(entry);
 			return;

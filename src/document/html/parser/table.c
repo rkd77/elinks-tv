@@ -253,11 +253,11 @@ parse_table_attributes(struct table *table, unsigned char *attr, int real,
 static struct table *
 new_table(void)
 {
-	struct table *table = mem_calloc(1, sizeof(*table));
+	struct table *table = (struct table *)mem_calloc(1, sizeof(*table));
 
 	if (!table) return NULL;
 
-	table->cells = mem_calloc(INIT_REAL_COLS * INIT_REAL_ROWS,
+	table->cells = (struct table_cell *)mem_calloc(INIT_REAL_COLS * INIT_REAL_ROWS,
 				  sizeof(*table->cells));
 	if (!table->cells) {
 		mem_free(table);
@@ -266,7 +266,7 @@ new_table(void)
 	table->real_cols = INIT_REAL_COLS;
 	table->real_rows = INIT_REAL_ROWS;
 
-	table->columns = mem_calloc(INIT_REAL_COLS, sizeof(*table->columns));
+	table->columns = (struct table_column *)mem_calloc(INIT_REAL_COLS, sizeof(*table->columns));
 	if (!table->columns) {
 		mem_free(table->cells);
 		mem_free(table);
@@ -421,7 +421,7 @@ new_cell(struct table *table, int dest_col, int dest_row)
 					    sizeof(*new_.cells), limit);
 		if (!new_.real_rows) return NULL;
 
-		new_.cells = mem_calloc(new_.real_cols * new_.real_rows,
+		new_.cells = (struct table_cell *)mem_calloc(new_.real_cols * new_.real_rows,
 				       sizeof(*new_.cells));
 		if (!new_.cells) return NULL;
 
@@ -446,7 +446,7 @@ new_columns(struct table *table, int span, int width, int align,
 				sizeof(*new_columns), SMART_RAISE_LIMIT);
 		if (!n) return;
 
-		new_columns = mem_realloc(table->columns, n * sizeof(*new_columns));
+		new_columns = (struct table_column *)mem_realloc(table->columns, n * sizeof(*new_columns));
 		if (!new_columns) return;
 
 		table->real_columns_count = n;
@@ -476,7 +476,7 @@ set_td_width(struct table *table, int col, int width, int force)
 		if (!n && table->cols_x_count) return;
 		if (!n) n = col + 1;
 
-		new_cols_x = mem_realloc(table->cols_x, n * sizeof(*new_cols_x));
+		new_cols_x = (int *)mem_realloc(table->cols_x, n * sizeof(*new_cols_x));
 		if (!new_cols_x) return;
 
 		for (i = table->cols_x_count; i < n; i++)
@@ -912,7 +912,7 @@ scan_done:
 	}
 
 	if (table->rows) {
-		table->rows_heights = mem_calloc(table->rows, sizeof(*table->rows_heights));
+		table->rows_heights = (int *)mem_calloc(table->rows, sizeof(*table->rows_heights));
 		if (!table->rows_heights)
 			goto abort;
 	} else {

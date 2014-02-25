@@ -187,7 +187,7 @@ init_global_history_item(unsigned char *url, unsigned char *title, time_t vtime)
 {
 	struct global_history_item *history_item;
 
-	history_item = mem_calloc(1, sizeof(*history_item));
+	history_item = (struct global_history_item *)mem_calloc(1, sizeof(*history_item));
 	if (!history_item)
 		return NULL;
 

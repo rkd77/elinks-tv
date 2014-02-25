@@ -49,7 +49,7 @@ debug_memacpy(const unsigned char *f, int l, const unsigned char *src, int len)
 	string_assert(f, l, len >= 0, "memacpy");
 	if_assert_failed len = 0;
 
-	m = debug_mem_alloc(f, l, len + 1);
+	m = (unsigned char *)debug_mem_alloc(f, l, len + 1);
 	if (!m) return NULL;
 
 	if (src && len) memcpy(m, src, len);
@@ -77,7 +77,7 @@ memacpy(const unsigned char *src, int len)
 	assertm(len >= 0, "[memacpy]");
 	if_assert_failed { len = 0; }
 
-	m = mem_alloc(len + 1);
+	m = (unsigned char *)mem_alloc(len + 1);
 	if (!m) return NULL;
 
 	if (src && len) memcpy(m, src, len);
@@ -110,7 +110,7 @@ add_to_strn(unsigned char **dst, const unsigned char *src)
 
 	dstlen = strlen(*dst);
 	srclen = strlen(src) + 1; /* Include the NUL char! */
-	newdst = mem_realloc(*dst, dstlen + srclen);
+	newdst = (unsigned char *)mem_realloc(*dst, dstlen + srclen);
 	if (!newdst) return;
 
 	memcpy(newdst + dstlen, src, srclen);
@@ -122,7 +122,7 @@ insert_in_string(unsigned char **dst, int pos,
 		 const unsigned char *seq, int seqlen)
 {
 	int dstlen = strlen(*dst);
-	unsigned char *string = mem_realloc(*dst, dstlen + seqlen + 1);
+	unsigned char *string = (unsigned char *)mem_realloc(*dst, dstlen + seqlen + 1);
 
 	if (!string) return NULL;
 
@@ -145,7 +145,7 @@ straconcat(const unsigned char *str, ...)
 	if_assert_failed { return NULL; }
 
 	len = strlen(str);
-	s = mem_alloc(len + 1);
+	s = (unsigned char *)mem_alloc(len + 1);
 	if (!s) return NULL;
 
 	if (len) memcpy(s, str, len);
@@ -157,7 +157,7 @@ straconcat(const unsigned char *str, ...)
 
 		if (!l) continue;
 
-		ns = mem_realloc(s, len + 1 + l);
+		ns = (unsigned char *)mem_realloc(s, len + 1 + l);
 		if (!ns) {
 			mem_free(s);
 			va_end(ap);
@@ -330,9 +330,9 @@ init_string(struct string *string)
 
 	string->length = 0;
 #ifdef DEBUG_MEMLEAK
-	string->source = debug_mem_alloc(file, line, STRING_GRANULARITY + 1);
+	string->source = (unsigned char *)debug_mem_alloc(file, line, STRING_GRANULARITY + 1);
 #else
-	string->source = mem_alloc(STRING_GRANULARITY + 1);
+	string->source = (unsigned char *)mem_alloc(STRING_GRANULARITY + 1);
 #endif
 	if (!string->source) return NULL;
 
@@ -554,7 +554,7 @@ add_to_string_list(LIST_OF(struct string_list_item) *list,
 	assertm(list && source, "[add_to_string_list]");
 	if_assert_failed return NULL;
 
-	item = mem_alloc(sizeof(*item));
+	item = (struct string_list_item *)mem_alloc(sizeof(*item));
 	if (!item) return NULL;
 
 	string = &item->string;

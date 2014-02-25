@@ -47,7 +47,7 @@ add_listbox_item(struct hierbox_browser *browser, struct listbox_item *root,
 		root = &browser->root;
 	}
 
-	item = mem_calloc(1, sizeof(*item));
+	item = (struct listbox_item *)mem_calloc(1, sizeof(*item));
 	if (!item) return NULL;
 
 	init_list(item->child);
@@ -219,7 +219,7 @@ hierbox_ev_init(struct dialog_data *dlg_data)
 
 	/* If we fail here it only means automatic updating
 	 * will not be possible so no need to panic. */
-	item = mem_alloc(sizeof(*item));
+	item = (struct hierbox_dialog_list_item *)mem_alloc(sizeof(*item));
 	if (item) {
 		item->dlg_data = dlg_data;
 		add_to_list(browser->dialogs, item);
@@ -375,7 +375,7 @@ init_listbox_context(struct listbox_data *box, struct terminal *term,
 {
 	struct listbox_context *context;
 
-	context = mem_calloc(1, sizeof(*context));
+	context = (struct listbox_context *)mem_calloc(1, sizeof(*context));
 	if (!context) return NULL;
 
 	context->item = item;

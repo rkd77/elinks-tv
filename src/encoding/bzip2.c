@@ -54,7 +54,7 @@ bzip2_open(struct stream_encoded *stream, int fd)
 	 * pointer.)  */
 	static const bz_stream null_bz_stream = {0};
 
-	struct bz2_enc_data *data = mem_alloc(sizeof(*data));
+	struct bz2_enc_data *data = (struct bz2_enc_data *)mem_alloc(sizeof(*data));
 	int err;
 
 	stream->data = NULL;
@@ -158,7 +158,7 @@ bzip2_decode_buffer(struct stream_encoded *st, unsigned char *data, int len, int
 		 * --jonas */
 		assertm(!stream->total_out_hi32, "64 bzip2 decoding not supported");
 
-		new_buffer = mem_realloc(buffer, size);
+		new_buffer = (unsigned char *)mem_realloc(buffer, size);
 		if (!new_buffer) {
 			error = BZ_MEM_ERROR;
 			break;

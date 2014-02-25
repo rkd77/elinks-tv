@@ -52,7 +52,7 @@ getml(void *p, ...)
 	va_end(ap);
 
 	/* Allocate space for memory list. */
-	ml = mem_alloc(ML_SIZE(n));
+	ml = (struct memory_list *)mem_alloc(ML_SIZE(n));
 	if (!ml) return NULL;
 
 	/* First element. */
@@ -106,7 +106,7 @@ add_to_ml(struct memory_list **ml, ...)
 	if (!*ml) {
 		/* If getml() wasn't called before or returned NULL,
 		 * then we create it. */
-		*ml = mem_alloc(ML_SIZE(n));
+		*ml = (struct memory_list *)mem_alloc(ML_SIZE(n));
 		if (!*ml) return;
 
 		(*ml)->n = 0;
@@ -114,7 +114,7 @@ add_to_ml(struct memory_list **ml, ...)
 		/* Enlarge existing ml. */
 		struct memory_list *nml;
 
-		nml = mem_realloc(*ml, ML_SIZE(n + (*ml)->n));
+		nml = (struct memory_list *)mem_realloc(*ml, ML_SIZE(n + (*ml)->n));
 		if (!nml) return;
 
 		*ml = nml;
@@ -147,7 +147,7 @@ add_one_to_ml(struct memory_list **ml, void *p)
 	if (!*ml) {
 		/* If getml() wasn't called before or returned NULL,
 		 * then we create it. */
-		*ml = mem_alloc(ML_SIZE(1));
+		*ml = (struct memory_list *)mem_alloc(ML_SIZE(1));
 		if (!*ml) return;
 
 		(*ml)->n = 0;
@@ -155,7 +155,7 @@ add_one_to_ml(struct memory_list **ml, void *p)
 		/* Enlarge existing ml. */
 		struct memory_list *nml;
 
-		nml = mem_realloc(*ml, ML_SIZE(1 + (*ml)->n));
+		nml = (struct memory_list *)mem_realloc(*ml, ML_SIZE(1 + (*ml)->n));
 		if (!nml) return;
 
 		*ml = nml;

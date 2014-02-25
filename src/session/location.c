@@ -23,7 +23,7 @@ copy_location(struct location *dst, struct location *src)
 
 	init_list(dst->frames);
 	foreachback (frame, src->frames) {
-		new_frame = mem_calloc(1, sizeof(*new_frame));
+		new_frame = (struct frame *)mem_calloc(1, sizeof(*new_frame));
 		if (new_frame) {
 			new_frame->name = stracpy(frame->name);
 			if (!new_frame->name) {

@@ -92,7 +92,7 @@ struct terminal *
 init_term(int fdin, int fdout)
 {
 	unsigned char name[MAX_TERM_LEN + 9] = "terminal.";
-	struct terminal *term = mem_calloc(1, sizeof(*term));
+	struct terminal *term = (struct terminal *)mem_calloc(1, sizeof(*term));
 
 	if (!term) {
 		check_if_no_terminal();
@@ -281,7 +281,7 @@ exec_on_master_terminal(struct terminal *term,
 {
 	int blockh;
 	int param_size = plen + dlen + 2 /* 2 null char */ + 1 /* fg */;
-	unsigned char *param = fmem_alloc(param_size);
+	unsigned char *param = (unsigned char *)fmem_alloc(param_size);
 
 	if (!param) return;
 
@@ -323,7 +323,7 @@ exec_on_slave_terminal( struct terminal *term,
 			enum term_exec fg)
 {
 	int data_size = plen + dlen + 1 /* 0 */ + 1 /* fg */ + 2 /* 2 null char */;
-	unsigned char *data = fmem_alloc(data_size);
+	unsigned char *data = (unsigned char *)fmem_alloc(data_size);
 
 	if (!data) return;
 
@@ -393,7 +393,7 @@ do_terminal_function(struct terminal *term, unsigned char code,
 		     unsigned char *data)
 {
 	int data_len = strlen(data);
-	unsigned char *x_data = fmem_alloc(data_len + 1 /* code */ + 1 /* null char */);
+	unsigned char *x_data = (unsigned char *)fmem_alloc(data_len + 1 /* code */ + 1 /* null char */);
 
 	if (!x_data) return;
 	x_data[0] = code;

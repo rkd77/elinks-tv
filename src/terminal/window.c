@@ -57,7 +57,7 @@ void
 add_window(struct terminal *term, window_handler_T handler, void *data)
 {
 	struct term_event ev;
-	struct window *win = mem_calloc(1, sizeof(*win));
+	struct window *win = (struct window *)mem_calloc(1, sizeof(*win));
 
 	if (!win) {
 		mem_free_if(data);
@@ -165,7 +165,7 @@ empty_window_handler(struct window *win, struct term_event *ev)
 void
 add_empty_window(struct terminal *term, void (*fn)(void *), void *data)
 {
-	struct ewd *ewd = mem_alloc(sizeof(*ewd));
+	struct ewd *ewd = (struct ewd *)mem_alloc(sizeof(*ewd));
 
 	if (!ewd) return;
 	ewd->fn = fn;

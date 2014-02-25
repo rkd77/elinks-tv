@@ -62,7 +62,7 @@ struct plain_renderer {
 static struct screen_char *
 realloc_line(struct document *document, int x, int y)
 {
-	struct line *line = realloc_lines(document, y);
+	struct line *line = (struct line *)realloc_lines(document, y);
 
 	if (!line) return NULL;
 
@@ -386,7 +386,7 @@ add_document_line(struct plain_renderer *renderer,
 
 	assert(expanded >= 0);
 
-	startpos = pos = realloc_line(document, width + expanded, lineno);
+	startpos = pos = (struct screen_char *)realloc_line(document, width + expanded, lineno);
 	if (!pos) {
 		mem_free(line);
 		return 0;
@@ -575,7 +575,7 @@ init_template(struct screen_char *template_, struct document_options *options)
 static struct node *
 add_node(struct plain_renderer *renderer, int x, int width, int height)
 {
-	struct node *node = mem_alloc(sizeof(*node));
+	struct node *node = (struct node *)mem_alloc(sizeof(*node));
 
 	if (node) {
 		struct document *document = renderer->document;

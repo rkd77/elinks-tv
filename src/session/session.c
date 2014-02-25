@@ -160,7 +160,7 @@ int
 add_session_info(struct session *ses, struct uri *uri, struct uri *referrer,
 		 enum cache_mode cache_mode, enum task_type task)
 {
-	struct session_info *info = mem_calloc(1, sizeof(*info));
+	struct session_info *info = (struct session_info *)mem_calloc(1, sizeof(*info));
 
 	if (!info) return -1;
 
@@ -358,7 +358,7 @@ request_frame(struct session *ses, unsigned char *name,
 		return;
 	}
 
-	frame = mem_calloc(1, sizeof(*frame));
+	frame = (struct frame *)mem_calloc(1, sizeof(*frame));
 	if (!frame) return;
 
 	frame->name = stracpy(name);
@@ -497,7 +497,7 @@ check_questions_queue(struct session *ses)
 void
 add_questions_entry(void (*callback)(struct session *, void *), void *data)
 {
-	struct questions_entry *q = mem_alloc(sizeof(*q));
+	struct questions_entry *q = (struct questions_entry *)mem_alloc(sizeof(*q));
 
 	if (!q) return;
 
@@ -702,7 +702,7 @@ request_additional_file(struct session *ses, unsigned char *name, struct uri *ur
 		}
 	}
 
-	ftl = mem_calloc(1, sizeof(*ftl));
+	ftl = (struct file_to_load *)mem_calloc(1, sizeof(*ftl));
 	if (!ftl) return NULL;
 
 	ftl->uri = get_uri_reference(uri);
@@ -880,7 +880,7 @@ struct session *
 init_session(struct session *base_session, struct terminal *term,
 	     struct uri *uri, int in_background)
 {
-	struct session *ses = mem_calloc(1, sizeof(*ses));
+	struct session *ses = (struct session *)mem_calloc(1, sizeof(*ses));
 
 	if (!ses) return NULL;
 

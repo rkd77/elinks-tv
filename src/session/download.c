@@ -95,7 +95,7 @@ init_file_download(struct uri *uri, struct session *ses, unsigned char *file, in
 {
 	struct file_download *file_download;
 
-	file_download = mem_calloc(1, sizeof(*file_download));
+	file_download = (struct file_download *)mem_calloc(1, sizeof(*file_download));
 	if (!file_download) return NULL;
 
 	/* Actually we could allow fragments in the URI and just change all the
@@ -395,7 +395,7 @@ exec_mailcap_command(void *data)
 static void
 exec_later(struct session *ses, unsigned char *handler, unsigned char *file)
 {
-	struct exec_mailcap *exec_mailcap = mem_calloc(1, sizeof(*exec_mailcap));
+	struct exec_mailcap *exec_mailcap = (struct exec_mailcap *)mem_calloc(1, sizeof(*exec_mailcap));
 
 	if (exec_mailcap) {
 		exec_mailcap->ses = ses;
@@ -812,7 +812,7 @@ lookup_unique_name(struct terminal *term, unsigned char *ofile,
 	/* overwrite == 2 (ask) and file != ofile (=> original file already
 	 * exists) */
 
-	lun_hop = mem_calloc(1, sizeof(*lun_hop));
+	lun_hop = (struct lun_hop *)mem_calloc(1, sizeof(*lun_hop));
 	if (!lun_hop) goto error;
 	lun_hop->term = term;
 	lun_hop->ofile = ofile;
@@ -970,7 +970,7 @@ create_download_file(struct terminal *term, unsigned char *fi,
 		     enum download_flags flags,
 		     cdf_callback_T *callback, void *data)
 {
-	struct cdf_hop *cdf_hop = mem_calloc(1, sizeof(*cdf_hop));
+	struct cdf_hop *cdf_hop = (struct cdf_hop *)mem_calloc(1, sizeof(*cdf_hop));
 	unsigned char *wd;
 
 	if (!cdf_hop) {
@@ -1135,7 +1135,7 @@ common_download(struct session *ses, unsigned char *file,
 
 	if (!ses->download_uri) return;
 
-	cmdw_hop = mem_calloc(1, sizeof(*cmdw_hop));
+	cmdw_hop = (struct cmdw_hop *)mem_calloc(1, sizeof(*cmdw_hop));
 	if (!cmdw_hop) return;
 	cmdw_hop->ses = ses;
 	cmdw_hop->download_uri = ses->download_uri;
@@ -1191,7 +1191,7 @@ transform_codw_to_cmdw(struct terminal *term, int fd,
 		       enum download_flags flags)
 {
 	struct type_query *type_query = codw_hop->type_query;
-	struct cmdw_hop *cmdw_hop = mem_calloc(1, sizeof(*cmdw_hop));
+	struct cmdw_hop *cmdw_hop = (struct cmdw_hop *)mem_calloc(1, sizeof(*cmdw_hop));
 
 	if (!cmdw_hop) {
 		close(fd);
@@ -1282,7 +1282,7 @@ static void
 continue_download(void *data, unsigned char *file)
 {
 	struct type_query *type_query = data;
-	struct codw_hop *codw_hop = mem_calloc(1, sizeof(*codw_hop));
+	struct codw_hop *codw_hop = (struct codw_hop *)mem_calloc(1, sizeof(*codw_hop));
 
 	if (!codw_hop) {
 		tp_cancel(type_query);
@@ -1337,7 +1337,7 @@ init_type_query(struct session *ses, struct download *download,
 {
 	struct type_query *type_query;
 
-	type_query = mem_calloc(1, sizeof(*type_query));
+	type_query = (struct type_query *)mem_calloc(1, sizeof(*type_query));
 	if (!type_query) return NULL;
 
 	type_query->uri = get_uri_reference(ses->loading_uri);
@@ -1597,7 +1597,7 @@ do_type_query(struct type_query *type_query, unsigned char *ct, struct mime_hand
 
 	/* Add input field or text widget with info about the program handler. */
 	if (!get_cmd_opt_bool("anonymous")) {
-		unsigned char *field = mem_calloc(1, MAX_STR_LEN);
+		unsigned char *field = (unsigned char *)mem_calloc(1, MAX_STR_LEN);
 
 		if (!field) {
 			mem_free(dlg);

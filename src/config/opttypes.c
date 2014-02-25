@@ -202,7 +202,7 @@ static unsigned char *
 num_rd(struct option *opt, unsigned char **file, int *line)
 {
 	unsigned char *end = *file;
-	long *value = mem_alloc(sizeof(*value));
+	long *value = (long *)mem_alloc(sizeof(*value));
 
 	if (!value) return NULL;
 
@@ -347,7 +347,7 @@ str_wr(struct option *o, struct string *s)
 static void
 str_dup(struct option *opt, struct option *template_, int flags)
 {
-	unsigned char *new_ = mem_alloc(MAX_STR_LEN);
+	unsigned char *new_ = (unsigned char *)mem_alloc(MAX_STR_LEN);
 
 	if (new_) safe_strncpy(new_, template_->value.string, MAX_STR_LEN);
 	opt->value.string = new_;

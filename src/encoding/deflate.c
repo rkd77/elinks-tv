@@ -49,7 +49,7 @@ deflate_open(int window_size, struct stream_encoded *stream, int fd)
 	static const z_stream null_z_stream = {0};
 	int err;
 
-	struct deflate_enc_data *data = mem_alloc(sizeof(*data));
+	struct deflate_enc_data *data = (struct deflate_enc_data *)mem_alloc(sizeof(*data));
 
 	stream->data = NULL;
 	if (!data) {
@@ -189,7 +189,7 @@ deflate_decode_buffer(struct stream_encoded *st, int window_size, unsigned char 
 		unsigned char *new_buffer;
 		size_t size = stream->total_out + MAX_STR_LEN;
 
-		new_buffer = mem_realloc(buffer, size);
+		new_buffer = (unsigned char *)mem_realloc(buffer, size);
 		if (!new_buffer) {
 			error = Z_MEM_ERROR;
 			break;

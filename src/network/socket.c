@@ -107,7 +107,7 @@ static struct connect_info *
 init_connection_info(struct uri *uri, struct socket *socket,
 		     socket_connect_T connect_done)
 {
-	struct connect_info *connect_info = mem_calloc(1, sizeof(*connect_info));
+	struct connect_info *connect_info = (struct connect_info *)mem_calloc(1, sizeof(*connect_info));
 
 	if (!connect_info) return NULL;
 
@@ -140,7 +140,7 @@ init_socket(void *conn, struct socket_operations *ops)
 {
 	struct socket *socket;
 
-	socket = mem_calloc(1, sizeof(*socket));
+	socket = (struct socket *)mem_calloc(1, sizeof(*socket));
 	if (!socket) return NULL;
 
 	socket->fd = -1;
@@ -234,7 +234,7 @@ dns_found(struct socket *socket, struct sockaddr_storage *addr, int addrlen)
 
 	size = sizeof(*addr) * addrlen;
 
-	connect_info->addr = mem_alloc(size);
+	connect_info->addr = (struct sockaddr_storage *)mem_alloc(size);
 	if (!connect_info->addr) {
 		socket->ops->done(socket, connection_state(S_OUT_OF_MEM));
 		return;
@@ -818,7 +818,7 @@ write_to_socket(struct socket *socket, unsigned char *data, int len,
 
 	socket->ops->set_timeout(socket, connection_state(0));
 
-	wb = mem_alloc(sizeof(*wb) + len);
+	wb = (struct write_buffer *)mem_alloc(sizeof(*wb) + len);
 	if (!wb) {
 		socket->ops->done(socket, connection_state(S_OUT_OF_MEM));
 		return;
@@ -884,7 +884,7 @@ read_select(struct socket *socket)
 	if (!rb->freespace) {
 		int size = RD_SIZE(rb, rb->length);
 
-		rb = mem_realloc(rb, size);
+		rb = (struct read_buffer *)mem_realloc(rb, size);
 		if (!rb) {
 			socket->ops->done(socket, connection_state(S_OUT_OF_MEM));
 			return;
@@ -945,7 +945,7 @@ alloc_read_buffer(struct socket *socket)
 {
 	struct read_buffer *rb;
 
-	rb = mem_calloc(1, RD_SIZE(rb, 0));
+	rb = (struct read_buffer *)mem_calloc(1, RD_SIZE(rb, 0));
 	if (!rb) {
 		socket->ops->done(socket, connection_state(S_OUT_OF_MEM));
 		return NULL;

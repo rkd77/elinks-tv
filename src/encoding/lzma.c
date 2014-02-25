@@ -35,7 +35,7 @@ struct lzma_enc_data {
 static int
 lzma_open(struct stream_encoded *stream, int fd)
 {
-	struct lzma_enc_data *data = mem_alloc(sizeof(*data));
+	struct lzma_enc_data *data = (struct lzma_enc_data *)mem_alloc(sizeof(*data));
 	int err;
 
 	stream->data = NULL;
@@ -126,7 +126,7 @@ lzma_decode_buffer(struct stream_encoded *st, unsigned char *data, int len, int 
 		unsigned char *new_buffer;
 		size_t size = stream->total_out + MAX_STR_LEN;
 
-		new_buffer = mem_realloc(buffer, size);
+		new_buffer = (unsigned char *)mem_realloc(buffer, size);
 		if (!new_buffer) {
 			error = LZMA_MEM_ERROR;
 			break;

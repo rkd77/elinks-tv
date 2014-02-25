@@ -811,7 +811,7 @@ get_combined(unicode_val_T *data, int length)
 	if (item) return (unicode_val_T)(long)item->value;
 	if (last_combined >= UCS_END_COMBINED) return UCS_NO_CHAR;
 
-	key = mem_alloc((length + 1) * sizeof(*key));
+	key = (unicode_val_T *)mem_alloc((length + 1) * sizeof(*key));
 	if (!key) return UCS_NO_CHAR;
 	for (i = 0; i < length; i++)
 		key[i] = data[i];
@@ -820,7 +820,7 @@ get_combined(unicode_val_T *data, int length)
 	last_combined++;
 	indeks = last_combined - UCS_BEGIN_COMBINED;
 
-	combined = mem_realloc(combined, sizeof(*combined) * (indeks + 1));
+	combined = (unicode_val_T *)mem_realloc(combined, sizeof(*combined) * (indeks + 1));
 	if (!combined) {
 		mem_free(key);
 		last_combined--;
@@ -864,7 +864,7 @@ add_utf8(struct conv_table *ct, unicode_val_T u, const unsigned char *str)
 			assertm(ct[*p].u.str == no_str, "bad utf encoding #1");
 			if_assert_failed return;
 
-			nct = mem_calloc(256, sizeof(*nct));
+			nct = (struct conv_table *)mem_calloc(256, sizeof(*nct));
 			if (!nct) return;
 			new_translation_table(nct);
 			ct[*p].t = 1;
@@ -1311,7 +1311,7 @@ convert_string(struct conv_table *convert_table,
 
 	/* Buffer allocation */
 
-	buffer = mem_alloc(ALLOC_GR + 1 /* trailing \0 */);
+	buffer = (unsigned char *)mem_alloc(ALLOC_GR + 1 /* trailing \0 */);
 	if (!buffer) return NULL;
 
 #ifdef HAVE_ICONV
@@ -1456,7 +1456,7 @@ flush:
 				callback(callback_data, buffer, bufferpos);
 				bufferpos = 0;
 			} else {
-				new_ = mem_realloc(buffer, bufferpos + ALLOC_GR);
+				new_ = (unsigned char *)mem_realloc(buffer, bufferpos + ALLOC_GR);
 				if (!new_) {
 					mem_free(buffer);
 					return NULL;

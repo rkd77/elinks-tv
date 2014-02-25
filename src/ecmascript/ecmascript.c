@@ -74,7 +74,7 @@ ecmascript_get_interpreter(struct view_state *vs)
 
 	assert(vs);
 
-	interpreter = mem_calloc(1, sizeof(*interpreter));
+	interpreter = (struct ecmascript_interpreter *)mem_calloc(1, sizeof(*interpreter));
 	if (!interpreter)
 		return NULL;
 

@@ -287,7 +287,7 @@ FF_DBG_dump_stats(struct fastfind_info *info)
 static struct fastfind_info *
 init_fastfind(struct fastfind_index *index, enum fastfind_flags flags)
 {
-	struct fastfind_info *info = mem_calloc(1, sizeof(*info));
+	struct fastfind_info *info = (struct fastfind_info *)mem_calloc(1, sizeof(*info));
 
 	index->handle = info;
 	if (!info) return NULL;
@@ -314,7 +314,7 @@ alloc_ff_data(struct fastfind_info *info)
 
 	/* On error, cleanup is done by fastfind_done(). */
 
-	data = mem_calloc(info->count, sizeof(*data));
+	data = (struct ff_data *)mem_calloc(info->count, sizeof(*data));
 	if (!data) return 0;
 	info->data = data;
 	FF_DBG_mem(info, info->count * sizeof(*data));
@@ -346,12 +346,12 @@ alloc_leafset(struct fastfind_info *info)
 
 	/* info->leafsets[0] is never used since l=0 marks no leaf
 	 * in struct ff_node. That's the reason of that + 2. */
-	leafsets = mem_realloc(info->leafsets,
+	leafsets = (struct ff_node **)mem_realloc(info->leafsets,
 			       sizeof(*leafsets) * (info->leafsets_count + 2));
 	if (!leafsets) return 0;
 	info->leafsets = leafsets;
 
-	leafset = mem_calloc(info->uniq_chars_count, sizeof(*leafset));
+	leafset = (struct ff_node *)mem_calloc(info->uniq_chars_count, sizeof(*leafset));
 	if (!leafset) return 0;
 
 	FF_DBG_mem(info, sizeof(*leafsets));
@@ -386,7 +386,7 @@ static inline void
 compress_node(struct ff_node *leafset, struct fastfind_info *info,
 	      int i, int pos)
 {
-	struct ff_node_c *new_ = mem_alloc(sizeof(*new_));
+	struct ff_node_c *new_ = (struct ff_node_c *)mem_alloc(sizeof(*new_));
 
 	if (!new_) return;
 

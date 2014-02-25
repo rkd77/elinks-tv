@@ -79,7 +79,7 @@ init_submitted_value(unsigned char *name, unsigned char *value, enum form_type t
 {
 	struct submitted_value *sv;
 
-	sv = mem_alloc(sizeof(*sv));
+	sv = (struct submitted_value *)mem_alloc(sizeof(*sv));
 	if (!sv) return NULL;
 
 	sv->value = stracpy(value);
@@ -256,7 +256,7 @@ find_form_state(struct document_view *doc_view, struct form_control *fc)
 		const struct form_state *const old_form_info = vs->form_info;
 #endif
 
-		fs = mem_align_alloc(&vs->form_info, vs->form_info_len, nn, 0);
+		fs = (struct form_state *)mem_align_alloc(&vs->form_info, vs->form_info_len, nn, 0);
 		if (!fs) return NULL;
 		vs->form_info = fs;
 		vs->form_info_len = nn;
@@ -323,7 +323,7 @@ find_form_view_in_vs(struct view_state *vs, int form_num)
 		if (fv->form_num == form_num)
 			return fv;
 
-	fv = mem_calloc(1, sizeof(*fv));
+	fv = (struct form_view *)mem_calloc(1, sizeof(*fv));
 	fv->form_num = form_num;
 	add_to_list(vs->forms, fv);
 	return fv;
@@ -1041,7 +1041,7 @@ encode_multipart(struct session *ses, LIST_OF(struct submitted_value) *l,
 					goto encode_error;
 				}
 
-				bfs_new = mem_calloc(1, sizeof(*bfs_new));
+				bfs_new = (struct files_offset *)mem_calloc(1, sizeof(*bfs_new));
 				if (!bfs_new) {
 					mem_free(filename);
 					goto encode_error;
@@ -1625,7 +1625,7 @@ field_op(struct session *ses, struct document_view *doc_view,
 
 			length = strlen(text);
 			if (length <= fc->maxlength) {
-				unsigned char *v = mem_realloc(fs->value, length + 1);
+				unsigned char *v = (unsigned char *)mem_realloc(fs->value, length + 1);
 
 				if (v) {
 					fs->value = v;

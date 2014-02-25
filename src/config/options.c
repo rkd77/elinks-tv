@@ -488,7 +488,7 @@ add_opt_rec(struct option *tree, unsigned char *path, struct option *option)
 static inline struct listbox_item *
 init_option_listbox_item(struct option *option)
 {
-	struct listbox_item *item = mem_calloc(1, sizeof(*item));
+	struct listbox_item *item = (struct listbox_item *)mem_calloc(1, sizeof(*item));
 
 	if (!item) return NULL;
 
@@ -506,7 +506,7 @@ add_opt(struct option *tree, unsigned char *path, unsigned char *capt,
 	unsigned char *name, enum option_flags flags, enum option_type type,
 	long min, long max, longptr_T value, unsigned char *desc)
 {
-	struct option *option = mem_calloc(1, sizeof(*option));
+	struct option *option = (struct option *)mem_calloc(1, sizeof(*option));
 
 	if (!option) return NULL;
 
@@ -672,7 +672,7 @@ delete_option(struct option *option)
 struct option *
 copy_option(struct option *template_, int flags)
 {
-	struct option *option = mem_calloc(1, sizeof(*option));
+	struct option *option = (struct option *)mem_calloc(1, sizeof(*option));
 
 	if (!option) return NULL;
 
@@ -753,7 +753,7 @@ get_option_shadow(struct option *option, struct option *tree,
 LIST_OF(struct option) *
 init_options_tree(void)
 {
-	LIST_OF(struct option) *ptr = mem_alloc(sizeof(*ptr));
+	LIST_OF(struct option) *ptr = (LIST_OF(struct option)*)mem_alloc(sizeof(*ptr));
 
 	if (ptr) init_list(*ptr);
 	return ptr;
@@ -1302,7 +1302,7 @@ register_options(union option_info info[], struct option *tree)
 				}
 				break;
 			case OPT_STRING:
-				string = mem_alloc(MAX_STR_LEN);
+				string = (unsigned char *)mem_alloc(MAX_STR_LEN);
 				if (!string) {
 					delete_option(option);
 					continue;

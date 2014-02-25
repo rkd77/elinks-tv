@@ -906,7 +906,7 @@ shift_chars(struct html_context *html_context, int y, int shift)
 
 	len = LEN(y);
 
-	a = fmem_alloc(len * sizeof(*a));
+	a = (struct screen_char *)fmem_alloc(len * sizeof(*a));
 	if (!a) return;
 
 	copy_screen_chars(a, &POS(0, y), len);
@@ -1166,13 +1166,13 @@ justify_line(struct html_context *html_context, int y)
 	assert(len > 0);
 	if_assert_failed return;
 
-	line = fmem_alloc(len * sizeof(*line));
+	line = (struct screen_char *)fmem_alloc(len * sizeof(*line));
 	if (!line) return;
 
 	/* It may sometimes happen that the line is only one char long and that
 	 * char is space - then we're going to write to both [0] and [1], but
 	 * we allocated only one field. Thus, we've to do (len + 1). --pasky */
-	space_list = fmem_alloc((len + 1) * sizeof(*space_list));
+	space_list = (int *)fmem_alloc((len + 1) * sizeof(*space_list));
 	if (!space_list) {
 		fmem_free(line);
 		return;
@@ -1323,7 +1323,7 @@ align_line(struct html_context *html_context, int y, int last)
 static inline void
 init_link_event_hooks(struct html_context *html_context, struct link *link)
 {
-	link->event_hooks = mem_calloc(1, sizeof(*link->event_hooks));
+	link->event_hooks = (LIST_OF(struct script_event_hook) *)mem_calloc(1, sizeof(*link->event_hooks));
 	if (!link->event_hooks) return;
 
 #define add_evhook(list_, type_, src_)						\
@@ -1332,7 +1332,7 @@ init_link_event_hooks(struct html_context *html_context, struct link *link)
 										\
 		if (!src_) break;						\
 										\
-		evhook = mem_calloc(1, sizeof(*evhook));			\
+		evhook = (struct script_event_hook *)mem_calloc(1, sizeof(*evhook));			\
 		if (!evhook) break;						\
 										\
 		evhook->type = type_;						\
@@ -1463,7 +1463,7 @@ html_special_tag(struct document *document, unsigned char *t, int x, int y)
 
 	tag_len = strlen(t);
 	/* One byte is reserved for name in struct tag. */
-	tag = mem_alloc(sizeof(*tag) + tag_len);
+	tag = (struct tag *)mem_alloc(sizeof(*tag) + tag_len);
 	if (!tag) return;
 
 	tag->x = x;
@@ -2294,7 +2294,7 @@ format_html_part(struct html_context *html_context,
 				     (unsigned char *) &key,
 				     sizeof(key));
 		if (item) { /* We found it in cache, so just copy and return. */
-			part = mem_alloc(sizeof(*part));
+			part = (struct part *)mem_alloc(sizeof(*part));
 			if (part)  {
 				copy_struct(part, &((struct table_cache_entry *)
 						    item->value)->part);
@@ -2307,7 +2307,7 @@ format_html_part(struct html_context *html_context,
 	if_assert_failed return NULL;
 
 	if (document) {
-		struct node *node = mem_alloc(sizeof(*node));
+		struct node *node = (struct node *)mem_alloc(sizeof(*node));
 
 		if (node) {
 			int node_width = !html_context->table_level ? INT_MAX : width;
@@ -2331,7 +2331,7 @@ format_html_part(struct html_context *html_context,
 	done_link_state_info();
 	renderer_context.nobreak = 1;
 
-	part = mem_calloc(1, sizeof(*part));
+	part = (struct part *)mem_calloc(1, sizeof(*part));
 	if (!part) goto ret;
 
 	part->document = document;
@@ -2376,7 +2376,7 @@ ret:
 		/* Create a new entry. */
 		/* Clear memory to prevent bad key comparaison due to alignment
 		 * of key fields. */
-		struct table_cache_entry *tce = mem_calloc(1, sizeof(*tce));
+		struct table_cache_entry *tce = (struct table_cache_entry *)mem_calloc(1, sizeof(*tce));
 
 		if (tce) {
 			tce->key.start = start;

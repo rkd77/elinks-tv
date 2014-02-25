@@ -988,7 +988,7 @@ join_urls(struct uri *base, unsigned char *rel)
 	}
 
 	length = path - struri(base);
-	uristring = mem_alloc(length + strlen(rel) + add_slash + 1);
+	uristring = (unsigned char *)mem_alloc(length + strlen(rel) + add_slash + 1);
 	if (!uristring) return NULL;
 
 	memcpy(uristring, struri(base), length);
@@ -1548,7 +1548,7 @@ get_uri_cache_entry(unsigned char *string, int length)
 
 	/* Setup a new entry */
 
-	entry = mem_calloc(1, sizeof(*entry) + length);
+	entry = (struct uri_cache_entry *)mem_calloc(1, sizeof(*entry) + length);
 	if (!entry) return NULL;
 
 	object_nolock(&entry->uri, "uri");

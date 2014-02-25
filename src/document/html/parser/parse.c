@@ -753,7 +753,7 @@ next_break:
 			dotcounter++;
 			base_pos = ++html;
 			if (*html >= ' ' || isspace(*html) || html >= eof) {
-				unsigned char *dots = fmem_alloc(dotcounter);
+				unsigned char *dots = (unsigned char *)fmem_alloc(dotcounter);
 
 				if (dots) {
 					memset(dots, '.', dotcounter);

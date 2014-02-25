@@ -164,7 +164,7 @@ get_unique_name(unsigned char *fileprefix)
 			digits++;
 
 			if (file != fileprefix) mem_free(file);
-			file = mem_alloc(fileprefixlen + 2 + digits);
+			file = (unsigned char *)mem_alloc(fileprefixlen + 2 + digits);
 			if (!file) return NULL;
 
 			memcpy(file, fileprefix, fileprefixlen);
@@ -197,7 +197,7 @@ file_read_line(unsigned char *line, size_t *size, FILE *file, int *lineno)
 	size_t offset = 0;
 
 	if (!line) {
-		line = mem_alloc(MAX_STR_LEN);
+		line = (unsigned char *)mem_alloc(MAX_STR_LEN);
 		if (!line)
 			return NULL;
 
@@ -224,7 +224,7 @@ file_read_line(unsigned char *line, size_t *size, FILE *file, int *lineno)
 			offset = *size - 1;
 			*size += MAX_STR_LEN;
 
-			newline = mem_realloc(line, *size);
+			newline = (unsigned char *)mem_realloc(line, *size);
 			if (!newline)
 				break;
 			line = newline;
@@ -342,7 +342,7 @@ get_directory_entries(unsigned char *dirname, int get_hidden)
 		if (!file_visible(entry->d_name, get_hidden, is_root_directory))
 			continue;
 
-		new_entries = mem_realloc(entries, (size + 2) * sizeof(*new_entries));
+		new_entries = (struct directory_entry *)mem_realloc(entries, (size + 2) * sizeof(*new_entries));
 		if (!new_entries) continue;
 		entries = new_entries;
 
@@ -405,7 +405,7 @@ mkalldirs(const unsigned char *path)
 	/* Make a copy of path, to be able to write to it.  Otherwise, the
 	 * function is unsafe if called with a read-only char *argument.  */
 	len = strlen(path) + 1;
-	p = fmem_alloc(len);
+	p = (unsigned char *)fmem_alloc(len);
 	if (!p) return -1;
 	memcpy(p, path, len);
 

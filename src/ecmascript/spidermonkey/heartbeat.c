@@ -85,7 +85,7 @@ add_heartbeat(struct ecmascript_interpreter *interpreter)
 	else
 		ses = interpreter->vs->doc_view->session;
 
-        hb = mem_alloc(sizeof(struct heartbeat));
+        hb = (struct heartbeat *)mem_alloc(sizeof(struct heartbeat));
         if (!hb) return NULL;
 
         hb->ttl = get_opt_int("ecmascript.max_exec_time", ses);

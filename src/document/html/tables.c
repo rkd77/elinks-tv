@@ -258,12 +258,12 @@ get_column_widths(struct table *table)
 	if (!table->cols) return -1; /* prevents calloc(0, ...) calls */
 
 	if (!table->min_cols_widths) {
-		table->min_cols_widths = mem_calloc(table->cols, sizeof(*table->min_cols_widths));
+		table->min_cols_widths = (int *)mem_calloc(table->cols, sizeof(*table->min_cols_widths));
 		if (!table->min_cols_widths) return -1;
 	}
 
 	if (!table->max_cols_widths) {
-		table->max_cols_widths = mem_calloc(table->cols, sizeof(*table->max_cols_widths));
+		table->max_cols_widths = (int *)mem_calloc(table->cols, sizeof(*table->max_cols_widths));
 		if (!table->max_cols_widths) {
 			mem_free_set(&table->min_cols_widths, NULL);
 			return -1;
@@ -271,7 +271,7 @@ get_column_widths(struct table *table)
 	}
 
 	if (!table->cols_widths) {
-		table->cols_widths = mem_calloc(table->cols, sizeof(*table->cols_widths));
+		table->cols_widths = (int *)mem_calloc(table->cols, sizeof(*table->cols_widths));
 		if (!table->cols_widths) {
 			mem_free_set(&table->min_cols_widths, NULL);
 			mem_free_set(&table->max_cols_widths, NULL);
@@ -499,10 +499,10 @@ distribute_widths(struct table *table, int width)
 	memcpy(table->cols_widths, table->min_cols_widths, cols_array_size);
 	table->real_width = width;
 
-	widths = fmem_alloc(cols_array_size);
+	widths = (int *)fmem_alloc(cols_array_size);
 	if (!widths) return;
 
-	max_widths = fmem_alloc(cols_array_size);
+	max_widths = (int *)fmem_alloc(cols_array_size);
 	if (!max_widths) goto free_widths;
 
 	while (spare_width) {
@@ -582,7 +582,7 @@ check_table_widths(struct html_context *html_context, struct table *table)
 	int colspan;
 	int width, new_width;
 	int max, max_index = 0; /* go away, warning! */
-	int *widths = mem_calloc(table->cols, sizeof(*widths));
+	int *widths = (int *)mem_calloc(table->cols, sizeof(*widths));
 
 	if (!widths) return;
 
@@ -1134,7 +1134,7 @@ draw_table_frames(struct table *table, int indent, int y,
 	int fh_size = (table->cols + 2) * (table->rows + 1);
 	int fv_size = (table->cols + 1) * (table->rows + 2);
 
-	frame[0] = fmem_alloc(fh_size + fv_size);
+	frame[0] = (char *)fmem_alloc(fh_size + fv_size);
 	if (!frame[0]) return;
 	memset(frame[0], -1, fh_size + fv_size);
 
@@ -1337,7 +1337,7 @@ format_table(unsigned char *attr, unsigned char *html, unsigned char *eof,
 	part->cy += table->real_height;
 	part->cx = -1;
 
-	new_node = mem_alloc(sizeof(*new_node));
+	new_node = (struct node *)mem_alloc(sizeof(*new_node));
 	if (new_node) {
 		set_box(&new_node->box, node->box.x, part->box.y + part->cy,
 			node->box.width, 0);

@@ -275,7 +275,7 @@ on_element_open(void *data, const char *name, const char **attr)
 	}
 
 	for (; *attr; attr += 2) {
-		struct attributes *attribute = mem_calloc(1, sizeof(*attribute));
+		struct attributes *attribute = (struct attributes *)mem_calloc(1, sizeof(*attribute));
 		unsigned char *name = stracpy((unsigned char *) attr[0]);
 		unsigned char *value = stracpy((unsigned char *) attr[1]);
 
@@ -308,7 +308,7 @@ delete_whites(const unsigned char *s)
 	int last_was_space = 0, c = 0, i;
 	int len = strlen(s);
 
-	r = mem_alloc(len + 1);
+	r = (unsigned char *)mem_alloc(len + 1);
 	if (!r) return NULL;
 
 	for (i = 0; i < len; i++) {
@@ -350,7 +350,7 @@ on_text(void *data, const XML_Char *text, int len)
 	if (len) {
 		len2 = current_node->text ? strlen(current_node->text) : 0;
 
-		tmp = mem_realloc(current_node->text, (size_t) (len + 1 + len2));
+		tmp = (char *)mem_realloc(current_node->text, (size_t) (len + 1 + len2));
 
 		/* Out of memory */
 		if (!tmp) return;
@@ -508,7 +508,7 @@ new_node(struct tree_node *parent)
 {
 	struct tree_node *node;
 
-	node = mem_calloc(1, sizeof(*node));
+	node = (struct tree_node *)mem_calloc(1, sizeof(*node));
 	if (!node) return NULL;
 
 	node->parent = parent ? parent : node;

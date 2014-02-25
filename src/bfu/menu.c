@@ -111,7 +111,7 @@ void
 do_menu_selected(struct terminal *term, struct menu_item *items,
 		 void *data, int selected, int hotkeys)
 {
-	struct menu *menu = mem_calloc(1, sizeof(*menu));
+	struct menu *menu = (struct menu *)mem_calloc(1, sizeof(*menu));
 
 	if (menu) {
 		menu->selected = selected;
@@ -1024,7 +1024,7 @@ do_mainmenu(struct terminal *term, struct menu_item *items,
 	struct window *win;
 
 	if (!term->main_menu) {
-		term->main_menu = mem_calloc(1, sizeof(*menu));
+		term->main_menu = (struct menu *)mem_calloc(1, sizeof(*menu));
 		if (!term->main_menu) return;
 		init = 1;
 	}
@@ -1374,7 +1374,7 @@ add_to_menu(struct menu_item **mi, unsigned char *text, unsigned char *rtext,
 {
 	int n = count_items(*mi);
 	/* XXX: Don't clear the last and special item. */
-	struct menu_item *item = realloc_menu_items(mi, n + 1);
+	struct menu_item *item = (struct menu_item *)realloc_menu_items(mi, n + 1);
 
 	if (!item) return;
 

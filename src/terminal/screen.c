@@ -530,7 +530,7 @@ add_screen_driver(enum term_mode_type type, struct terminal *term, int env_len)
 	struct screen_driver *driver;
 
 	/* One byte is reserved for name in struct screen_driver. */
-	driver = mem_alloc(sizeof(*driver) + env_len);
+	driver = (struct screen_driver *)mem_alloc(sizeof(*driver) + env_len);
 	if (!driver) return NULL;
 
 	/* These four operations fully initialize *driver.  */
@@ -1312,7 +1312,7 @@ init_screen(void)
 {
 	struct terminal_screen *screen;
 
-	screen = mem_calloc(1, sizeof(*screen));
+	screen = (struct terminal_screen *)mem_calloc(1, sizeof(*screen));
 	if (!screen) return NULL;
 
 	screen->lcx = -1;
@@ -1343,7 +1343,7 @@ resize_screen(struct terminal *term, int width, int height)
 
 	bsize = size * sizeof(*image);
 
-	image = mem_realloc(screen->image, bsize * 2);
+	image = (struct screen_char *)mem_realloc(screen->image, bsize * 2);
 	if (!image) return;
 
 	screen->image = image;
