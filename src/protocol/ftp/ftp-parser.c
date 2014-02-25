@@ -46,14 +46,14 @@ main(int argc, char *argv[])
 
 		response = strchr(response, '\n');
 		if (!response) {
-			response = start + strlen(start);
+			response = start + strlen((const char *)start);
 		} else {
 			if (response > start && response[-1] == '\r')
 				response[-1] = 0;
 			*response++ = 0;
 		}
 
-		if (!parse_ftp_file_info(&ftp_info, start, strlen(start)))
+		if (!parse_ftp_file_info(&ftp_info, start, strlen((const char *)start)))
 			return 1;
 	}
 

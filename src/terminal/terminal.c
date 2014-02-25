@@ -226,7 +226,7 @@ check_if_no_terminal(void)
 void
 exec_thread(unsigned char *path, int p)
 {
-	int plen = strlen(path + 1) + 2;
+	int plen = strlen((const char *)(path + 1)) + 2;
 
 #if defined(HAVE_SETPGID) && !defined(CONFIG_OS_BEOS) && !defined(HAVE_BEGINTHREAD)
 	if (path[0] == TERM_EXEC_NEWWIN) setpgid(0, 0);
@@ -364,13 +364,13 @@ exec_on_terminal(struct terminal *term, unsigned char *path,
 		}
 
 		exec_on_master_terminal(term,
-					path, strlen(path),
-		 			delete_, strlen(delete_),
+					path, strlen((const char *)path),
+		 			delete_, strlen((const char *)delete_),
 					fg);
 	} else {
 		exec_on_slave_terminal( term,
-					path, strlen(path),
-		 			delete_, strlen(delete_),
+					path, strlen((const char *)path),
+		 			delete_, strlen((const char *)delete_),
 					fg);
 	}
 }
@@ -392,7 +392,7 @@ void
 do_terminal_function(struct terminal *term, unsigned char code,
 		     unsigned char *data)
 {
-	int data_len = strlen(data);
+	int data_len = strlen((const char *)data);
 	unsigned char *x_data = (unsigned char *)fmem_alloc(data_len + 1 /* code */ + 1 /* null char */);
 
 	if (!x_data) return;
@@ -430,7 +430,7 @@ set_terminal_title(struct terminal *term, unsigned char *title)
 
 		convert_table = get_translation_table(from_cp, to_cp);
 		if (!convert_table) return -1;
-		converted = convert_string(convert_table, title, strlen(title),
+		converted = convert_string(convert_table, title, strlen((const char *)title),
 					   to_cp, CSM_NONE, NULL, NULL, NULL);
 		if (!converted) return -1;
 	}

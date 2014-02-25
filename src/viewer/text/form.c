@@ -195,11 +195,11 @@ init_form_state(struct document_view *doc_view,
 				fs->value = convert_string(
 					get_translation_table(doc_cp, viewer_cp),
 					fc->default_value,
-					strlen(fc->default_value),
+					strlen((const char *)fc->default_value),
 					viewer_cp, CSM_FORM,
 					&fs->state, NULL, NULL);
 			}
-			fs->state = fs->value ? strlen(fs->value) : 0;
+			fs->state = fs->value ? strlen((const char *)fs->value) : 0;
 #ifdef CONFIG_UTF8
 			if (fc->type == FC_TEXTAREA)
 				fs->state_cell = 0;
@@ -215,7 +215,7 @@ init_form_state(struct document_view *doc_view,
 			fs->value = convert_string(
 				get_translation_table(doc_cp, viewer_cp),
 				fc->default_value,
-				strlen(fc->default_value),
+				strlen((const char *)fc->default_value),
 				viewer_cp, CSM_FORM,
 				&fs->state, NULL, NULL);
 			fs->state = fc->default_state;
@@ -439,7 +439,7 @@ draw_form_entry(struct terminal *term, struct document_view *doc_view,
 			if (term->utf8_cp) goto utf8;
 #endif /* CONFIG_UTF8 */
 			int_bounds(&fs->vpos, fs->state - fc->size + 1, fs->state);
-			len = strlen(fs->value) - fs->vpos;
+			len = strlen((const char *)fs->value) - fs->vpos;
 
 			for (i = 0; i < fc->size; i++, x++) {
 				unsigned char data;
@@ -461,7 +461,7 @@ utf8:
 retry_after_scroll:
 			text = fs->value;
 			if (!text) text = "";
-			len = strlen(text);
+			len = strlen((const char *)text);
 			int_bounds(&fs->state, 0, len);
 			int_bounds(&fs->vpos, 0, fs->state);
 			end = text + len;
@@ -592,7 +592,7 @@ drew_char:
 #ifdef CONFIG_UTF8
 			if (term->utf8_cp) goto utf8_select;
 #endif /* CONFIG_UTF8 */
-			len = s ? strlen(s) : 0;
+			len = s ? strlen((const char *)s) : 0;
 			for (i = 0; i < link->npoints; i++) {
 				x = link->points[i].x + dx;
 				y = link->points[i].y + dy;
@@ -847,7 +847,7 @@ encode_controls(LIST_OF(struct submitted_value) *l, struct string *data,
 		else
 			lst = 1;
 
-		encode_uri_string(data, sv->name, strlen(sv->name), 1);
+		encode_uri_string(data, sv->name, strlen((const char *)sv->name), 1);
 		add_char_to_string(data, '=');
 
 		/* Convert back to original encoding (see html_form_control()
@@ -861,7 +861,7 @@ encode_controls(LIST_OF(struct submitted_value) *l, struct string *data,
 					convert_table = get_translation_table(cp_from, cp_to);
 
 				p2 = convert_string(convert_table, p,
-						    strlen(p), -1, CSM_FORM, NULL, NULL, NULL);
+						    strlen((const char *)p), -1, CSM_FORM, NULL, NULL, NULL);
 				mem_free(p);
 			}
 		} else if (sv->type == FC_TEXT ||
@@ -870,7 +870,7 @@ encode_controls(LIST_OF(struct submitted_value) *l, struct string *data,
 				convert_table = get_translation_table(cp_from, cp_to);
 
 			p2 = convert_string(convert_table, sv->value,
-					    strlen(sv->value), -1, CSM_FORM, NULL, NULL, NULL);
+					    strlen((const char *)sv->value), -1, CSM_FORM, NULL, NULL, NULL);
 		} else if (sv->type == FC_HIDDEN) {
 			p2 = encode_crlf(sv);
 		} else {
@@ -878,7 +878,7 @@ encode_controls(LIST_OF(struct submitted_value) *l, struct string *data,
 		}
 
 		if (p2) {
-			encode_uri_string(data, p2, strlen(p2), 1);
+			encode_uri_string(data, p2, strlen((const char *)p2), 1);
 			mem_free(p2);
 		}
 	}
@@ -1070,7 +1070,7 @@ encode_multipart(struct session *ses, LIST_OF(struct submitted_value) *l,
 									      cp_to);
 
 				p = convert_string(convert_table, sv->value,
-						   strlen(sv->value), -1, CSM_FORM, NULL,
+						   strlen((const char *)sv->value), -1, CSM_FORM, NULL,
 						   NULL, NULL);
 				if (p) {
 					add_to_string(data, p);
@@ -1152,7 +1152,7 @@ encode_text_plain(LIST_OF(struct submitted_value) *l, struct string *data,
 			/* Convert back to original encoding (see
 			 * html_form_control() for the original recoding). */
 			value = convert_string(convert_table, value,
-			                       strlen(value), -1, CSM_FORM,
+			                       strlen((const char *)value), -1, CSM_FORM,
 			                       NULL, NULL, NULL);
 		default:
 			/* Falling right through to free that textarea stuff */
@@ -1429,7 +1429,7 @@ set_file_form_state(struct terminal *term, void *filename_, void *fs_)
 
 	/* The menu code doesn't free the filename data */
 	mem_free_set(&fs->value, filename);
-	fs->state = strlen(filename);
+	fs->state = strlen((const char *)filename);
 	redraw_terminal(term);
 }
 
@@ -1442,8 +1442,8 @@ file_form_menu(struct terminal *term, void *path_, void *fs_)
 
 	/* FIXME: It doesn't work for ../../ */
 #if 0
-	int valuelen = strlen(fs->value);
-	int pathlen = strlen(path);
+	int valuelen = strlen((const char *)fs->value);
+	int pathlen = strlen((const char *)path);
 	int no_elevator = 0;
 
 	/* Don't add elevators for subdirs menus */
@@ -1525,7 +1525,7 @@ field_op(struct session *ses, struct document_view *doc_view,
 				fs->state = (int)(text - fs->value);
 			} else
 #endif /* CONFIG_UTF8 */
-				fs->state = int_min(fs->state + 1, strlen(fs->value));
+				fs->state = int_min(fs->state + 1, strlen((const char *)fs->value));
 			break;
 		case ACT_EDIT_HOME:
 #ifdef CONFIG_UTF8
@@ -1571,7 +1571,7 @@ field_op(struct session *ses, struct document_view *doc_view,
 				status = textarea_op_end(fs, fc);
 #endif /* CONFIG_UTF8 */
 			} else {
-				fs->state = strlen(fs->value);
+				fs->state = strlen((const char *)fs->value);
 			}
 			break;
 		case ACT_EDIT_BEGINNING_OF_BUFFER:
@@ -1594,7 +1594,7 @@ field_op(struct session *ses, struct document_view *doc_view,
 				status = textarea_op_eob(fs, fc);
 #endif /* CONFIG_UTF8 */
 			} else {
-				fs->state = strlen(fs->value);
+				fs->state = strlen((const char *)fs->value);
 			}
 			break;
 		case ACT_EDIT_OPEN_EXTERNAL:
@@ -1623,14 +1623,14 @@ field_op(struct session *ses, struct document_view *doc_view,
 			text = get_clipboard_text();
 			if (!text) break;
 
-			length = strlen(text);
+			length = strlen((const char *)text);
 			if (length <= fc->maxlength) {
 				unsigned char *v = (unsigned char *)mem_realloc(fs->value, length + 1);
 
 				if (v) {
 					fs->value = v;
 					memmove(v, text, length + 1);
-					fs->state = strlen(fs->value);
+					fs->state = strlen((const char *)fs->value);
 #ifdef CONFIG_UTF8
 					if (utf8 && fc->type == FC_TEXTAREA)
 						fs->state_cell = 0;
@@ -1681,13 +1681,14 @@ field_op(struct session *ses, struct document_view *doc_view,
 				if (old_state != fs->state) {
 					if (fc->type == FC_TEXTAREA)
 						fs->state_cell = 0;
-					length = strlen(fs->value + old_state) + 1;
+					length = strlen((const char *)(fs->value + old_state)
+					) + 1;
 					memmove(new_value, fs->value + old_state, length);
 				}
 			} else
 #endif /* CONFIG_UTF8 */
 			{
-				length = strlen(fs->value + fs->state) + 1;
+				length = strlen((const char *)(fs->value + fs->state)) + 1;
 				text = fs->value + fs->state;
 
 				memmove(text - 1, text, length);
@@ -1700,7 +1701,7 @@ field_op(struct session *ses, struct document_view *doc_view,
 				break;
 			}
 
-			length = strlen(fs->value);
+			length = strlen((const char *)fs->value);
 			if (fs->state >= length) {
 				status = FRAME_EVENT_OK;
 				break;
@@ -1744,7 +1745,7 @@ field_op(struct session *ses, struct document_view *doc_view,
 				text = fs->value;
 			}
 
-			length = strlen(fs->value + fs->state) + 1;
+			length = strlen((const char *)(fs->value + fs->state)) + 1;
 			memmove(text, fs->value + fs->state, length);
 
 			fs->state = (int) (text - fs->value);
@@ -1775,7 +1776,7 @@ field_op(struct session *ses, struct document_view *doc_view,
 			if (fs->value[fs->state] == ASCII_LF)
 				++text;
 
-			memmove(fs->value + fs->state, text, strlen(text) + 1);
+			memmove(fs->value + fs->state, text, strlen((const char *)text) + 1);
 			break;
 
 		case ACT_EDIT_KILL_WORD_BACK:
@@ -1798,7 +1799,7 @@ field_op(struct session *ses, struct document_view *doc_view,
 			    && text != &fs->value[fs->state - 1])
 				text++;
 
-			length = strlen(fs->value + fs->state) + 1;
+			length = strlen((const char *)(fs->value + fs->state)) + 1;
 			memmove(text, fs->value + fs->state, length);
 
 			fs->state = (int) (text - fs->value);
@@ -1853,7 +1854,7 @@ field_op(struct session *ses, struct document_view *doc_view,
 
 			if (form_field_is_readonly(fc)
 #ifndef CONFIG_UTF8
-					|| strlen(fs->value) >= fc->maxlength
+					|| strlen((const char *)fs->value) >= fc->maxlength
 					|| !insert_in_string(&fs->value, fs->state, "?", 1)
 #endif /* CONFIG_UTF8 */
 					)
@@ -1866,9 +1867,9 @@ field_op(struct session *ses, struct document_view *doc_view,
 			/* fs->value is in the charset of the terminal.  */
 			ctext = u2cp_no_nbsp(get_kbd_key(ev),
 					     get_terminal_codepage(ses->tab->term));
-			length = strlen(ctext);
+			length = strlen((const char *)ctext);
 
-			if (strlen(fs->value) + length > fc->maxlength
+			if (strlen((const char *)fs->value) + length > fc->maxlength
 			    || !insert_in_string(&fs->value, fs->state, ctext, length)) {
 				status = FRAME_EVENT_OK;
 				break;

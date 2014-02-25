@@ -25,7 +25,7 @@ main(int argc, char *argv[])
 
 		fgets(string, 1024, stdin);
 
-		string[strlen(string) - 1] = '\0'; /* Strip newline. */
+		string[strlen((const char *)string) - 1] = '\0'; /* Strip newline. */
 		if (!*string) return 0;
 
 		if (!parse_cookie_str(&cstr, string)) {

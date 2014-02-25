@@ -840,7 +840,7 @@ send_it_line_by_line(struct connection *conn, struct string *cmd)
 
 	nl++;
 	add_bytes_to_string(cmd, ftp->cmd_buffer, nl - ftp->cmd_buffer);
-	memmove(ftp->cmd_buffer, nl, strlen(nl) + 1);
+	memmove(ftp->cmd_buffer, nl, strlen((const char *)nl) + 1);
 }
 
 /* Send commands to retrieve file or directory. */

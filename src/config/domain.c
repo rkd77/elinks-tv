@@ -78,7 +78,7 @@ get_domain_tree(unsigned char *domain_name)
 		if (!strcasecmp(domain->name, domain_name))
 			return domain->tree;
 
-	domain_len = strlen(domain_name);
+	domain_len = strlen((const char *)domain_name);
 	/* One byte is reserved for domain in struct domain_tree. */
 	domain = (struct domain_tree *)mem_alloc(sizeof(*domain) + domain_len);
 	if (!domain) return NULL;

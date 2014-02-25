@@ -48,7 +48,7 @@ add_dlg_button_do(struct dialog *dlg, unsigned char *text, int flags,
 		  done_handler_T *done, void *done_data)
 #endif
 {
-	int textlen = strlen(text);
+	int textlen = strlen((const char *)text);
 	struct widget *widget = &dlg->widgets[dlg->number_of_widgets++];
 
 	widget->type	= WIDGET_BUTTON;

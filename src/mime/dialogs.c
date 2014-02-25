@@ -29,7 +29,7 @@ get_real_opt(unsigned char *base, unsigned char *id)
 	assert(opt);
 
 	if (init_string(&translated)
-	    && add_optname_to_string(&translated, id, strlen(id)))
+	    && add_optname_to_string(&translated, id, strlen((const char *)id)))
 		opt = get_opt_rec_real(opt, translated.source);
 
 	done_string(&translated);
@@ -87,7 +87,7 @@ add_mime_extension(void *data)
 	if (!ext || !init_string(&name)) return;
 
 	add_to_string(&name, "mime.extension.");
-	add_optname_to_string(&name, ext->ext, strlen(ext->ext));
+	add_optname_to_string(&name, ext->ext, strlen((const char *)ext->ext));
 
 	really_del_ext(ext->ext_orig); /* ..or rename ;) */
 	safe_strncpy(get_opt_str(name.source, NULL), ext->ct, MAX_STR_LEN);
@@ -160,7 +160,7 @@ menu_list_ext(struct terminal *term, void *fn_, void *xxx)
 
 		if (!init_string(&translated)
 		    || !add_real_optname_to_string(&translated, opt->name,
-						   strlen(opt->name))) {
+						   strlen((const char *)opt->name))) {
 			done_string(&translated);
 			continue;
 		}

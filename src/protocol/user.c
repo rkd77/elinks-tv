@@ -179,7 +179,7 @@ subst_cmd(unsigned char *cmd, struct uri *uri, unsigned char *subj,
 			case 's':
 				if (subj)
 					add_shell_safe_to_string(&string, subj,
-								 strlen(subj));
+								 strlen((const char *)subj));
 				break;
 			case 'f':
 				if (formfile)
@@ -236,7 +236,7 @@ save_form_data_to_file(struct uri *uri)
 	/* Jump the content type */
 	formdata = strchr((char *)uri->post, '\n');
 	formdata = formdata ? formdata + 1 : uri->post;
-	len = strlen(formdata);
+	len = strlen((const char *)formdata);
 	if (len == 0) return filename;
 
 	fp = fdopen(fd, "w");

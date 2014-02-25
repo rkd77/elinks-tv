@@ -160,7 +160,7 @@ download_dialog_layouter(struct dialog_data *dlg_data)
 	else
 #endif /* CONFIG_UTF8 */
 		decode_uri_for_display(url);
-	url_len = strlen(url);
+	url_len = strlen((const char *)url);
 
 	if (show_meter) {
 		int_lower_bound(&w, DOWN_DLG_MIN);
@@ -393,7 +393,7 @@ draw_file_download(struct listbox_item *item, struct listbox_context *context,
 	text = get_file_download_text(item, context->term);
 	if (!text) return;
 
-	length = strlen(text);
+	length = strlen((const char *)text);
 	/* Show atleast the required percentage of the URI */
 	if (length * DOWNLOAD_URI_PERCENTAGE / 100 < width - meter - 4) {
 		trimmedlen = int_min(length, width - meter - 4);

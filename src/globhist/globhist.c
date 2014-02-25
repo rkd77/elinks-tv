@@ -100,7 +100,7 @@ remove_item_from_global_history(struct global_history_item *history_item)
 	if (globhist_cache) {
 		struct hash_item *item;
 
-		item = get_hash_item(globhist_cache, history_item->url, strlen(history_item->url));
+		item = get_hash_item(globhist_cache, history_item->url, strlen((const char *)history_item->url));
 		if (item) {
 			del_hash_item(globhist_cache, item);
 			globhist_cache_entries--;
@@ -151,7 +151,7 @@ get_global_history_item(unsigned char *url)
 
 	/* Search for cached entry. */
 
-	item = get_hash_item(globhist_cache, url, strlen(url));
+	item = get_hash_item(globhist_cache, url, strlen((const char *)url));
 
 	return item ? (struct global_history_item *) item->value : NULL;
 }
@@ -252,7 +252,7 @@ add_item_to_global_history(struct global_history_item *history_item,
 		globhist_cache = init_hash8();
 
 	if (globhist_cache && globhist_cache_entries < max_globhist_items) {
-		int urllen = strlen(history_item->url);
+		int urllen = strlen((const char *)history_item->url);
 
 		/* Create a new entry. */
 		if (add_hash_item(globhist_cache, history_item->url, urllen, history_item)) {

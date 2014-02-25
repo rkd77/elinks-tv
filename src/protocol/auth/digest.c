@@ -55,11 +55,11 @@ init_credential_digest(md5_digest_hex_T ha1, struct auth_entry *entry)
 	md5_digest_bin_T skey;
 
 	MD5_Init(&MD5Ctx);
-	MD5_Update(&MD5Ctx, entry->user, strlen(entry->user));
+	MD5_Update(&MD5Ctx, entry->user, strlen((const char *)entry->user));
 	MD5_Update(&MD5Ctx, ":", 1);
-	MD5_Update(&MD5Ctx, entry->realm, strlen(entry->realm));
+	MD5_Update(&MD5Ctx, entry->realm, strlen((const char *)entry->realm));
 	MD5_Update(&MD5Ctx, ":", 1);
-	MD5_Update(&MD5Ctx, entry->password, strlen(entry->password));
+	MD5_Update(&MD5Ctx, entry->password, strlen((const char *)entry->password));
 	MD5_Final(skey, &MD5Ctx);
 
 	convert_to_md5_digest_hex_T(skey, ha1);
@@ -118,7 +118,7 @@ init_response_digest(md5_digest_hex_T response, struct auth_entry *entry,
 	MD5_Update(&MD5Ctx, ha1, sizeof(md5_digest_hex_T));
 	MD5_Update(&MD5Ctx, ":", 1);
 	if (entry->nonce)
-		MD5_Update(&MD5Ctx, entry->nonce, strlen(entry->nonce));
+		MD5_Update(&MD5Ctx, entry->nonce, strlen((const char *)entry->nonce));
 	MD5_Update(&MD5Ctx, ":", 1);
 	MD5_Update(&MD5Ctx, hexl(entry->nc), 8);
 	MD5_Update(&MD5Ctx, ":", 1);

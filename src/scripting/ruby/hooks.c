@@ -64,12 +64,12 @@ script_hook_goto_url(va_list ap, void *data)
 	if (*url == NULL)
 		return EVENT_HOOK_STATUS_NEXT;
 
-	args[0] = rb_str_new(*url, strlen(*url));
+	args[0] = rb_str_new(*url, strlen((const char *)*url));
 
 	if (!ses || !have_location(ses)) {
 		args[1] = Qnil;
 	} else {
-		args[1] = rb_str_new(struri(cur_loc(ses)->vs.uri), strlen(struri(cur_loc(ses)->vs.uri)));
+		args[1] = rb_str_new(struri(cur_loc(ses)->vs.uri), strlen((const char *)struri(cur_loc(ses)->vs.uri)));
 	}
 
 	result = erb_protected_method_call("goto_url_hook", 2, args, &error);
@@ -113,7 +113,7 @@ script_hook_follow_url(va_list ap, void *data)
 	if (*url == NULL)
 		return EVENT_HOOK_STATUS_NEXT;
 
-	args[0] = rb_str_new(*url, strlen(*url));
+	args[0] = rb_str_new(*url, strlen((const char *)*url));
 
 	result = erb_protected_method_call("follow_url_hook", 1, args, &error);
 	if (error) {
@@ -203,7 +203,7 @@ script_hook_get_proxy(va_list ap, void *data)
 	if (!new_proxy_url || !url)
 		return EVENT_HOOK_STATUS_NEXT;
 
-	args[0] = rb_str_new(url, strlen(url));
+	args[0] = rb_str_new(url, strlen((const char *)url));
 
 	result = erb_protected_method_call("proxy_hook", 1, args, &error);
 	if (error) {

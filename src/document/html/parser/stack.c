@@ -53,7 +53,7 @@ search_html_stack(struct html_context *html_context, unsigned char *name)
 	int namelen;
 
 	assert(name && *name);
-	namelen = strlen(name);
+	namelen = strlen((const char *)name);
 
 #if 0	/* Debug code. Please keep. */
 	dump_html_stack(html_context);
@@ -212,7 +212,7 @@ kill_html_stack_until(struct html_context *html_context, int ls, ...)
 
 			if (!s) break;
 
-			slen = strlen(s);
+			slen = strlen((const char *)s);
 			if (!slen) {
 				sk++;
 				continue;

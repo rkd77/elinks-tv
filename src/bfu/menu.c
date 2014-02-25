@@ -206,7 +206,7 @@ get_menuitem_text_width(struct terminal *term, struct menu_item *mi)
 		       - !!mi->hotkey_pos + R_TEXT_SPACE;
 	else
 #endif /* CONFIG_UTF8 */
-		return L_TEXT_SPACE + strlen(text)
+		return L_TEXT_SPACE + strlen((const char *)text)
 		       - !!mi->hotkey_pos + R_TEXT_SPACE;
 }
 
@@ -235,7 +235,7 @@ get_menuitem_rtext_width(struct terminal *term, struct menu_item *mi)
 			rtext = _(rtext, term);
 
 		if (rtext[0])
-			rtext_width = L_RTEXT_SPACE + strlen(rtext) + R_RTEXT_SPACE;
+			rtext_width = L_RTEXT_SPACE + strlen((const char *)rtext) + R_RTEXT_SPACE;
 	}
 
 	return rtext_width;
@@ -379,7 +379,7 @@ draw_menu_left_text(struct terminal *term, unsigned char *text, int len,
 
 	if (w <= 0) return;
 
-	if (len < 0) len = strlen(text);
+	if (len < 0) len = strlen((const char *)text);
 	if (!len) return;
 
 #ifdef CONFIG_UTF8
@@ -528,7 +528,7 @@ draw_menu_right_text(struct terminal *term, unsigned char *text, int len,
 
 	if (w <= 0) return;
 
-	if (len < 0) len = strlen(text);
+	if (len < 0) len = strlen((const char *)text);
 	if (!len) return;
 	if (len > w) len = w;
 
@@ -797,7 +797,7 @@ search_menu_item(struct menu_item *item, unsigned char *buffer,
 
 	match = strchr((char *)text, '~');
 	if (match)
-		memmove(match, match + 1, strlen(match));
+		memmove(match, match + 1, strlen((const char *)match));
 
 	match = strcasestr((char *)text, (char *)buffer);
 	mem_free(text);
@@ -1118,7 +1118,7 @@ display_mainmenu(struct terminal *term, struct menu *menu)
 		if (mi_text_translate(mi))
 			text = _(text, term);
 
-		textlen = strlen(text) - !!l;
+		textlen = strlen((const char *)text) - !!l;
 #ifdef CONFIG_UTF8
 		if (term->utf8_cp)
 			screencnt = utf8_ptr2cells(text, NULL) - !!l;
@@ -1241,7 +1241,7 @@ mainmenu_mouse_handler(struct menu *menu, struct term_event *ev)
 			 * the sides followed by the text width substracting
 			 * one char if it has hotkeys (the '~' char) */
 			p += L_MAINTEXT_SPACE + L_TEXT_SPACE
-			  + strlen(text) - !!item->hotkey_pos
+			  + strlen((const char *)text) - !!item->hotkey_pos
 			  + R_TEXT_SPACE + R_MAINTEXT_SPACE;
 
 			if (ev->info.mouse.x < p) {

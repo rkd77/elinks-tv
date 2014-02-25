@@ -333,7 +333,7 @@ parse_dom_config(unsigned char *flaglist, unsigned char separator)
 
 	while (flaglist) {
 		unsigned char *end = separator ? strchr(flaglist, separator) : NULL;
-		int length = end ? end - flaglist : strlen(flaglist);
+		int length = end ? end - flaglist : strlen((const char *)flaglist);
 		struct dom_string name = INIT_DOM_STRING(flaglist, length);
 
 		flags |= get_dom_config_flag(&name);

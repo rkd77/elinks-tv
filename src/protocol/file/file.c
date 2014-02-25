@@ -95,10 +95,10 @@ add_dir_entry(struct directory_entry *entry, struct string *page,
 
 	encode_uri_string(&uri_encoded_name, entry->name + pathlen, -1, 1);
 	add_html_to_string(&html_encoded_name, entry->name + pathlen,
-			   strlen(entry->name) - pathlen);
+			   strlen((const char *)entry->name) - pathlen);
 
 	/* add_to_string(&fragment, &fragmentlen, "   "); */
-	add_html_to_string(page, entry->attrib, strlen(entry->attrib));
+	add_html_to_string(page, entry->attrib, strlen((const char *)entry->attrib));
 	add_to_string(page, "<a href=\"");
 	add_string_to_string(page, &uri_encoded_name);
 
@@ -139,7 +139,7 @@ add_dir_entry(struct directory_entry *entry, struct string *page,
 
 	add_to_string(page, "</a>");
 	if (lnk) {
-		add_html_to_string(page, lnk, strlen(lnk));
+		add_html_to_string(page, lnk, strlen((const char *)lnk));
 		mem_free(lnk);
 	}
 
@@ -153,7 +153,7 @@ add_dir_entries(struct directory_entry *entries, unsigned char *dirpath,
 		struct string *page)
 {
 	unsigned char dircolor[8];
-	int dirpathlen = strlen(dirpath);
+	int dirpathlen = strlen((const char *)dirpath);
 	int i;
 
 	/* Setup @dircolor so it's easy to check if we should color dirs. */

@@ -209,7 +209,7 @@ get_auth_entry_info(struct listbox_item *item, struct terminal *term)
 
 	add_format_to_string(&info, "\n%s: ", _("Realm", term));
 	if (auth_entry->realm) {
-		int len = strlen(auth_entry->realm);
+		int len = strlen((const char *)auth_entry->realm);
 		int maxlen = 512; /* Max. number of chars displayed for realm. */
 
 		if (len < maxlen)

@@ -64,7 +64,7 @@ debug_stracpy(const unsigned char *f, int l, const unsigned char *src)
 	string_assert(f, l, src, "stracpy");
 	if_assert_failed return NULL;
 
-	return debug_memacpy(f, l, src, strlen(src));
+	return debug_memacpy(f, l, src, strlen((const char *)src));
 }
 
 #else /* DEBUG_MEMLEAK */
@@ -92,7 +92,7 @@ stracpy(const unsigned char *src)
 	assertm(src, "[stracpy]");
 	if_assert_failed return NULL;
 
-	return memacpy(src, strlen(src));
+	return memacpy(src, strlen((const char *)src));
 }
 
 #endif /* DEBUG_MEMLEAK */
@@ -108,8 +108,8 @@ add_to_strn(unsigned char **dst, const unsigned char *src)
 	assertm(*dst && src, "[add_to_strn]");
 	if_assert_failed return;
 
-	dstlen = strlen(*dst);
-	srclen = strlen(src) + 1; /* Include the NUL char! */
+	dstlen = strlen((const char *)*dst);
+	srclen = strlen((const char *)src) + 1; /* Include the NUL char! */
 	newdst = (unsigned char *)mem_realloc(*dst, dstlen + srclen);
 	if (!newdst) return;
 
@@ -121,7 +121,7 @@ unsigned char *
 insert_in_string(unsigned char **dst, int pos,
 		 const unsigned char *seq, int seqlen)
 {
-	int dstlen = strlen(*dst);
+	int dstlen = strlen((const char *)*dst);
 	unsigned char *string = (unsigned char *)mem_realloc(*dst, dstlen + seqlen + 1);
 
 	if (!string) return NULL;
@@ -144,7 +144,7 @@ straconcat(const unsigned char *str, ...)
 	assertm(str != NULL, "[straconcat]");
 	if_assert_failed { return NULL; }
 
-	len = strlen(str);
+	len = strlen((const char *)str);
 	s = (unsigned char *)mem_alloc(len + 1);
 	if (!s) return NULL;
 
@@ -152,7 +152,7 @@ straconcat(const unsigned char *str, ...)
 
 	va_start(ap, str);
 	while ((a = va_arg(ap, const unsigned char *))) {
-		unsigned int l = strlen(a);
+		unsigned int l = strlen((const char *)a);
 		unsigned char *ns;
 
 		if (!l) continue;
@@ -210,8 +210,8 @@ safe_strncpy(unsigned char *dst, const unsigned char *src, size_t dst_size)
  \
 	/* TODO: Don't precompute strlen()s but rather make the loop smarter.
 	 * --pasky */ \
-	if (n1 == -1) n1 = strlen(s1); \
-	if (n2 == -1) n2 = strlen(s2); \
+	if (n1 == -1) n1 = strlen((const char *)s1); \
+	if (n2 == -1) n2 = strlen((const char *)s2); \
  \
 	string_assert(errfile, errline, n1 >= 0 && n2 >= 0, c); \
  \
@@ -372,7 +372,7 @@ add_to_string(struct string *string, const unsigned char *source)
 
 	if (!*source) return string;
 
-	return add_bytes_to_string(string, source, strlen(source));
+	return add_bytes_to_string(string, source, strlen((const char *)source));
 }
 
 /** @relates string */
@@ -558,7 +558,7 @@ add_to_string_list(LIST_OF(struct string_list_item) *list,
 	if (!item) return NULL;
 
 	string = &item->string;
-	if (length < 0) length = strlen(source);
+	if (length < 0) length = strlen((const char *)source);
 
 	if (!init_string(string)
 	    || !add_bytes_to_string(string, source, length)) {

@@ -70,7 +70,7 @@ current_link_evhook(struct document_view *doc_view, enum script_event_hook_type 
 		while ((ret = strstr((char *)ret, "return ")))
 			while (*ret != ' ') *ret++ = ' ';
 		{
-			struct string src = INIT_STRING(evhook->src, strlen(evhook->src));
+			struct string src = INIT_STRING(evhook->src, strlen((const char *)evhook->src));
 			/* TODO: Some even handlers return a bool. */
 			if (!ecmascript_eval_boolback(doc_view->vs->ecmascript, &src))
 				return 0;
@@ -1433,7 +1433,7 @@ get_current_link_title(struct document_view *doc_view)
 		/* CSM_NONE because any entities in the title have
 		 * already been decoded.  */
 		link_title = convert_string(convert_table, link->title,
-					    strlen(link->title),
+					    strlen((const char *)link->title),
 					    doc_view->document->options.cp,
 					    CSM_NONE, NULL, NULL, NULL);
 		/* Remove illicit chars. */

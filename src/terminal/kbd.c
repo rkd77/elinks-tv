@@ -382,7 +382,7 @@ handle_trm(int std_in, int std_out, int sock_in, int sock_out, int ctl_in,
 
 	ts = get_cwd();
 	if (ts) {
-		memcpy(info.cwd, ts, int_min(strlen(ts), MAX_CWD_LEN));
+		memcpy(info.cwd, ts, int_min(strlen((const char *)ts), MAX_CWD_LEN));
 		mem_free(ts);
 	}
 

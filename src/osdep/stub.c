@@ -256,7 +256,7 @@ elinks_inet_ntop4(const unsigned char *src, unsigned char *dst, size_t size)
 {
 	const unsigned char *addr = inet_ntoa(*(struct in_addr*)src);
 
-	if (strlen(addr) >= size) {
+	if (strlen((const char *)addr) >= size) {
 		SET_ERRNO(ENOSPC);
 		return NULL;
 	}
@@ -332,7 +332,7 @@ elinks_inet_ntop6(const unsigned char *src, char *dst, size_t size)
 				return NULL;
 			}
 
-			tp += strlen(tp);
+			tp += strlen((const char *)tp);
 			break;
 		}
 

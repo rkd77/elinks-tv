@@ -950,7 +950,7 @@ complete_file_menu(struct terminal *term, int no_elevator, void *data,
 {
 	struct menu_item *menu = new_menu(FREE_LIST | NO_INTL);
 	struct directory_entry *entries, *entry;
-	int filenamelen = strlen(filename);
+	int filenamelen = strlen((const char *)filename);
 	int direntries = 0, fileentries = 0;
 
 	if (!menu) return;
@@ -1027,7 +1027,7 @@ complete_file_menu(struct terminal *term, int no_elevator, void *data,
 
 		/* For single directory entries open the lonely subdir if it is
 		 * not the parent elevator. */
-		if (strcmp(&text[strlen(dirname)], "..")) {
+		if (strcmp(&text[strlen((const char *)dirname)], "..")) {
 			dir_func(term, text, data);
 		} else {
 			do_menu(term, empty_directory_menu, NULL, 0); 			\
@@ -1074,7 +1074,7 @@ auto_complete_file(struct terminal *term, int no_elevator, unsigned char *path,
 	filename = get_filename_position(path);
 
 	if (*filename && file_is_dir(path)) {
-		filename = path + strlen(path);
+		filename = path + strlen((const char *)path);
 
 	} else if (*filename && file_exists(path)) {
 		/* Complete any tilde expansion */

@@ -65,7 +65,7 @@ init_css_selector(struct css_selector_set *sels,
 
 	if (name) {
 		if (namelen < 0)
-			namelen = strlen(name);
+			namelen = strlen((const char *)name);
 		selector->name = memacpy(name, namelen);
 		if (!selector->name) {
 			done_css_selector_set(&selector->leaves);
@@ -119,7 +119,7 @@ copy_css_selector(struct css_stylesheet *css, struct css_selector *orig)
 	assert(orig->relation == CSR_ROOT);
 
 	copy = init_css_selector(&css->selectors, orig->type, CSR_ROOT,
-	                         orig->name, strlen(orig->name));
+	                         orig->name, strlen((const char *)orig->name));
 	if (!copy)
 		return NULL;
 
@@ -313,7 +313,7 @@ merge_css_stylesheets(struct css_stylesheet *css1,
 		struct css_selector *origsel;
 
 		origsel = find_css_selector(&css1->selectors, selector->name,
-					    strlen(selector->name));
+					    strlen((const char *)selector->name));
 		if (!origsel) {
 			clone_css_selector(css1, selector);
 		} else {

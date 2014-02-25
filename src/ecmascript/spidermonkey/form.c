@@ -405,7 +405,7 @@ input_set_property(JSContext *ctx, JSObject *obj, jsid id, JSBool strict, jsval 
 			break; /* A huge security risk otherwise. */
 		mem_free_set(&fs->value, stracpy(jsval_to_string(ctx, vp)));
 		if (fc->type == FC_TEXT || fc->type == FC_PASSWORD)
-			fs->state = strlen(fs->value);
+			fs->state = strlen((const char *)fs->value);
 		break;
 	case JSP_INPUT_SELECTED_INDEX:
 		if (fc->type == FC_SELECT) {

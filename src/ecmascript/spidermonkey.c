@@ -100,7 +100,7 @@ error_reporter(JSContext *ctx, const char *message, JSErrorReport *report)
 		add_format_to_string(&msg, "\n\n%s\n.%*s^%*s.",
 			       report->linebuf,
 			       pos - 2, " ",
-			       strlen(report->linebuf) - pos - 1, " ");
+			       strlen((const char *)report->linebuf) - pos - 1, " ");
 	}
 
 	info_box(term, MSGBOX_FREE_TEXT, N_("JavaScript Error"), ALIGN_CENTER,

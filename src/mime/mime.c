@@ -71,7 +71,7 @@ get_content_filename(struct uri *uri, struct cache_entry *cached)
 
 	/* Remove start and ending quotes. */
 	if (filename[0] == '"') {
-		int len = strlen(filename);
+		int len = strlen((const char *)filename);
 
 		if (len > 1 && filename[len - 1] == '"') {
 			filename[len - 1] = 0;
@@ -94,7 +94,7 @@ get_content_filename(struct uri *uri, struct cache_entry *cached)
 	}
 
 	if (pos > filename)
-		memmove(filename, pos, strlen(pos) + 1);
+		memmove(filename, pos, strlen((const char *)pos) + 1);
 
 	return filename;
 }
@@ -203,7 +203,7 @@ get_cache_header_content_type(struct cache_entry *cached)
 
 		if (end) *end = '\0';
 
-		ctypelen = strlen(ctype);
+		ctypelen = strlen((const char *)ctype);
 		while (ctypelen && ctype[--ctypelen] <= ' ')
 			ctype[ctypelen] = '\0';
 
@@ -292,7 +292,7 @@ get_content_type(struct cache_entry *cached)
 		 * is with default (via option system) and mimetypes resolving
 		 * doing that option and hash lookup will not be easy to
 		 * convert. --jonas */
-		convert_to_lowercase_locale_indep(extension, strlen(extension));
+		convert_to_lowercase_locale_indep(extension, strlen((const char *)extension));
 
 		ctype = get_extension_content_type(extension);
 		mem_free(extension);
@@ -336,7 +336,7 @@ add_mime_filename_to_string(struct string *string, struct uri *uri)
 	assert(uri->data);
 
 	if (filename) {
-		add_shell_safe_to_string(string, filename, strlen(filename));
+		add_shell_safe_to_string(string, filename, strlen((const char *)filename));
 		mem_free(filename);
 
 		return string;

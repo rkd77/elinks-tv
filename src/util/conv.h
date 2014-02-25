@@ -170,7 +170,7 @@ int month2num(const unsigned char *month);
 static inline unsigned char *
 trim_chars(unsigned char *s, unsigned char c, int *len)
 {
-	int l = strlen(s);
+	int l = strlen((const char *)s);
 	unsigned char *p = s;
 
 	while (*p == c) p++, l--;

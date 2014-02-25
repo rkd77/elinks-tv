@@ -240,7 +240,7 @@ set_clipboard_text(unsigned char *data)
 		if (hmq != NULLHANDLE) {
 			if (WinOpenClipbrd(hab)) {
 				PVOID pvShrObject = NULL;
-				if (DosAllocSharedMem(&pvShrObject, NULL, strlen(data) + 1, PAG_COMMIT | PAG_WRITE | OBJ_GIVEABLE) == NO_ERROR) {
+				if (DosAllocSharedMem(&pvShrObject, NULL, strlen((const char *)data) + 1, PAG_COMMIT | PAG_WRITE | OBJ_GIVEABLE) == NO_ERROR) {
 					strcpy(pvShrObject, data);
 					WinSetClipbrdData(hab, (ULONG) pvShrObject, CF_TEXT, CFI_POINTER);
 				}
@@ -367,7 +367,7 @@ set_window_title(int init, const char *url)
 		memset(&swData, 0, sizeof(swData));
 		hSw = WinQuerySwitchHandle(0, pib->pib_ulpid);
 		if (hSw != NULLHANDLE && !WinQuerySwitchEntry(hSw, &swData)) {
-			org_switch_title = mem_alloc(strlen(swData.szSwtitle) + 1);
+			org_switch_title = mem_alloc(strlen((const char *)swData.szSwtitle) + 1);
 			strcpy(org_switch_title, swData.szSwtitle);
 			pib->pib_ultype = 3;
 			hab = WinInitialize(0);
@@ -438,7 +438,7 @@ resize_window(int x, int y, int old_width, int old_height)
 	sprintf(cmdline, "mode ");
 	ulongcat(cmdline + 5, NULL, x, 5, 0);
 	strcat(cmdline, ",");
-	ulongcat(cmdline + strlen(cmdline), NULL, y, 5, 0);
+	ulongcat(cmdline + strlen((const char *)cmdline), NULL, y, 5, 0);
 #endif
 	return 0;
 }

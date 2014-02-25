@@ -498,7 +498,7 @@ clr_spaces(unsigned char *str)
 void
 sanitize_title(unsigned char *title)
 {
-	int len = strlen(title);
+	int len = strlen((const char *)title);
 
 	if (!len) return;
 
@@ -514,7 +514,7 @@ sanitize_title(unsigned char *title)
 int
 sanitize_url(unsigned char *url)
 {
-	int len = strlen(url);
+	int len = strlen((const char *)url);
 
 	if (!len) return 1;
 

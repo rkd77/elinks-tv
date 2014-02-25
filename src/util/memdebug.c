@@ -450,7 +450,7 @@ debug_mem_free(const unsigned char *file, int line, void *ptr)
 	dump_short_info(ah, file, line, "free");
 
 	if (ah->comment) {
-		mem_stats.true_amount -= strlen(ah->comment) + 1;
+		mem_stats.true_amount -= strlen((const char *)ah->comment) + 1;
 		free(ah->comment);
 	}
 
@@ -545,7 +545,7 @@ set_mem_comment(void *ptr, const unsigned char *str, int len)
 	ah = PTR_BASE2AH(ptr);
 
 	if (ah->comment) {
-		mem_stats.true_amount -= strlen(ah->comment) + 1;
+		mem_stats.true_amount -= strlen((const char *)ah->comment) + 1;
 		free(ah->comment);
 	}
 	ah->comment = malloc(len + 1);

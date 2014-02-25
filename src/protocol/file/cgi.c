@@ -156,7 +156,7 @@ set_vars(struct connection *conn, unsigned char *script)
 			if (res) return -1;
 			post = postend + 1;
 		}
-		snprintf(buf, 16, "%d", (int) strlen(post) / 2);
+		snprintf(buf, 16, "%d", (int) strlen((const char *)post) / 2);
 		if (env_set("CONTENT_LENGTH", buf, -1)) return -1;
 	}
 
@@ -283,7 +283,7 @@ test_path(unsigned char *path)
 	for (path_ptr = &cgi_path;
 	     (filename = get_next_path_filename(path_ptr, ':'));
 	     ) {
-		int filelen = strlen(filename);
+		int filelen = strlen((const char *)filename);
 		int res;
 
 		if (filename[filelen - 1] != '/') {

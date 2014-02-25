@@ -112,7 +112,7 @@ static unsigned char *
 truncate_label(unsigned char *label, int max_len)
 {
 	unsigned char *new_label;
-	int len = strlen(label);
+	int len = strlen((const char *)label);
 	int left_part_len;
 	int right_part_len;
 
@@ -205,7 +205,7 @@ put_image_label(unsigned char *a, unsigned char *label,
 	saved_attr = format.style.attr;
 	format.style.color.foreground = format.color.image_link;
 	format.style.attr |= AT_NO_ENTITIES;
-	put_chrs(html_context, label, strlen(label));
+	put_chrs(html_context, label, strlen((const char *)label));
 	format.style.color.foreground = saved_foreground;
 	format.style.attr = saved_attr;
 }
@@ -260,7 +260,7 @@ html_img_do(unsigned char *a, unsigned char *object_src,
 		/* Little hack to preserve rendering of [   ], in directory listings,
 		 * but we still want to drop extra spaces in alt or title attribute
 		 * to limit display width on certain websites. --Zas */
-		if (label && strlen(label) > 5) clr_spaces(label);
+		if (label && strlen((const char *)label) > 5) clr_spaces(label);
 	}
 
 	src = null_or_stracpy(object_src);
@@ -371,7 +371,7 @@ put_link_line(unsigned char *prefix, unsigned char *linkname,
 	mem_free_set(&format.target, NULL);
 	mem_free_set(&format.title, NULL);
 	format.form = NULL;
-	put_chrs(html_context, prefix, strlen(prefix));
+	put_chrs(html_context, prefix, strlen((const char *)prefix));
 	format.link = join_urls(html_context->base_href, link);
 	format.target = stracpy(target);
 	format.style.color.foreground = format.color.clink;
@@ -379,7 +379,7 @@ put_link_line(unsigned char *prefix, unsigned char *linkname,
 	 * has already expanded character entity references.
 	 * Tell put_chrs not to expand them again.  */
 	format.style.attr |= AT_NO_ENTITIES;
-	put_chrs(html_context, linkname, strlen(linkname));
+	put_chrs(html_context, linkname, strlen((const char *)linkname));
 	ln_break(html_context, 1);
 	pop_html_element(html_context);
 }
@@ -846,7 +846,7 @@ html_link(struct html_context *html_context, unsigned char *a,
 #ifdef CONFIG_CSS
 	if (link.type == LT_STYLESHEET
 	    && supports_html_media_attr(link.media)) {
-		int len = strlen(link.href);
+		int len = strlen((const char *)link.href);
 
 		import_css_stylesheet(&html_context->css_styles,
 				      html_context->base_href, link.href, len);

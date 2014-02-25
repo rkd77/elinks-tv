@@ -312,7 +312,7 @@ add_header_to_string(struct string *str, unsigned char *header)
 		header = end + 2;
 	}
 
-	add_html_to_string(str, header, strlen(header));
+	add_html_to_string(str, header, strlen((const char *)header));
 }
 
 

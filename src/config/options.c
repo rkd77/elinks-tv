@@ -85,7 +85,7 @@ check_caption(unsigned char *caption)
 
 	if (!caption) return;
 
-	len = strlen(caption);
+	len = strlen((const char *)caption);
 	if (!len) return;
 
 	c = caption[len - 1];
@@ -94,7 +94,7 @@ check_caption(unsigned char *caption)
 
 #ifdef CONFIG_NLS
 	caption = gettext(caption);
-	len = strlen(caption);
+	len = strlen((const char *)caption);
 	if (!len) return;
 
 	c = caption[len - 1];
@@ -113,7 +113,7 @@ check_description(unsigned char *desc)
 
 	if (!desc) return;
 
-	len = strlen(desc);
+	len = strlen((const char *)desc);
 	if (!len) return;
 
 	c = desc[len - 1];
@@ -122,7 +122,7 @@ check_description(unsigned char *desc)
 
 #ifdef CONFIG_NLS
 	desc = gettext(desc);
-	len = strlen(desc);
+	len = strlen((const char *)desc);
 	if (!len) return;
 
 	if (ispunct(c) != ispunct(desc[len - 1]))
@@ -553,7 +553,7 @@ add_opt(struct option *tree, unsigned char *path, unsigned char *capt,
 			option->value.big_number = (long) value; /* FIXME: cast from void * */
 			break;
 		case OPT_COLOR:
-			decode_color((unsigned char *) value, strlen((unsigned char *) value),
+			decode_color((unsigned char *) value, strlen((const char *) value),
 					&option->value.color);
 			break;
 		case OPT_COMMAND:
@@ -1313,7 +1313,7 @@ register_options(union option_info info[], struct option *tree)
 			case OPT_COLOR:
 				string = (unsigned char *)init.value_dataptr;
 				assert(string);
-				decode_color(string, strlen(string),
+				decode_color(string, strlen((const char *)string),
 						&option->value.color);
 				break;
 			case OPT_CODEPAGE:

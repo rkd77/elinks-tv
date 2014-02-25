@@ -114,7 +114,7 @@ get_content_type_default(unsigned char *extension)
 {
 	struct option *opt_tree;
 	struct option *opt;
-	unsigned char *extend = extension + strlen(extension) - 1;
+	unsigned char *extend = extension + strlen((const char *)extension) - 1;
 
 	if (extend < extension)	return NULL;
 
@@ -122,7 +122,7 @@ get_content_type_default(unsigned char *extension)
 	assert(opt_tree);
 
 	foreach (opt, *opt_tree->value.tree) {
-		unsigned char *namepos = opt->name + strlen(opt->name) - 1;
+		unsigned char *namepos = opt->name + strlen((const char *)opt->name) - 1;
 		unsigned char *extpos = extend;
 
 		/* Match the longest possible part of URL.. */
@@ -158,7 +158,7 @@ get_mime_type_option(unsigned char *type)
 
 	if (!init_string(&name)) return NULL;
 
-	if (add_optname_to_string(&name, type, strlen(type))) {
+	if (add_optname_to_string(&name, type, strlen((const char *)type))) {
 		/* Search for end of the base type. */
 		unsigned char *pos = strchr((char *)name.source, '/');
 

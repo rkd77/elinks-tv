@@ -130,7 +130,7 @@ display_entry(const FSP_RDENTRY *fentry, const unsigned char dircolor[])
 	 * fentry->namlen is the original length or the truncated
 	 * length.  ELinks therefore ignores fentry->namlen and
 	 * instead measures the length on its own.  */
-	const size_t namelen = strlen(fentry->name);
+	const size_t namelen = strlen((const char *)fentry->name);
 
 	if (!init_string(&string)) return;
 	add_format_to_string(&string, "%10d", fentry->size);

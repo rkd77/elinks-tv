@@ -554,7 +554,7 @@ get_screen_driver(struct terminal *term)
 {
 	enum term_mode_type type = get_opt_int_tree(term->spec, "type", NULL);
 	unsigned char *name = term->spec->name;
-	int len = strlen(name);
+	int len = strlen((const char *)name);
 	struct screen_driver *driver;
 
 	foreach (driver, active_screen_drivers) {

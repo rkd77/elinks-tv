@@ -386,7 +386,7 @@ normalize_bencoding_path(const unsigned char *path, int pathlen,
 	*malicious = !!dir_sep(path[7]);
 
 	path += 8 + !*malicious;
-	memmove(string.source, path, strlen(path) + 1);
+	memmove(string.source, path, strlen((const char *)path) + 1);
 
 	return string.source;
 }
@@ -403,13 +403,13 @@ add_bittorrent_file(struct bittorrent_meta *meta, unsigned char *path,
 	int pathlen;
 
 	/* Normalize and check for malicious paths in the the file list. */
-	path = normalize_bencoding_path(path, strlen(path), &malicious);
+	path = normalize_bencoding_path(path, strlen((const char *)path), &malicious);
 	if (!path) return BITTORRENT_STATE_OUT_OF_MEM;
 
 	if (malicious)
 		meta->malicious_paths = malicious;
 
-	pathlen = strlen(path);
+	pathlen = strlen((const char *)path);
 
 	file = mem_calloc(1, sizeof(*file) + pathlen);
 	if (!file) {

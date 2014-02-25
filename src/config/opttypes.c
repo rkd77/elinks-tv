@@ -338,7 +338,7 @@ str_eq(struct option *opt, const unsigned char *str)
 static void
 str_wr(struct option *o, struct string *s)
 {
-	int len = strlen(o->value.string);
+	int len = strlen((const char *)o->value.string);
 
 	int_upper_bound(&len, o->max - 1);
 	add_optstring_to_string(s, o->value.string, len);
@@ -376,7 +376,7 @@ cp_wr(struct option *o, struct string *s)
 {
 	unsigned char *mime_name = get_cp_config_name(o->value.number);
 
-	add_optstring_to_string(s, mime_name, strlen(mime_name));
+	add_optstring_to_string(s, mime_name, strlen((const char *)mime_name));
 }
 
 
@@ -411,14 +411,14 @@ lang_wr(struct option *o, struct string *s)
 	lang = "System";
 #endif
 
-	add_optstring_to_string(s, lang, strlen(lang));
+	add_optstring_to_string(s, lang, strlen((const char *)lang));
 }
 
 
 static int
 color_set(struct option *opt, unsigned char *str)
 {
-	return !decode_color(str, strlen(str), &opt->value.color);
+	return !decode_color(str, strlen((const char *)str), &opt->value.color);
 }
 
 static int
@@ -426,7 +426,7 @@ color_eq(struct option *opt, const unsigned char *str)
 {
 	color_T color;
 
-	return str && !decode_color(str, strlen(str), &color)
+	return str && !decode_color(str, strlen((const char *)str), &color)
 		&& color == opt->value.color;
 }
 
@@ -437,7 +437,7 @@ color_wr(struct option *opt, struct string *str)
 	unsigned char hexcolor[8];
 	const unsigned char *strcolor = get_color_string(color, hexcolor);
 
-	add_optstring_to_string(str, strcolor, strlen(strcolor));
+	add_optstring_to_string(str, strcolor, strlen((const char *)strcolor));
 }
 
 static void

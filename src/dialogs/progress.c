@@ -20,7 +20,7 @@ get_progress_msg_2(struct progress *progress, struct terminal *term,
 		 int wide, int full, unsigned char *separator, unsigned char *type)
 {
 	struct string msg;
-	int newlines = separator[strlen(separator) - 1] == '\n';
+	int newlines = separator[strlen((const char *)separator) - 1] == '\n';
 
 	if (!init_string(&msg)) return NULL;
 
@@ -129,7 +129,7 @@ draw_progress_bar(struct progress *progress, struct terminal *term,
 
 	/* On error, will print '?' only, should not occur. */
 	if (text) {
-		width = int_min(width, strlen(text));
+		width = int_min(width, strlen((const char *)text));
 
 	} else if (width > 1) {
 		static unsigned char s[] = "????"; /* Reduce or enlarge at will. */

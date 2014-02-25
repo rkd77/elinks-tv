@@ -498,7 +498,7 @@ set_enhanced_dom_node_value(struct dom_string *string, struct dom_node *node)
 		string->string = compress_string(value->string, value->length);
 	}
 
-	string->length = string->string ? strlen(string->string) : 0;
+	string->length = string->string ? strlen((const char *)string->string) : 0;
 }
 
 static unsigned char indent_string[] =

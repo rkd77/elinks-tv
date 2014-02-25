@@ -455,7 +455,7 @@ fastfind_index(struct fastfind_index *index, enum fastfind_flags flags)
 	index->reset();
 
 	while ((p = index->next())) {
-		int key_len = strlen(p->key);
+		int key_len = strlen((const char *)p->key);
 		int i;
 
 		assert(key_len > 0 && key_len <= FF_MAX_KEYLEN);
@@ -503,7 +503,7 @@ fastfind_index(struct fastfind_index *index, enum fastfind_flags flags)
 	index->reset();
 
 	while ((p = index->next())) {
-		int key_len = strlen(p->key);
+		int key_len = strlen((const char *)p->key);
 		struct ff_node *leafset = info->root_leafset;
 		int i;
 
@@ -786,7 +786,7 @@ main(int argc, char **argv)
 
 	fprintf(stderr, "---------- SEARCH PHASE ----------\n");
 	/* Without this one ... */
-	result = (struct list *) fastfind_search(&ff_index, key, strlen(key));
+	result = (struct list *) fastfind_search(&ff_index, key, strlen((const char *)key));
 
 	if (result)
 		fprintf(stderr, " Found: '%s' -> %d\n", result->tag, result->val);

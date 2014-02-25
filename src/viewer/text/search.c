@@ -510,7 +510,7 @@ strlen_u(unsigned char *text, int utf8)
 	if (utf8)
 		return strlen_utf8(&text);
 #endif
-	return strlen(text);
+	return strlen((const char *)text);
 
 }
 
@@ -1191,7 +1191,7 @@ match_link_text(struct link *link, unsigned char *text, int textlen,
 	unsigned char *match = get_link_typeahead_text(link);
 	unsigned char *matchpos;
 
-	if (link_is_form(link) || textlen > strlen(match))
+	if (link_is_form(link) || textlen > strlen((const char *)match))
 		return -1;
 
 	matchpos = case_sensitive ? strstr((char *)match, (char *)text)
@@ -1215,7 +1215,7 @@ search_link_text(struct document *document, int current_link, int i,
 	int case_sensitive = get_opt_bool("document.browse.search.case", NULL);
 	int wraparound = get_opt_bool("document.browse.search.wraparound",
 	                              NULL);
-	int textlen = strlen(text);
+	int textlen = strlen((const char *)text);
 
 	assert(textlen && direction && offset);
 
@@ -1349,7 +1349,7 @@ do_typeahead(struct session *ses, struct document_view *doc_view,
 	if (i < 0 || i >= doc_view->document->nlinks) {
 		if (!get_opt_bool("document.browse.search.wraparound", NULL)) {
 			if (match_link_text(&document->links[current],
-			                    text, strlen(text),
+			                    text, strlen((const char *)text),
 			                    get_opt_bool("document.browse"
 			                                 ".search.case", NULL))
 			     >= 0) {
@@ -1483,7 +1483,7 @@ link_typeahead_handler(struct input_line *line, int action_id)
 
 		if (current < 0) return INPUT_LINE_PROCEED;
 
-		bufferlen = strlen(buffer);
+		bufferlen = strlen((const char *)buffer);
 		offset = match_link_text(&doc_view->document->links[current],
 					 buffer, bufferlen,
 					 get_opt_bool("document.browse"
@@ -1531,12 +1531,12 @@ link_typeahead_handler(struct input_line *line, int action_id)
 		case TYPEAHEAD_MATCHED:
 			fixup_typeahead_match(ses, doc_view);
 			draw_formatted(ses, 0);
-			draw_typeahead_match(ses->tab->term, doc_view, strlen(buffer), offset);
+			draw_typeahead_match(ses->tab->term, doc_view, strlen((const char *)buffer), offset);
 			return INPUT_LINE_PROCEED;
 
 		case TYPEAHEAD_ERROR_NO_FURTHER:
 			typeahead_error(ses, buffer, 1);
-			draw_typeahead_match(ses->tab->term, doc_view, strlen(buffer), offset);
+			draw_typeahead_match(ses->tab->term, doc_view, strlen((const char *)buffer), offset);
 			return INPUT_LINE_PROCEED;
 
 		case TYPEAHEAD_ERROR:

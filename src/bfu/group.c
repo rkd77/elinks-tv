@@ -48,7 +48,7 @@ dlg_format_group(struct dialog_data *dlg_data,
 				label_length = 0;
 		} else
 #endif /* CONFIG_UTF8 */
-			label_length = (text && *text) ? strlen(text) : 0;
+			label_length = (text && *text) ? strlen((const char *)text) : 0;
 
 		label_padding = (label_length > 0);
 
@@ -154,7 +154,7 @@ group_layouter(struct dialog_data *dlg_data)
 		rw = int_min(w, utf8_ptr2cells(dlg_data->dlg->title, NULL));
 	else
 #endif /* CONFIG_UTF8 */
-		rw = int_min(w, strlen(dlg_data->dlg->title));
+		rw = int_min(w, strlen((const char *)dlg_data->dlg->title));
 
 	dlg_format_group(dlg_data, dlg_data->widgets_data, n,
 			 0, &y, w, &rw, 1);

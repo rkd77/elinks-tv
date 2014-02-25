@@ -216,7 +216,7 @@ found_endattr:
 			mem_free(saved_attr);
 		}
 
-		set_mem_comment(attr, name, strlen(name));
+		set_mem_comment(attr, name, strlen((const char *)name));
 		return attr;
 
 	} else {

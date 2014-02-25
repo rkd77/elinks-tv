@@ -93,7 +93,7 @@ debug_transfer_log(unsigned char *data, int len)
 	if (fd == -1) return;
 
 	set_bin(fd);
-	write(fd, data, len < 0 ? strlen(data) : len);
+	write(fd, data, len < 0 ? strlen((const char *)data) : len);
 	close(fd);
 }
 #undef DEBUG_TRANSFER_LOGFILE

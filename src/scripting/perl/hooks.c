@@ -30,13 +30,13 @@ do_script_hook_goto_url(struct session *ses, unsigned char **url)
 	SAVETMPS;
 
 	PUSHMARK(SP);
-	my_XPUSHs(*url, strlen(*url));
+	my_XPUSHs(*url, strlen((const char *)*url));
 	if (!ses || !have_location(ses)) {
 		XPUSHs(sv_2mortal(newSV(0)));
 	} else {
 		unsigned char *uri = struri(cur_loc(ses)->vs.uri);
 
-		my_XPUSHs(uri, strlen(uri));
+		my_XPUSHs(uri, strlen((const char *)uri));
 	}
 	PUTBACK;
 
@@ -85,7 +85,7 @@ do_script_hook_follow_url(unsigned char **url)
 	SAVETMPS;
 
 	PUSHMARK(SP);
-	my_XPUSHs(*url, strlen(*url));
+	my_XPUSHs(*url, strlen((const char *)*url));
 	PUTBACK;
 
 	count = call_pv("follow_url_hook", G_EVAL | G_SCALAR);
@@ -133,7 +133,7 @@ do_script_hook_pre_format_html(unsigned char *url, struct cache_entry *cached,
 	SAVETMPS;
 
 	PUSHMARK(SP);
-	my_XPUSHs(url, strlen(url));
+	my_XPUSHs(url, strlen((const char *)url));
 	my_XPUSHs(fragment->data, fragment->length);
 	PUTBACK;
 
@@ -180,7 +180,7 @@ do_script_hook_get_proxy(unsigned char **new_proxy_url, unsigned char *url)
 	SAVETMPS;
 
 	PUSHMARK(SP);
-	my_XPUSHs(url, strlen(url));
+	my_XPUSHs(url, strlen((const char *)url));
 	PUTBACK;
 
 	count = call_pv("proxy_for_hook", G_EVAL | G_SCALAR);

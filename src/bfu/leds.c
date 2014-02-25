@@ -169,7 +169,7 @@ draw_timer(struct terminal *term, int xpos, int ypos, struct color_pair *color)
 	int i, length;
 
 	snprintf(s, sizeof(s), "[%d]", get_timer_duration());
-	length = strlen(s);
+	length = strlen((const char *)s);
 
 	for (i = length - 1; i >= 0; i--)
 		draw_char(term, xpos - (length - i), ypos, s[i], 0, color);
@@ -184,7 +184,7 @@ draw_show_ip(struct session *ses, int xpos, int ypos, struct color_pair *color)
 	if (ses->doc_view && ses->doc_view->document && ses->doc_view->document->ip) {
 		struct terminal *term = ses->tab->term;
 		unsigned char *s = ses->doc_view->document->ip;
-		int length = strlen(s);
+		int length = strlen((const char *)s);
 		int i;
 
 		for (i = length - 1; i >= 0; i--)

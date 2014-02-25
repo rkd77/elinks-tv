@@ -234,9 +234,9 @@ html_input_format(struct html_context *html_context, unsigned char *a,
 			put_chrs(html_context, "[&nbsp;", 7);
 			format.style.attr |= AT_NO_ENTITIES;
 			if (fc->alt)
-				put_chrs(html_context, fc->alt, strlen(fc->alt));
+				put_chrs(html_context, fc->alt, strlen((const char *)fc->alt));
 			else if (fc->name)
-				put_chrs(html_context, fc->name, strlen(fc->name));
+				put_chrs(html_context, fc->name, strlen((const char *)fc->name));
 			else
 				put_chrs(html_context, "Submit", 6);
 			format.style.attr &= ~AT_NO_ENTITIES;
@@ -251,7 +251,7 @@ html_input_format(struct html_context *html_context, unsigned char *a,
 			put_chrs(html_context, "[&nbsp;", 7);
 			if (fc->default_value) {
 				format.style.attr |= AT_NO_ENTITIES;
-				put_chrs(html_context, fc->default_value, strlen(fc->default_value));
+				put_chrs(html_context, fc->default_value, strlen((const char *)fc->default_value));
 				format.style.attr &= ~AT_NO_ENTITIES;
 			}
 			put_chrs(html_context, "&nbsp;]", 7);
@@ -508,7 +508,7 @@ end_parse:
 					utf8_ptr2cells(labels[i], NULL));
 		else
 #endif /* CONFIG_UTF8 */
-			int_lower_bound(&max_width, strlen(labels[i]));
+			int_lower_bound(&max_width, strlen((const char *)labels[i]));
 	}
 
 	for (i = 0; i < max_width; i++)
@@ -665,7 +665,7 @@ pp:
 		if (p[0] == '\r') {
 			if (p[1] == '\n'
 			    || (p > fc->default_value && p[-1] == '\n')) {
-				memmove(p, p + 1, strlen(p));
+				memmove(p, p + 1, strlen((const char *)p));
 				p--;
 			} else {
 				p[0] = '\n';

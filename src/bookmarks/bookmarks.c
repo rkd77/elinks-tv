@@ -257,7 +257,7 @@ delete_bookmark(struct bookmark *bm)
 	if (check_bookmark_cache(bm->url)) {
 		struct hash_item *item;
 
-		item = get_hash_item(bookmark_cache, bm->url, strlen(bm->url));
+		item = get_hash_item(bookmark_cache, bm->url, strlen((const char *)bm->url));
 		if (item) del_hash_item(bookmark_cache, item);
 	}
 
@@ -358,7 +358,7 @@ add_bookmark_item_to_bookmarks(struct bookmark *bm, struct bookmark *root, int p
 
 	/* Create a new entry. */
 	if (check_bookmark_cache(bm->url))
-		add_hash_item(bookmark_cache, bm->url, strlen(bm->url), bm);
+		add_hash_item(bookmark_cache, bm->url, strlen((const char *)bm->url), bm);
 }
 
 /** Add a bookmark to the bookmark list.
@@ -450,10 +450,10 @@ add_bookmark_cp(struct bookmark *root, int place, int codepage,
 	if (!table)
 		return NULL;
 
-	utf8_title = convert_string(table, title, strlen(title),
+	utf8_title = convert_string(table, title, strlen((const char *)title),
 				    utf8_cp, CSM_NONE,
 				    NULL, NULL, NULL);
-	utf8_url = convert_string(table, url, strlen(url),
+	utf8_url = convert_string(table, url, strlen((const char *)url),
 				  utf8_cp, CSM_NONE,
 				  NULL, NULL, NULL);
 	if (utf8_title && utf8_url)
@@ -484,7 +484,7 @@ update_bookmark(struct bookmark *bm, int codepage,
 		return 0;
 
 	if (url) {
-		url2 = convert_string(table, url, strlen(url),
+		url2 = convert_string(table, url, strlen((const char *)url),
 				      utf8_cp, CSM_NONE,
 				      NULL, NULL, NULL);
 		if (!url2) return 0;
@@ -492,7 +492,7 @@ update_bookmark(struct bookmark *bm, int codepage,
 	}
 
 	if (title) {
-		title2 = convert_string(table, title, strlen(title),
+		title2 = convert_string(table, title, strlen((const char *)title),
 					utf8_cp, CSM_NONE,
 					NULL, NULL, NULL);
 		if (!title2) {
@@ -512,14 +512,14 @@ update_bookmark(struct bookmark *bm, int codepage,
 	if (url2) {
 		if (check_bookmark_cache(bm->url)) {
 			struct hash_item *item;
-			int len = strlen(bm->url);
+			int len = strlen((const char *)bm->url);
 
 			item = get_hash_item(bookmark_cache, bm->url, len);
 			if (item) del_hash_item(bookmark_cache, item);
 		}
 
 		if (check_bookmark_cache(url2)) {
-			add_hash_item(bookmark_cache, url2, strlen(url2), bm);
+			add_hash_item(bookmark_cache, url2, strlen((const char *)url2), bm);
 		}
 
 		mem_free_set(&bm->url, url2);
@@ -566,7 +566,7 @@ get_bookmark(unsigned char *url)
 
 	/* Search for cached entry. */
 
-	item = get_hash_item(bookmark_cache, url, strlen(url));
+	item = get_hash_item(bookmark_cache, url, strlen((const char *)url));
 
 	return item ? item->value : NULL;
 }
@@ -662,7 +662,7 @@ get_auto_save_bookmark_foldername_utf8(void)
 	if (!convert_table) return NULL;
 
 	return convert_string(convert_table,
-			      foldername, strlen(foldername),
+			      foldername, strlen((const char *)foldername),
 			      to_cp, CSM_NONE,
 			      NULL, NULL, NULL);
 }

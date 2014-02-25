@@ -733,8 +733,8 @@ http_send_header(struct socket *socket)
 
 		if (proxy_auth.digest) {
 			unsigned char *response;
-			int userlen = int_min(strlen(user), AUTH_USER_MAXLEN - 1);
-			int passwordlen = int_min(strlen(passwd), AUTH_PASSWORD_MAXLEN - 1);
+			int userlen = int_min(strlen((const char *)user), AUTH_USER_MAXLEN - 1);
+			int passwordlen = int_min(strlen((const char *)passwd), AUTH_PASSWORD_MAXLEN - 1);
 
 			if (userlen)
 				memcpy(proxy_auth.user, user, userlen);
@@ -1720,7 +1720,7 @@ again:
 	conn->from = 0;
 	d = parse_header(conn->cached->head, "Content-Range", NULL);
 	if (d) {
-		if (strlen(d) > 6) {
+		if (strlen((const char *)d) > 6) {
 			d[5] = 0;
 			if (isdigit(d[6]) && !c_strcasecmp(d, "bytes")) {
 				int f;

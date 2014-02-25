@@ -89,7 +89,7 @@ register_event(unsigned char *name)
 	if (event != events) {
 		for (id = 0; id < eventssize; id++) {
 			struct hash_item *item;
-			int len = strlen(events[id].name);
+			int len = strlen((const char *)events[id].name);
 
 			item = get_hash_item(event_hash, events[id].name, len);
 
@@ -99,7 +99,7 @@ register_event(unsigned char *name)
 
 	event = &events[eventssize];
 
-	namelen = strlen(name);
+	namelen = strlen((const char *)name);
 	event->name = memacpy(name, namelen);
 	if (!event->name) return EVENT_NONE;
 
@@ -127,7 +127,7 @@ get_event_id(unsigned char *name)
 
 	if (!event_hash) return EVENT_NONE;
 
-	namelen = strlen(name);
+	namelen = strlen((const char *)name);
 	item = get_hash_item(event_hash, name, namelen);
 	if (item) {
 		struct event *event = (struct event *)item->value;

@@ -150,7 +150,7 @@ static inline struct mailcap_entry *
 init_mailcap_entry(unsigned char *command, int priority)
 {
 	struct mailcap_entry *entry;
-	int commandlen = strlen(command);
+	int commandlen = strlen((const char *)command);
 
 	entry = (struct mailcap_entry *)mem_calloc(1, sizeof(*entry) + commandlen);
 	if (!entry) return NULL;
@@ -243,7 +243,7 @@ get_mailcap_field(unsigned char **next)
 		skip_space(*next);
 	} else {
 		*next = NULL;
-		fieldend = field + strlen(field) - 1;
+		fieldend = field + strlen((const char *)field) - 1;
 	}
 
 	/* Remove trailing whitespace */
@@ -360,7 +360,7 @@ parse_mailcap_file(unsigned char *filename, unsigned int priority)
 		}
 
 		basetypeend = strchr((char *)type, '/');
-		typelen = strlen(type);
+		typelen = strlen((const char *)type);
 
 		if (!basetypeend) {
 			unsigned char implicitwild[64];
@@ -600,7 +600,7 @@ get_mailcap_entry(unsigned char *type)
 	struct mailcap_entry *entry;
 	struct hash_item *item;
 
-	item = get_hash_item(mailcap_map, type, strlen(type));
+	item = get_hash_item(mailcap_map, type, strlen((const char *)type));
 
 	/* Check list of entries */
 	entry = (struct mailcap_entry *)((item && item->value) ? check_entries(item->value) : NULL);

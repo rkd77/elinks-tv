@@ -110,7 +110,7 @@ exe(unsigned char *path)
 	int rc;
 	unsigned char *shell = get_shell();
 	unsigned char *x = *path != '"' ? " /c start /wait " : " /c start /wait \"\" ";
-	unsigned char *p = malloc((strlen(shell) + strlen(x) + strlen(path)) * 2 + 1);
+	unsigned char *p = malloc((strlen((const char *)shell) + strlen((const char *)x) + strlen((const char *)path)) * 2 + 1);
 
 	if (!p)
 		return -1;
@@ -121,7 +121,7 @@ exe(unsigned char *path)
 	x = p;
 	while (*x) {
 		if (*x == '\\') {
-			memmove(x + 1, x, strlen(x) + 1);
+			memmove(x + 1, x, strlen((const char *)x) + 1);
 			x++;
 		}
 		x++;

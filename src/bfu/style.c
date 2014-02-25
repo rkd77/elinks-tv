@@ -61,7 +61,7 @@ get_bfu_color(struct terminal *term, unsigned char *stylename)
 		last_color_mode = color_mode;
 	}
 
-	stylenamelen = strlen(stylename);
+	stylenamelen = strlen((const char *)stylename);
 	item = get_hash_item(bfu_colors, stylename, stylenamelen);
 	entry = (struct bfu_color_entry *)(item ? item->value : NULL);
 

@@ -76,7 +76,7 @@ dump_dom_scanner(struct dom_scanner *scanner)
 		bufpos += 4;
 	}
 
-	srclen = strlen(srcpos);
+	srclen = strlen((const char *)srcpos);
 	int_upper_bound(&src_lookahead, srclen);
 	*bufpos++ = '[';
 

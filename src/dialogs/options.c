@@ -181,7 +181,7 @@ terminal_options(struct terminal *term, void *xxx, struct session *ses)
 		"each terminal in which you run ELinks.", term),
 		 term->spec->name);
 
-	help_textlen = strlen(help_text);
+	help_textlen = strlen((const char *)help_text);
 
 	/* Two newlines are needed to get a blank line between the help text and
 	 * the first group of widgets. */

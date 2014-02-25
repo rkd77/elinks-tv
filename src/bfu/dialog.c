@@ -95,7 +95,7 @@ redraw_dialog(struct dialog_data *dlg_data, int layout)
 		title_color = get_bfu_color(term, "dialog.title");
 		if (title_color && dlg_data->real_box.width > 2) {
 			unsigned char *title = dlg_data->dlg->title;
-			int titlelen = strlen(title);
+			int titlelen = strlen((const char *)title);
 			int titlecells = titlelen;
 			int x, y;
 
@@ -650,7 +650,7 @@ generic_dialog_layouter(struct dialog_data *dlg_data)
 		rw = int_min(w, utf8_ptr2cells(dlg_data->dlg->title, NULL));
 	else
 #endif /* CONFIG_UTF8 */
-		rw = int_min(w, strlen(dlg_data->dlg->title));
+		rw = int_min(w, strlen((const char *)dlg_data->dlg->title));
 	y = dlg_data->dlg->layout.padding_top ? 0 : -1;
 
 	format_widgets(term, dlg_data, x, &y, w, height, &rw, 1);

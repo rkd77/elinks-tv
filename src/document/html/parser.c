@@ -61,7 +61,7 @@ extract_color(struct html_context *html_context, unsigned char *a,
 	value = get_attr_val(a, attribute, html_context->doc_cp);
 	if (!value) return -1;
 
-	retval = decode_color(value, strlen(value), rgb);
+	retval = decode_color(value, strlen((const char *)value), rgb);
 	mem_free(value);
 
 	return retval;
@@ -532,7 +532,7 @@ look_for_link(unsigned char **pos, unsigned char *eof, struct menu_item **menu,
 		if (alt) {
 			/* CSM_NONE because get_attr_val() already
 			 * decoded entities.  */
-			label = convert_string(ct, alt, strlen(alt),
+			label = convert_string(ct, alt, strlen((const char *)alt),
 			                       options->cp, CSM_NONE,
 			                       NULL, NULL, NULL);
 			mem_free(alt);

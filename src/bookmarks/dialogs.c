@@ -64,7 +64,7 @@ get_bookmark_text(struct listbox_item *item, struct terminal *term)
 	if (!convert_table) return NULL;
 
 	return convert_string(convert_table,
-			      bookmark->title, strlen(bookmark->title),
+			      bookmark->title, strlen((const char *)bookmark->title),
 			      term_cp, CSM_NONE, NULL, NULL, NULL);
 }
 
@@ -95,11 +95,11 @@ get_bookmark_info(struct listbox_item *item, struct terminal *term)
 	if (!init_string(&info)) return NULL;
 
 	add_format_to_string(&info, "%s: ", _("Title", term));
-	convert_string(convert_table, bookmark->title, strlen(bookmark->title),
+	convert_string(convert_table, bookmark->title, strlen((const char *)bookmark->title),
 		       term_cp, CSM_NONE, NULL,
 		       add_converted_bytes_to_string, &info);
 	add_format_to_string(&info, "\n%s: ", _("URL", term));
-	convert_string(convert_table, bookmark->url, strlen(bookmark->url),
+	convert_string(convert_table, bookmark->url, strlen((const char *)bookmark->url),
 		       term_cp, CSM_NONE, NULL,
 		       add_converted_bytes_to_string, &info);
 
@@ -397,11 +397,11 @@ push_edit_button(struct dialog_data *dlg_data, struct widget_data *edit_btn)
 			unsigned char *url;
 
 			title = convert_string(convert_table,
-					       bm->title, strlen(bm->title),
+					       bm->title, strlen((const char *)bm->title),
 					       term_cp, CSM_NONE,
 					       NULL, NULL, NULL);
 			url = convert_string(convert_table,
-					     bm->url, strlen(bm->url),
+					     bm->url, strlen((const char *)bm->url),
 					     term_cp, CSM_NONE,
 					     NULL, NULL, NULL);
 			if (title && url) {
@@ -680,7 +680,7 @@ test_search(struct listbox_item *item, void *data_, int *offset)
 			if (convert_table) {
 				title = convert_string(convert_table,
 						       bm->title,
-						       strlen(bm->title),
+						       strlen((const char *)bm->title),
 						       ctx->system_cp,
 						       CSM_NONE, NULL,
 						       NULL, NULL);
@@ -761,18 +761,18 @@ bookmark_search_do(void *data)
 	convert_table = get_translation_table(term_cp, ctx.system_cp);
 	if (!convert_table) goto free_all;
 	ctx.title = convert_string(convert_table,
-				   title_term, strlen(title_term),
+				   title_term, strlen((const char *)title_term),
 				   ctx.system_cp, CSM_NONE, NULL, NULL, NULL);
 	if (!ctx.title) goto free_all;
 
 	convert_table = get_translation_table(term_cp, ctx.utf8_cp);
 	if (!convert_table) goto free_all;
 	ctx.url = convert_string(convert_table,
-				 url_term, strlen(url_term),
+				 url_term, strlen((const char *)url_term),
 				 ctx.utf8_cp, CSM_NONE, NULL, NULL, NULL);
 	if (!ctx.url) goto free_all;
 	title_utf8 = convert_string(convert_table,
-				    title_term, strlen(title_term),
+				    title_term, strlen((const char *)title_term),
 				    ctx.utf8_cp, CSM_NONE, NULL, NULL, NULL);
 	if (!title_utf8) goto free_all;
 
@@ -810,10 +810,10 @@ launch_bm_search_doc_dialog(struct terminal *term,
 		convert_table = get_translation_table(utf8_cp, term_cp);
 		if (convert_table) {
 			title = convert_string(convert_table, bm_last_searched_title,
-					       strlen(bm_last_searched_title), term_cp,
+					       strlen((const char *)bm_last_searched_title), term_cp,
 					       CSM_NONE, NULL, NULL, NULL);
 			url = convert_string(convert_table, bm_last_searched_url,
-					     strlen(bm_last_searched_url), term_cp,
+					     strlen((const char *)bm_last_searched_url), term_cp,
 					     CSM_NONE, NULL, NULL, NULL);
 		}
 		if (!title || !url) {
@@ -931,7 +931,7 @@ bookmark_terminal_tabs_ok(void *term_void, unsigned char *foldername)
 	if (convert_table == NULL) return; /** @todo Report the error */
 
 	converted = convert_string(convert_table,
-				   foldername, strlen(foldername),
+				   foldername, strlen((const char *)foldername),
 				   to_cp, CSM_NONE,
 				   NULL, NULL, NULL);
 	if (converted == NULL) return; /** @todo Report the error */

@@ -469,7 +469,7 @@ display_listbox_item(struct listbox_item *item, void *data_, int *offset)
 		text = ops->get_text(item, data->term);
 		if (!text) return 0;
 
-		len = strlen(text);
+		len = strlen((const char *)text);
 		int_upper_bound(&len, int_max(0, data->widget_data->box.width - depth * 5));
 #ifdef CONFIG_UTF8
 		if (data->term->utf8_cp)

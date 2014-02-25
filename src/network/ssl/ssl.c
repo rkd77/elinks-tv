@@ -367,7 +367,7 @@ init_ssl_connection(struct socket *socket,
 
 	if (server_name
 	    && gnutls_server_name_set(*state, GNUTLS_NAME_DNS, server_name,
-				      strlen(server_name))) {
+				      strlen((const char *)server_name))) {
 		gnutls_deinit(*state);
 		mem_free(state);
 		return S_SSL_ERROR;

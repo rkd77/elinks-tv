@@ -91,7 +91,7 @@ open_http_post(struct http_post *http_post, const unsigned char *post_data,
 	       struct connection_state *error)
 {
 	off_t size = 0;
-	size_t length = strlen(post_data);
+	size_t length = strlen((const char *)post_data);
 	const unsigned char *end = post_data;
 
 	done_http_post(http_post);

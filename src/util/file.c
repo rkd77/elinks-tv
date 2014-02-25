@@ -151,7 +151,7 @@ unsigned char *
 get_unique_name(unsigned char *fileprefix)
 {
 	unsigned char *file = fileprefix;
-	int fileprefixlen = strlen(fileprefix);
+	int fileprefixlen = strlen((const char *)fileprefix);
 	int memtrigger = 1;
 	int suffix = 1;
 	int digits = 0;
@@ -404,7 +404,7 @@ mkalldirs(const unsigned char *path)
 
 	/* Make a copy of path, to be able to write to it.  Otherwise, the
 	 * function is unsafe if called with a read-only char *argument.  */
-	len = strlen(path) + 1;
+	len = strlen((const char *)path) + 1;
 	p = (unsigned char *)fmem_alloc(len);
 	if (!p) return -1;
 	memcpy(p, path, len);

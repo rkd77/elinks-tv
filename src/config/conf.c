@@ -648,7 +648,7 @@ parse_config_command(struct option *options, struct conf_parsing_state *state,
 
 	for (handler = parse_handlers; handler->command;
 	     handler++) {
-		int cmdlen = strlen(handler->command);
+		int cmdlen = strlen((const char *)handler->command);
 
 		if (!strncmp(state->pos.look, handler->command, cmdlen)
 		    && isspace(state->pos.look[cmdlen])) {
@@ -1001,7 +1001,7 @@ smart_config_output_fn(struct string *string, struct option *option,
 static void
 add_cfg_header_to_string(struct string *string, unsigned char *text)
 {
-	int n = strlen(text) + 2;
+	int n = strlen((const char *)text) + 2;
 
 	int_bounds(&n, 10, 80);
 
@@ -1137,7 +1137,7 @@ write_config_file(unsigned char *prefix, unsigned char *name,
 	struct secure_save_info *ssi;
 	unsigned char *config_file = NULL;
 	unsigned char *cfg_str = create_config_string(prefix, name);
-	int prefixlen = strlen(prefix);
+	int prefixlen = strlen((const char *)prefix);
 	int prefix_has_slash = (prefixlen && dir_sep(prefix[prefixlen - 1]));
 	int name_has_slash = dir_sep(name[0]);
 	unsigned char *slash = name_has_slash || prefix_has_slash ? "" : STRING_DIR_SEP;

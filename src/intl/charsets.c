@@ -1582,7 +1582,7 @@ get_cp_index(const unsigned char *name)
 #endif
 	}
 
-	codepage = (const struct codepage_desc *)fastfind_search(&ff_charsets_index, name, strlen(name));
+	codepage = (const struct codepage_desc *)fastfind_search(&ff_charsets_index, name, strlen((const char *)name));
 	if (codepage) {
 		assert(codepages <= codepage && codepage < codepages + N_CODEPAGES);
 		return (codepage - codepages) | syscp;

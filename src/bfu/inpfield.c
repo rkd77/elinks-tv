@@ -116,7 +116,7 @@ dlg_format_field(struct dialog_data *dlg_data,
 	int float_label = widget_data->widget->info.field.flags & (INPFIELD_FLOAT|INPFIELD_FLOAT2);
 
 	if (label && *label && float_label) {
-		label_width = strlen(label);
+		label_width = strlen((const char *)label);
 		if (prev_y == y) {
 			int_lower_bound(&max_label_width, label_width);
 		} else {
@@ -222,7 +222,7 @@ input_field(struct terminal *term, struct memory_list *ml, int intl,
 	field = get_dialog_offset(dlg, INPUT_WIDGETS_COUNT);
 
 	if (def) {
-		int defsize = strlen(def) + 1;
+		int defsize = strlen((const char *)def) + 1;
 
 		memcpy(field, def, (defsize > l) ? l - 1 : defsize);
 	}
@@ -305,7 +305,7 @@ display_field_do(struct dialog_data *dlg_data, struct widget_data *widget_data,
 			len = utf8_ptr2chars(text, NULL);
 		else
 #endif /* CONFIG_UTF8 */
-			len = strlen(text);
+			len = strlen((const char *)text);
 		w = int_min(len, widget_data->box.width);
 
 		if (!hide) {
@@ -361,7 +361,7 @@ init_field(struct dialog_data *dlg_data, struct widget_data *widget_data)
 		struct input_history_entry *entry;
 
 		foreach (entry, widget_data->widget->info.field.history->entries) {
-			int datalen = strlen(entry->data);
+			int datalen = strlen((const char *)entry->data);
 			struct input_history_entry *new_entry;
 
 			/* One byte is reserved in struct input_history_entry. */
@@ -373,7 +373,7 @@ init_field(struct dialog_data *dlg_data, struct widget_data *widget_data)
 		}
 	}
 
-	widget_data->info.field.cpos = strlen(widget_data->cdata);
+	widget_data->info.field.cpos = strlen((const char *)widget_data->cdata);
 	return EVENT_PROCESSED;
 }
 
@@ -433,7 +433,7 @@ mouse_field(struct dialog_data *dlg_data, struct widget_data *widget_data)
 	/* Place text cursor at mouse position and focus the widget. */
 	widget_data->info.field.cpos = widget_data->info.field.vpos
 				     + ev->info.mouse.x - widget_data->box.x;
-	int_upper_bound(&widget_data->info.field.cpos, strlen(widget_data->cdata));
+	int_upper_bound(&widget_data->info.field.cpos, strlen((const char *)widget_data->cdata));
 
 	select_widget(dlg_data, widget_data);
 	return EVENT_PROCESSED;
@@ -473,7 +473,7 @@ kbd_field(struct dialog_data *dlg_data, struct widget_data *widget_data)
 			break;
 
 		case ACT_EDIT_RIGHT:
-			if (widget_data->info.field.cpos < strlen(widget_data->cdata)) {
+			if (widget_data->info.field.cpos < strlen((const char *)widget_data->cdata)) {
 #ifdef CONFIG_UTF8
 				if (term->utf8_cp) {
 					unsigned char *next = widget_data->cdata + widget_data->info.field.cpos;
@@ -513,7 +513,7 @@ kbd_field(struct dialog_data *dlg_data, struct widget_data *widget_data)
 			goto display_field;
 
 		case ACT_EDIT_END:
-			widget_data->info.field.cpos = strlen(widget_data->cdata);
+			widget_data->info.field.cpos = strlen((const char *)widget_data->cdata);
 			goto display_field;
 
 		case ACT_EDIT_BACKSPACE:
@@ -539,7 +539,7 @@ kbd_field(struct dialog_data *dlg_data, struct widget_data *widget_data)
 					int length;
 
 					text = widget_data->cdata;
-					length = strlen(text + old) + 1;
+					length = strlen((const char *(text + old)) + 1;
 					memmove(text + widget_data->info.field.cpos, text + old, length);
 				}
 				goto display_field;
@@ -548,14 +548,14 @@ kbd_field(struct dialog_data *dlg_data, struct widget_data *widget_data)
 			if (widget_data->info.field.cpos) {
 				memmove(widget_data->cdata + widget_data->info.field.cpos - 1,
 					widget_data->cdata + widget_data->info.field.cpos,
-					strlen(widget_data->cdata) - widget_data->info.field.cpos + 1);
+					strlen((const char *)widget_data->cdata) - widget_data->info.field.cpos + 1);
 				widget_data->info.field.cpos--;
 			}
 			goto display_field;
 
 		case ACT_EDIT_DELETE:
 			{
-				int cdata_len = strlen(widget_data->cdata);
+				int cdata_len = strlen((const char *)widget_data->cdata);
 
 				if (widget_data->info.field.cpos >= cdata_len) goto display_field;
 
@@ -582,7 +582,7 @@ kbd_field(struct dialog_data *dlg_data, struct widget_data *widget_data)
 		case ACT_EDIT_KILL_TO_BOL:
 			memmove(widget_data->cdata,
 					widget_data->cdata + widget_data->info.field.cpos,
-					strlen(widget_data->cdata + widget_data->info.field.cpos) + 1);
+					strlen((const char *)(widget_data->cdata + widget_data->info.field.cpos)) + 1);
 			widget_data->info.field.cpos = 0;
 			goto display_field;
 
@@ -592,7 +592,7 @@ kbd_field(struct dialog_data *dlg_data, struct widget_data *widget_data)
 
 		case ACT_EDIT_KILL_WORD_BACK:
 			{
-				int cdata_len = strlen(widget_data->cdata);
+				int cdata_len = strlen((const char *)widget_data->cdata);
 				int start = widget_data->info.field.cpos;
 
 				while (start > 0 && isspace(widget_data->cdata[start - 1]))
@@ -647,7 +647,7 @@ kbd_field(struct dialog_data *dlg_data, struct widget_data *widget_data)
 				if (!clipboard) goto display_field;
 
 				safe_strncpy(widget_data->cdata, clipboard, widget_data->widget->datalen);
-				widget_data->info.field.cpos = strlen(widget_data->cdata);
+				widget_data->info.field.cpos = strlen((const char *)widget_data->cdata);
 				mem_free(clipboard);
 				goto display_field;
 			}
@@ -680,7 +680,7 @@ kbd_field(struct dialog_data *dlg_data, struct widget_data *widget_data)
 		default:
 			if (check_kbd_textinput_key(ev)) {
 				unsigned char *text = widget_data->cdata;
-				int textlen = strlen(text);
+				int textlen = strlen((const char *)text);
 #ifndef CONFIG_UTF8
 				/* Both get_kbd_key(ev) and @text
 				 * are in the terminal's charset.  */
@@ -693,7 +693,7 @@ kbd_field(struct dialog_data *dlg_data, struct widget_data *widget_data)
 				 * is in the terminal's charset.  */
 				ins = u2cp_no_nbsp(get_kbd_key(ev),
 						   get_terminal_codepage(term));
-				inslen = strlen(ins);
+				inslen = strlen((const char *)ins);
 #endif /* CONFIG_UTF8 */
 
 				if (textlen >= widget_data->widget->datalen - inslen)
@@ -824,7 +824,7 @@ input_line_event_handler(struct dialog_data *dlg_data)
 		 * should be propagated to the line handler. */
 		if (!widget_has_history(widget_data)
 		    || widget_data->info.field.cpos <= 0
-		    || widget_data->info.field.cpos <= strlen(input_line->buffer))
+		    || widget_data->info.field.cpos <= strlen((const char *)input_line->buffer))
 			return EVENT_NOT_PROCESSED;
 
 		/* Fall thru */
@@ -851,7 +851,7 @@ cancel_input_line:
 		/* This is stolen kbd_field() handling for ACT_EDIT_BACKSPACE */
 		memmove(widget_data->cdata + widget_data->info.field.cpos - 1,
 			widget_data->cdata + widget_data->info.field.cpos,
-			strlen(widget_data->cdata) - widget_data->info.field.cpos + 1);
+			strlen((const char *)widget_data->cdata) - widget_data->info.field.cpos + 1);
 		widget_data->info.field.cpos--;
 
 		update_dialog_data(dlg_data);

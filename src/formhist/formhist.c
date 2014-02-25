@@ -48,7 +48,7 @@ static struct formhist_data *
 new_formhist_item(unsigned char *url)
 {
 	struct formhist_data *form;
-	int url_len = strlen(url);
+	int url_len = strlen((const char *)url);
 
 	form = (struct formhist_data *)mem_calloc(1, sizeof(*form) + url_len);
 	if (!form) return NULL;
@@ -131,7 +131,7 @@ load_formhist_from_file(void)
 		}
 
 		/* URL */
-		p[strlen(p) - 1] = '\0';
+		p[strlen((const char *)p) - 1] = '\0';
 
 		form = new_formhist_item(p);
 		if (!form) continue;

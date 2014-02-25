@@ -243,7 +243,7 @@ not_processed:
 		}
 
 		if (!c_strncasecmp(pos, "javascript", 10)) {
-			int len = strlen(pos);
+			int len = strlen((const char *)pos);
 
 			if (len > 10 && !isdigit(pos[10])) {
 				mem_free(type);
@@ -268,7 +268,7 @@ not_processed:
 	 * That attribute is deprecated in favor of type by HTML 4.01 */
 	language = get_attr_val(a, "language", html_context->doc_cp);
 	if (language) {
-		int languagelen = strlen(language);
+		int languagelen = strlen((const char *)language);
 
 		if (languagelen < 10
 		    || (languagelen > 10 && !isdigit(language[10]))

@@ -1461,7 +1461,7 @@ html_special_tag(struct document *document, unsigned char *t, int x, int y)
 	assert(document);
 	if_assert_failed return;
 
-	tag_len = strlen(t);
+	tag_len = strlen((const char *)t);
 	/* One byte is reserved for name in struct tag. */
 	tag = (struct tag *)mem_alloc(sizeof(*tag) + tag_len);
 	if (!tag) return;

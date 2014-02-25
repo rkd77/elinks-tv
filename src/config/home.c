@@ -32,7 +32,7 @@ strip_trailing_dir_sep(unsigned char *path)
 {
 	int i;
 
-	for (i = strlen(path) - 1; i > 0; i--)
+	for (i = strlen((const char *)path) - 1; i > 0; i--)
 		if (!dir_sep(path[i]))
 			break;
 
@@ -97,7 +97,7 @@ elinks_dirname(unsigned char *path)
 	dir = stracpy(path);
 	if (!dir) return NULL;
 
-	for (i = strlen(dir) - 1; i >= 0; i--)
+	for (i = strlen((const char *)dir) - 1; i >= 0; i--)
 		if (dir_sep(dir[i]))
 			break;
 

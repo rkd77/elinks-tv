@@ -187,7 +187,7 @@ print_xml_entities(struct secure_save_info *ssi, const unsigned char *str)
 	struct string entitized = NULL_STRING;
 
 	if (init_string(&entitized)
-	    && add_html_to_string(&entitized, str, strlen(str))) {
+	    && add_html_to_string(&entitized, str, strlen((const char *)str))) {
 		secure_fputs(ssi, entitized.source);
 	} else {
 		secsave_errno = SS_ERR_OUT_OF_MEM;
@@ -306,7 +306,7 @@ delete_whites(const unsigned char *s)
 {
 	unsigned char *r;
 	int last_was_space = 0, c = 0, i;
-	int len = strlen(s);
+	int len = strlen((const char *)s);
 
 	r = (unsigned char *)mem_alloc(len + 1);
 	if (!r) return NULL;
@@ -348,7 +348,7 @@ on_text(void *data, const XML_Char *text, int len)
 	int len2 = 0;
 
 	if (len) {
-		len2 = current_node->text ? strlen(current_node->text) : 0;
+		len2 = current_node->text ? strlen((const char *)current_node->text) : 0;
 
 		tmp = (char *)mem_realloc(current_node->text, (size_t) (len + 1 + len2));
 

@@ -537,7 +537,7 @@ draw_text(struct terminal *term, int x, int y,
 		INTERNAL("end_pos < 0 !!");
 		end_pos = 0;
 	} else {
-		int textlen = strlen(text);
+		int textlen = strlen((const char *)text);
 
 		if (end_pos >= textlen) {
 			INTERNAL("end_pos (%d) >= text length (%d) !!", end_pos, textlen);

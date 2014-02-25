@@ -146,10 +146,10 @@ write_bookmarks_default_inner(const struct write_bookmarks_default *out,
 		unsigned char *title, *url;
 
 		title = convert_string(out->conv_table, bm->title,
-				       strlen(bm->title), out->codepage,
+				       strlen((const char *)bm->title), out->codepage,
 				       CSM_NONE, NULL, NULL, NULL);
 		url = convert_string(out->conv_table, bm->url,
-				     strlen(bm->url), out->codepage,
+				     strlen((const char *)bm->url), out->codepage,
 				     CSM_NONE, NULL, NULL, NULL);
 		secure_fprintf(out->ssi, "%s\t%s\t%d\t",
 			       empty_string_or_(title), empty_string_or_(url),

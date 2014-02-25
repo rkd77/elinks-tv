@@ -87,7 +87,7 @@ done_mimetypes_entry(struct mimetypes_entry *entry)
 static inline void
 parse_mimetypes_extensions(unsigned char *token, unsigned char *ctype)
 {
-	int ctypelen = strlen(ctype);
+	int ctypelen = strlen((const char *)ctype);
 
 	/* Cycle through the file extensions */
 	while (*token) {
@@ -104,7 +104,7 @@ parse_mimetypes_extensions(unsigned char *token, unsigned char *ctype)
 		if (!*token) break;
 		*token++ = '\0';
 
-		extlen = strlen(extension);
+		extlen = strlen((const char *)extension);
 		/* First check if the type is already known. If it is
 		 * drop it. This way first files are priotized. */
 		item = get_hash_item(mimetypes_map, extension, extlen);
@@ -245,7 +245,7 @@ get_content_type_mimetypes(unsigned char *extension)
 		return NULL;
 
 	extension++; /* Skip the leading '.' */
-	extensionlen = strlen(extension);
+	extensionlen = strlen((const char *)extension);
 	while (extensionlen) {
 		unsigned char *trimmed;
 

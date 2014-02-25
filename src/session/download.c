@@ -913,7 +913,7 @@ create_download_file_do(struct terminal *term, unsigned char *file,
 			safe_strncpy(download_dir, file, MAX_STR_LEN);
 
 			/* Find the used directory so it's available in history */
-			for (i = strlen(download_dir); i >= 0; i--)
+			for (i = strlen((const char *)download_dir); i >= 0; i--)
 				if (dir_sep(download_dir[i]))
 					break;
 			download_dir[i + 1] = 0;
@@ -1019,7 +1019,7 @@ get_temp_name(struct uri *uri)
 
 	extension = get_extension_from_uri(uri);
 	if (extension) {
-		add_shell_safe_to_string(&name, extension, strlen(extension));
+		add_shell_safe_to_string(&name, extension, strlen((const char *)extension));
 		mem_free(extension);
 	}
 
@@ -1057,7 +1057,7 @@ subst_file(unsigned char *prog, unsigned char *file)
 			cygwin_conv_to_full_win32_path(file, new_path);
 			add_to_string(&name, new_path);
 #else
-			add_shell_quoted_to_string(&name, file, strlen(file));
+			add_shell_quoted_to_string(&name, file, strlen((const char *)file));
 #endif
 			prog++;
 		}
@@ -1068,7 +1068,7 @@ subst_file(unsigned char *prog, unsigned char *file)
 
 		if (init_string(&s)) {
 			add_to_string(&s, "/bin/cat ");
-			add_shell_quoted_to_string(&s, file, strlen(file));
+			add_shell_quoted_to_string(&s, file, strlen((const char *)file));
 			add_to_string(&s, " | ");
 			add_string_to_string(&s, &name);
 			done_string(&name);
@@ -1729,7 +1729,7 @@ setup_download_handler(struct session *ses, struct download *loading,
 	xwin = ses->tab->term->environment & ENV_XWIN;
 	handler = get_mime_type_handler(ctype, xwin);
 
-	if (!handler && strlen(ctype) >= 4 && !c_strncasecmp(ctype, "text", 4))
+	if (!handler && strlen((const char *)ctype) >= 4 && !c_strncasecmp(ctype, "text", 4))
 		goto plaintext_follow;
 
 	type_query = find_type_query(ses);

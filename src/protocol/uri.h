@@ -338,7 +338,7 @@ int end_with_known_tld(const unsigned char *s, int slen);
 static inline int
 get_real_uri_length(struct uri *uri)
 {
-	return uri->post ? uri->post - struri(uri) - 1 : strlen(struri(uri));
+	return uri->post ? uri->post - struri(uri) - 1 : strlen((const char *)struri(uri));
 }
 
 /* Checks if @address contains a valid IP address. */

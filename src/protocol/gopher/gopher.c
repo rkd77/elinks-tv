@@ -194,7 +194,7 @@ add_uri_decoded(struct string *command, unsigned char *string, int length,
 	decode_uri(command->source + oldlen);
 
 	/* Evil decode_uri_string() modifies the string */
-	command->length = strlen(command->source);
+	command->length = strlen((const char *)command->source);
 }
 
 static struct connection_state init_gopher_index_cache_entry(struct connection *conn);
@@ -470,7 +470,7 @@ add_gopher_menu_line(struct string *buffer, unsigned char *line)
 
 	/* Nameless files are separator lines */
 	if (entity == GOPHER_FILE) {
-		int i = strlen(name) - 1;
+		int i = strlen((const char *)name) - 1;
 
 		while (name[i] == ' ' && i >= 0)
 			name[i--] = '\0';

@@ -78,7 +78,7 @@ get_bordercolor(struct html_context *html_context, unsigned char *a, color_T *rg
 		at = get_attr_val(a, "bordercolordark", html_context->doc_cp);
 	if (!at) return;
 
-	decode_color(at, strlen(at), rgb);
+	decode_color(at, strlen((const char *)at), rgb);
 	mem_free(at);
 }
 
@@ -120,7 +120,7 @@ get_column_width(unsigned char *attr, int *width, int sh,
 
 	if (!al) return;
 
-	len = strlen(al);
+	len = strlen((const char *)al);
 	if (len && al[len - 1] == '*') {
 		unsigned char *en;
 		int n;

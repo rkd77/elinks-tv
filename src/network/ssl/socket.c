@@ -193,7 +193,7 @@ static int
 match_uri_host_name(const unsigned char *uri_host,
 		    ASN1_STRING *cert_host_asn1)
 {
-	const size_t uri_host_len = strlen(uri_host);
+	const size_t uri_host_len = strlen((const char *)uri_host);
 	unsigned char *cert_host = NULL;
 	int cert_host_len;
 	int matched = 0;
@@ -409,7 +409,7 @@ ssl_connect(struct socket *socket)
 	}
 
 	/* RFC 3546 says literal IPv4 and IPv6 addresses are not allowed.  */
-	if (is_ip_address(server_name, strlen(server_name)))
+	if (is_ip_address(server_name, strlen((const char *)server_name)))
 		mem_free_set(&server_name, NULL);
 
 	if (init_ssl_connection(socket, server_name) == S_SSL_ERROR) {

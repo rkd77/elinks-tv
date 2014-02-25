@@ -441,7 +441,7 @@ add_server_do(void *data)
 				   stracpy("1") /* value */,
 				   stracpy("/") /* path */,
 				   stracpy(value) /* domain */,
-				   get_cookie_server(value, strlen(value)));
+				   get_cookie_server(value, strlen((const char *)value)));
 	if (!dummy_cookie) return;
 
 	accept_cookie(dummy_cookie);

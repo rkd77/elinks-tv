@@ -192,7 +192,7 @@ import_default_css(void)
 
 	if (!*url) return;
 
-	import_css_file(&default_stylesheet, NULL, url, strlen(url));
+	import_css_file(&default_stylesheet, NULL, url, strlen((const char *)url));
 }
 
 static int

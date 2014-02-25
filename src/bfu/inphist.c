@@ -42,7 +42,7 @@ tab_compl_n(struct dialog_data *dlg_data, unsigned char *item, int len)
 static void
 tab_compl(struct dialog_data *dlg_data, unsigned char *item)
 {
-	tab_compl_n(dlg_data, item, strlen(item));
+	tab_compl_n(dlg_data, item, strlen((const char *)item));
 }
 
 /* menu_func_T */
@@ -52,7 +52,7 @@ menu_tab_compl(struct terminal *term, void *item_, void *dlg_data_)
 	unsigned char *item = (unsigned char *)item_;
 	struct dialog_data *dlg_data = (struct dialog_data *)dlg_data_;
 
-	tab_compl_n(dlg_data, item, strlen(item));
+	tab_compl_n(dlg_data, item, strlen((const char *)item));
 }
 
 /* Complete to last unambiguous character, and display menu for all possible
@@ -130,7 +130,7 @@ do_tab_compl_unambiguous(struct dialog_data *dlg_data,
 		if (!match) {
 			/* This is the first match, so its length is the maximum
 			 * for any future matches. */
-			longest_common_match = strlen(entry->data);
+			longest_common_match = strlen((const char *)entry->data);
 			match = entry->data;
 		} else if (cur_len < longest_common_match) {
 			/* The current match has a shorter substring in common
@@ -165,7 +165,7 @@ set_complete_file_menu(struct terminal *term, void *filename_, void *dlg_data_)
 
 	assert(widget_is_textfield(widget_data));
 
-	filenamelen = int_min(widget_data->widget->datalen - 1, strlen(filename));
+	filenamelen = int_min(widget_data->widget->datalen - 1, strlen((const char *)filename));
 	memcpy(widget_data->cdata, filename, filenamelen);
 
 	widget_data->cdata[filenamelen] = 0;
@@ -305,7 +305,7 @@ load_input_history(struct input_history *history, unsigned char *filename)
 
 	while (fgets(line, MAX_STR_LEN, file)) {
 		/* Drop '\n'. */
-		if (*line) line[strlen(line) - 1] = 0;
+		if (*line) line[strlen((const char *)line) - 1] = 0;
 		add_to_input_history(history, line, 0);
 	}
 
@@ -360,7 +360,7 @@ dlg_set_history(struct widget_data *widget_data)
 	if ((void *) widget_data->info.field.cur_hist != &widget_data->info.field.history) {
 		unsigned char *s = widget_data->info.field.cur_hist->data;
 
-		widget_data->info.field.cpos = int_min(strlen(s), widget_data->widget->datalen - 1);
+		widget_data->info.field.cpos = int_min(strlen((const char *)s), widget_data->widget->datalen - 1);
 		if (widget_data->info.field.cpos)
 			memcpy(widget_data->cdata, s, widget_data->info.field.cpos);
 	} else {

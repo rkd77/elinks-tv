@@ -46,7 +46,7 @@ split_line(unsigned char *text, int max_width, int *cells)
 {
 	unsigned char *split = text;
 #ifdef CONFIG_UTF8
-	unsigned char *text_end = split + strlen(split);
+	unsigned char *text_end = split + strlen((const char *)split);
 #endif /* CONFIG_UTF8 */
 	int cells_save = *cells;
 

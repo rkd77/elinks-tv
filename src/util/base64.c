@@ -21,7 +21,7 @@ base64_encode(register unsigned char *in)
 	assert(in && *in);
 	if_assert_failed return NULL;
 
-	return base64_encode_bin(in, strlen(in), NULL);
+	return base64_encode_bin(in, strlen((const char *)in), NULL);
 }
 
 unsigned char *
@@ -73,7 +73,7 @@ base64_decode(register unsigned char *in)
 	assert(in && *in);
 	if_assert_failed return NULL;
 
-	return base64_decode_bin(in, strlen(in), NULL);
+	return base64_decode_bin(in, strlen((const char *)in), NULL);
 }
 
 /** Decode a Base64 string.

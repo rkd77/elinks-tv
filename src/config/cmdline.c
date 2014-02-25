@@ -240,7 +240,7 @@ remote_cmd(struct option *o, unsigned char ***argv, int *argc)
 	arg = command + len;
 	skip_space(arg);
 
-	argend = arg + strlen(arg);
+	argend = arg + strlen((const char *)arg);
 	skipback_whitespace(arg, argend);
 	if (argend > arg)
 		argend--;
@@ -304,7 +304,7 @@ remote_cmd(struct option *o, unsigned char ***argv, int *argc)
 		} else {
 			end = strchr((char *)start, ',');
 			if (!end) {
-				end = start + strlen(start);
+				end = start + strlen((const char *)start);
 				arg = end;
 			} else {
 				arg = end + 1;
@@ -478,7 +478,7 @@ print_full_help_inner(struct option *tree, unsigned char *path,
 			capt = (unsigned char *) N_("Template option folder");
 
 		if (!capt) {
-			int len = strlen(option->name);
+			int len = strlen((const char *)option->name);
 			int max = MAX_STR_LEN - (savedpos - saved);
 
 			safe_strncpy(savedpos, option->name, max);
@@ -541,8 +541,8 @@ print_full_help_inner(struct option *tree, unsigned char *path,
 
 			case OPT_TREE:
 			{
-				int pathlen = strlen(path);
-				int namelen = strlen(option->name);
+				int pathlen = strlen((const char *)path);
+				int namelen = strlen((const char *)option->name);
 
 				if (pathlen + namelen + 2 > MAX_STR_LEN)
 					continue;
@@ -602,7 +602,7 @@ print_short_help(void)
 		unsigned char *help;
 		unsigned char *info = saved ? saved->source
 					    : (unsigned char *) "";
-		int len = strlen(option->name);
+		int len = strlen((const char *)option->name);
 
 		/* Avoid printing compatibility options */
 		if (option->flags & OPT_HIDDEN)
@@ -627,7 +627,7 @@ print_short_help(void)
 		help = (unsigned char *)gettext_nonempty(option_types[option->type].help_str);
 
 		/* When @help string is non empty align at least one space. */
-		len = ALIGN_WIDTH - len - strlen(help);
+		len = ALIGN_WIDTH - len - strlen((const char *)help);
 		len -= (saved ? saved->length : 0);
 		len = (len < 0) ? !!(*help) : len;
 

@@ -101,7 +101,7 @@ find_in_dns_cache(unsigned char *name)
 static void
 add_to_dns_cache(unsigned char *name, struct sockaddr_storage *addr, int addrno)
 {
-	int namelen = strlen(name);
+	int namelen = strlen((const char *)name);
 	struct dnsentry *dnsentry;
 	int size;
 
@@ -170,7 +170,7 @@ do_real_lookup(unsigned char *name, struct sockaddr_storage **addrs, int *addrno
 	{
 		struct in_addr inp;
 
-		if (is_ip_address(name, strlen(name)) && inet_aton(name, &inp))
+		if (is_ip_address(name, strlen((const char *)name)) && inet_aton(name, &inp))
 			hostent = gethostbyaddr(&inp, sizeof(inp), AF_INET);
 	}
 	if (!hostent)
@@ -361,7 +361,7 @@ init_async_dns_lookup(struct dnsquery *dnsquery, int force_async)
 	}
 
 	dnsquery->h = start_thread(async_dns_writer, dnsquery->name,
-				   strlen(dnsquery->name) + 1);
+				   strlen((const char *)dnsquery->name) + 1);
 	if (dnsquery->h == -1)
 		return 0;
 
@@ -478,7 +478,7 @@ init_dns_lookup(unsigned char *name, void **queryref,
 		dns_callback_T done, void *data)
 {
 	struct dnsquery *query;
-	int namelen = strlen(name);
+	int namelen = strlen((const char *)name);
 
 	query = (struct dnsquery *)mem_calloc(1, sizeof(*query) + namelen);
 	if (!query) {

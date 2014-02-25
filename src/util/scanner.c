@@ -78,7 +78,7 @@ dump_scanner(struct scanner *scanner)
 		bufpos += 4;
 	}
 
-	srclen = strlen(srcpos);
+	srclen = strlen((const char *)srcpos);
 	int_upper_bound(&src_lookahead, srclen);
 	*bufpos++ = '[';
 
@@ -168,7 +168,7 @@ init_scanner(struct scanner *scanner, struct scanner_info *scanner_info,
 
 	scanner->string = string;
 	scanner->position = string;
-	scanner->end = end ? end : string + strlen(string);
+	scanner->end = end ? end : string + strlen((const char *)string);
 	scanner->current = scanner->table;
 	scanner->info = scanner_info;
 	scanner->info->scan(scanner);

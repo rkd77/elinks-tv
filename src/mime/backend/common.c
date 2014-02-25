@@ -108,7 +108,7 @@ struct mime_handler *
 init_mime_handler(unsigned char *program, unsigned char *description,
 		  unsigned char *backend_name, int ask, int block)
 {
-	int programlen = strlen(program);
+	int programlen = strlen((const char *)program);
 	struct mime_handler *handler;
 
 	handler = (struct mime_handler *)mem_calloc(1, sizeof(*handler) + programlen);

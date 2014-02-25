@@ -144,7 +144,7 @@ get_cookie_server(unsigned char *host, int hostlen)
 	foreach (cs, cookie_servers) {
 		/* XXX: We must count with cases like "x.co" vs "x.co.uk"
 		 * below! */
-		int cslen = strlen(cs->host);
+		int cslen = strlen((const char *)cs->host);
 		int cmp = c_strncasecmp(cs->host, host, hostlen);
 
 		if (!sort_spot && (cmp > 0 || (cmp == 0 && cslen > hostlen))) {
@@ -232,7 +232,7 @@ is_domain_security_ok(unsigned char *domain, unsigned char *server, int server_l
 	int need_dots;
 
 	if (domain[0] == '.') domain++;
-	domain_len = strlen(domain);
+	domain_len = strlen((const char *)domain);
 
 	/* Match domain and server.. */
 
@@ -357,12 +357,12 @@ set_cookie(struct uri *uri, unsigned char *str)
 
 	case HEADER_PARAM_FOUND:
 		if (!path[0]
-		    || path[strlen(path) - 1] != '/')
+		    || path[strlen((const char *)path) - 1] != '/')
 			add_to_strn(&path, "/");
 
 		if (path[0] != '/') {
 			add_to_strn(&path, "x");
-			memmove(path + 1, path, strlen(path) - 1);
+			memmove(path + 1, path, strlen((const char *)path) - 1);
 			path[0] = '/';
 		}
 		break;
@@ -384,7 +384,7 @@ set_cookie(struct uri *uri, unsigned char *str)
 	if (parse_header_param(str, "domain", &domain) == HEADER_PARAM_NOT_FOUND)
 		domain = memacpy(uri->host, uri->hostlen);
 	if (domain && domain[0] == '.')
-		memmove(domain, domain + 1, strlen(domain));
+		memmove(domain, domain + 1, strlen((const char *)domain));
 
 	cookie = init_cookie(memacpy(str, cstr.nam_end - str),
 			     memacpy(cstr.val_start, cstr.val_end - cstr.val_start),
@@ -518,7 +518,7 @@ accept_cookie(struct cookie *cookie)
 		if (!c_strcasecmp((char *)cd->domain, (char *)cookie->domain))
 			return;
 
-	domain_len = strlen(cookie->domain);
+	domain_len = strlen((const char *)cookie->domain);
 	/* One byte is reserved for domain in struct c_domain. */
 	cd = (struct c_domain *)mem_alloc(sizeof(*cd) + domain_len);
 	if (!cd) return;
@@ -608,11 +608,11 @@ accept_cookie_never(void *idp)
 static inline int
 is_path_prefix(unsigned char *d, unsigned char *s)
 {
-	int dl = strlen(d);
+	int dl = strlen((const char *)d);
 
 	/* TODO: strlcmp()? --pasky */
 
-	if (dl > strlen(s)) return 0;
+	if (dl > strlen((const char *)s)) return 0;
 
 	return !memcmp(d, s, dl);
 }

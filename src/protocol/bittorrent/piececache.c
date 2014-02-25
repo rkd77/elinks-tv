@@ -604,7 +604,7 @@ remove_bittorrent_path(struct bittorrent_meta *meta, unsigned char *path)
 	if (!root || root == path)
 		return;
 
-	for (pos = strlen(root); pos >= 0; pos--) {
+	for (pos = strlen((const char *)root); pos >= 0; pos--) {
 		unsigned char separator = root[pos];
 		int ret;
 
@@ -784,7 +784,7 @@ bittorrent_file_piece_translation(struct bittorrent_meta *meta,
 			/* Try to gracefully handle bogus paths; empty file
 			 * names and directory names. */
 			if (!file->name[0]
-			    || dir_sep(file->name[strlen(file->name) - 1])) {
+			    || dir_sep(file->name[strlen((const char *)file->name) - 1])) {
 				current_offset += file->length;
 				continue;
 			}

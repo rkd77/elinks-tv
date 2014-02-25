@@ -264,7 +264,7 @@ display_status_bar(struct session *ses, struct terminal *term, int tabs_count)
 	if (!text_color)
 		text_color = get_bfu_color(term, "status.status-text");
 
-	msglen = strlen(msg);
+	msglen = strlen((const char *)msg);
 	draw_text(term, 0 + tab_info_len, term->height - 1,
 		  msg, msglen, 0, text_color);
 	mem_free(msg);
@@ -373,7 +373,7 @@ display_tab_bar(struct session *ses, struct terminal *term, int tabs_count)
 							   NULL) - msg;
 			} else
 #endif /* CONFIG_UTF8 */
-				msglen = int_min(strlen(msg), actual_tab_width);
+				msglen = int_min(strlen((const char *)msg), actual_tab_width);
 
 			draw_text(term, box.x, box.y, msg, msglen, 0, color);
 		}
@@ -450,7 +450,7 @@ display_title_bar(struct session *ses, struct terminal *term)
 		} else
 #endif /* CONFIG_UTF8 */
 		{
-			titlewidth = int_min(strlen(document->title), maxlen);
+			titlewidth = int_min(strlen((const char *)document->title), maxlen);
 			titlelen = titlewidth;
 		}
 
@@ -502,10 +502,10 @@ display_window_title(struct session *ses, struct terminal *term)
 			  : stracpy("ELinks");
 	if (!title) return;
 
-	titlelen = strlen(title);
+	titlelen = strlen((const char *)title);
 	if ((last_ses != ses
 	     || !status->last_title
-	     || strlen(status->last_title) != titlelen
+	     || strlen((const char *)status->last_title) != titlelen
 	     || memcmp(status->last_title, title, titlelen))
 	    && set_terminal_title(term, title) >= 0) {
 		mem_free_set(&status->last_title, title);

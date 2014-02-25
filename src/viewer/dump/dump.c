@@ -328,7 +328,7 @@ dump_references(struct document *document, int fd, unsigned char buf[D_BUF])
 	    && get_opt_bool("document.dump.references", NULL)) {
 		int x;
 		unsigned char *header = "\nReferences\n\n   Visible links\n";
-		int headlen = strlen(header);
+		int headlen = strlen((const char *)header);
 
 		if (hard_write(fd, header, headlen) != headlen)
 			return -1;
@@ -355,7 +355,7 @@ dump_references(struct document *document, int fd, unsigned char buf[D_BUF])
 					snprintf(buf, D_BUF, "   . %s\n", where);
 			}
 
-			reflen = strlen(buf);
+			reflen = strlen((const char *)buf);
 			if (hard_write(fd, buf, reflen) != reflen)
 				return -1;
 		}

@@ -156,7 +156,7 @@ const unsigned char *const *listext_encoded(enum stream_encoding encoding)
 enum stream_encoding
 guess_encoding(unsigned char *filename)
 {
-	int fname_len = strlen(filename);
+	int fname_len = strlen((const char *)filename);
 	unsigned char *fname_end = filename + fname_len;
 	int enc;
 
@@ -164,7 +164,7 @@ guess_encoding(unsigned char *filename)
 		const unsigned char *const *ext = decoding_backends[enc]->extensions;
 
 		while (ext && *ext) {
-			int len = strlen(*ext);
+			int len = strlen((const char *)*ext);
 
 			if (fname_len >= len && !strcmp(fname_end - len, *ext))
 				return enc;

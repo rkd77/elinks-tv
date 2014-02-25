@@ -38,13 +38,13 @@ main(int argc, char *argv[])
 		arg += 2;
 
 		if (get_test_opt(&arg, "uri", &i, argc, argv, "a URI")) {
-			set_dom_string(&uri, arg, strlen(arg));
+			set_dom_string(&uri, arg, strlen((const char *)arg));
 
 		} else if (get_test_opt(&arg, "src", &i, argc, argv, "a string")) {
-			set_dom_string(&source, arg, strlen(arg));
+			set_dom_string(&source, arg, strlen((const char *)arg));
 
 		} else if (get_test_opt(&arg, "selector", &i, argc, argv, "a string")) {
-			set_dom_string(&selector, arg, strlen(arg));
+			set_dom_string(&selector, arg, strlen((const char *)arg));
 
 		} else if (!strcmp(arg, "help")) {
 			die(NULL);

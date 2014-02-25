@@ -183,7 +183,7 @@ show_http_error_document(struct session *ses, void *data)
 			     straconcat("\r\nContent-Type: text/html; charset=",
 					get_cp_mime_name(gettext_codepage),
 					"\r\n", (unsigned char *) NULL));
-		add_fragment(cache, 0, str, strlen(str));
+		add_fragment(cache, 0, str, strlen((const char *)str));
 		mem_free(str);
 
 		draw_formatted(ses, 1);

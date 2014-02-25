@@ -155,7 +155,7 @@ data_protocol_handler(struct connection *conn)
 
 	{
 		/* Use strlen() to get the correct decoded length */
-		int datalen = strlen(data);
+		int datalen = strlen((const char *)data);
 
 		add_fragment(cached, conn->from, data, datalen);
 		conn->from += datalen;

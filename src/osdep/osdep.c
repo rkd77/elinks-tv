@@ -403,7 +403,7 @@ set_clipboard_text(unsigned char *data)
 		if (!init_string(&str)) return;
 
 		add_to_string(&str, "screen -X register . ");
-		add_shell_quoted_to_string(&str, data, strlen(data));
+		add_shell_quoted_to_string(&str, data, strlen((const char *)data));
 
 		if (str.length) exe(str.source);
 		if (str.source) done_string(&str);
@@ -430,7 +430,7 @@ set_window_title(unsigned char *title, int codepage)
 	/* Copy title to filtered if different from NULL */
 	if (title) {
 		unsigned char *scan = title;
-		unsigned char *end = title + strlen(title);
+		unsigned char *end = title + strlen((const char *)title);
 
 		/* Remove control characters, so that they cannot
 		 * interfere with the command we send to the terminal.
@@ -543,7 +543,7 @@ xprop_to_string(Display *display, const XTextProperty *text_prop, int to_cp)
 
 	convert_table = get_translation_table(from_cp, to_cp);
 	if (count >= 1 && convert_table)
-		ret = convert_string(convert_table, list[0], strlen(list[0]),
+		ret = convert_string(convert_table, list[0], strlen((const char *)list[0]),
 				     to_cp, CSM_NONE, NULL, NULL, NULL);
 
 	XFreeStringList(list);

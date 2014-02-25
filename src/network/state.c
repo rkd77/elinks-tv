@@ -171,7 +171,7 @@ get_state_message(struct connection_state state, struct terminal *term)
 	e = (unsigned char *) strerror(state.syserr);
 	if (!e || !*e) return unknown_error;
 
-	len = strlen(e);
+	len = strlen((const char *)e);
 
 	foreach (s, strerror_buf)
 		if (!strlcmp(s->msg, -1, e, len))

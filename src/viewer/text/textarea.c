@@ -80,7 +80,7 @@ format_textutf8(unsigned char *text, int width, enum form_wrap wrap, int format)
 	if (!realloc_line_info(&line, 0))
 		return NULL;
 
-	text_end = text + strlen(text);
+	text_end = text + strlen((const char *)text);
 	while (text[pos]) {
 		int char_cells = utf8_char2cells(&text[pos], text_end);
 
@@ -535,7 +535,7 @@ save_textarea_file(unsigned char *value)
 		return NULL;
 	}
 
-	len = strlen(value);
+	len = strlen((const char *)value);
 	if (len == 0) return filename;
 
 	fp = fdopen(fd, "w");
@@ -950,7 +950,7 @@ static int
 do_op_end(struct form_state *fs, struct line_info *line, int current, int utf8)
 {
 	if (current == -1) {
-		fs->state = strlen(fs->value);
+		fs->state = strlen((const char *)fs->value);
 		return 0;
 	}
 
@@ -981,7 +981,7 @@ static int
 do_op_end(struct form_state *fs, struct line_info *line, int current)
 {
 	if (current == -1) {
-		fs->state = strlen(fs->value);
+		fs->state = strlen((const char *)fs->value);
 
 	} else {
 		int wrap = line[current + 1].start == line[current].end;
@@ -1015,10 +1015,10 @@ do_op_eob(struct form_state *fs, struct line_info *line, int current)
 #endif /* CONFIG_UTF8 */
 {
 	if (current == -1) {
-		fs->state = strlen(fs->value);
+		fs->state = strlen((const char *)fs->value);
 
 	} else {
-		int last = get_textarea_line_number(line, strlen(fs->value));
+		int last = get_textarea_line_number(line, strlen((const char *)fs->value));
 
 		assertm(last != -1, "line info corrupt");
 
@@ -1129,7 +1129,7 @@ textarea_op_enter(struct form_state *fs, struct form_control *fc)
 	if_assert_failed return FRAME_EVENT_OK;
 
 	if (form_field_is_readonly(fc)
-	    || strlen(fs->value) >= fc->maxlength
+	    || strlen((const char *)fs->value) >= fc->maxlength
 	    || !insert_in_string(&fs->value, fs->state, "\n", 1))
 		return FRAME_EVENT_OK;
 
@@ -1177,7 +1177,7 @@ do_op_right(struct form_state *fs, struct line_info *line, int current, int utf8
 
 	if (!utf8) {
 		/* TODO: zle */
-		fs->state = int_min(fs->state + 1, strlen(fs->value));
+		fs->state = int_min(fs->state + 1, strlen((const char *)fs->value));
 		return 0;
 	}
 

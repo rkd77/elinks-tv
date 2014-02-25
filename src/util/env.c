@@ -30,7 +30,7 @@ env_set(unsigned char *name, unsigned char *value, int length)
 
 	if (!value || !name || !*name) return -1;
 
-	true_length = strlen(value);
+	true_length = strlen((const char *)value);
 	substring = (length >= 0 && length < true_length);
 	if (!substring) length = true_length;
 
@@ -53,7 +53,7 @@ env_set(unsigned char *name, unsigned char *value, int length)
 #elif defined(HAVE_PUTENV)
 
 	{
-		int namelen = strlen(name);
+		int namelen = strlen((const char *)name);
 		char *s = malloc(namelen + length + 2);
 
 		if (!s) return -1;

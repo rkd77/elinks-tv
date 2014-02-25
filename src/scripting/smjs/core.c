@@ -61,7 +61,7 @@ error_reporter(JSContext *ctx, const char *message, JSErrorReport *report)
 		add_format_to_string(&msg, "\n\n%s\n.%*s^%*s.",
 			       report->linebuf,
 			       pos - 2, " ",
-			       strlen(report->linebuf) - pos - 1, " ");
+			       strlen((const char *)report->linebuf) - pos - 1, " ");
 	}
 
 	alert_smjs_error(msg.source);
@@ -191,7 +191,7 @@ utf8_to_jsstring(JSContext *ctx, const unsigned char *str, int length)
 	JSString *jsstr;
 
 	if (length == -1)
-		in_bytes = strlen(str);
+		in_bytes = strlen((const char *)str);
 	else
 		in_bytes = length;
 

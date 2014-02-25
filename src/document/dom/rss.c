@@ -204,7 +204,7 @@ dom_rss_push_document(struct dom_stack *stack, struct dom_node *root, void *xxx)
 
 		selector = find_css_selector(&css->selectors,
 					     CST_ELEMENT, CSR_ROOT,
-					     names[type], strlen(names[type]));
+					     names[type], strlen((const char *)names[type]));
 		init_template_by_style(template, &document->options,
 				       selector ? &selector->properties : NULL);
 	}

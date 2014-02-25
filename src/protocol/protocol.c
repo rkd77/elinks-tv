@@ -114,7 +114,7 @@ get_protocol(unsigned char *name, int namelen)
 
 	while (start <= end) {
 		unsigned char *pname = protocol_backends[protocol].name;
-		int pnamelen = strlen(pname);
+		int pnamelen = strlen((const char *)pname);
 		int minlen = int_min(pnamelen, namelen);
 		int compare = c_strncasecmp(pname, name, minlen);
 

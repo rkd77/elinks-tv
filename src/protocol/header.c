@@ -245,13 +245,13 @@ parse_header_param(unsigned char *str, unsigned char *name, unsigned char **ret)
 	/* Returns now if string @str is empty. */
 	if (!*p) return HEADER_PARAM_NOT_FOUND;
 
-	namelen = strlen(name);
+	namelen = strlen((const char *)name);
 	do {
 		p = strchr((char *)p, ';');
 		if (!p) return HEADER_PARAM_NOT_FOUND;
 
 		while (*p && (*p == ';' || *p <= ' ')) p++;
-		if (strlen(p) < namelen) return HEADER_PARAM_NOT_FOUND;
+		if (strlen((const char *)p) < namelen) return HEADER_PARAM_NOT_FOUND;
 	} while (c_strncasecmp(p, name, namelen));
 
 	p += namelen;

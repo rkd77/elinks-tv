@@ -60,7 +60,7 @@ is_uri_dir_sep(const struct uri *uri, unsigned char pos)
 int
 is_in_domain(unsigned char *domain, unsigned char *server, int server_len)
 {
-	int domain_len = strlen(domain);
+	int domain_len = strlen((const char *)domain);
 	int len;
 
 	if (domain_len > server_len)
@@ -125,10 +125,10 @@ end_with_known_tld(const unsigned char *s, int slen)
 	  "name", "pro", NULL };
 
 	if (!slen) return -1;
-	if (slen < 0) slen = strlen(s);
+	if (slen < 0) slen = strlen((const char *)s);
 
 	for (i = 0; tld[i]; i++) {
-		int tldlen = strlen(tld[i]);
+		int tldlen = strlen((const char *)tld[i]);
 		int pos = slen - tldlen;
 
 		if (pos >= 0 && !c_strncasecmp(&s[pos], tld[i], tldlen))
@@ -145,7 +145,7 @@ check_whether_file_exists(unsigned char *name)
 	/* Check POST_CHAR etc ... */
 	static const unsigned char chars[] = POST_CHAR_S "#?";
 	int i;
-	int namelen = strlen(name);
+	int namelen = strlen((const char *)name);
 
 	if (file_exists(name))
 		return namelen;
@@ -251,7 +251,7 @@ parse_uri(struct uri *uri, unsigned char *uristring)
 
 	if (get_protocol_free_syntax(uri->protocol)) {
 		uri->data = prefix_end;
-		uri->datalen = strlen(prefix_end);
+		uri->datalen = strlen((const char *)prefix_end);
 		return URI_ERRNO_OK;
 
 	} else if (uri->protocol == PROTOCOL_FILE) {
@@ -269,7 +269,7 @@ parse_uri(struct uri *uri, unsigned char *uristring)
 				uri->post = frag_or_post + 1;
 			}
 		} else {
-			datalen = strlen(prefix_end);
+			datalen = strlen((const char *)prefix_end);
 		}
 
 		/* A bit of a special case, but using the "normal" host
@@ -482,7 +482,7 @@ compare_uri(const struct uri *a, const struct uri *b,
 		&& (!wants(URI_FRAGMENT)
 		    || compare_component(a->fragment, a->fragmentlen, b->fragment, b->fragmentlen))
 		&& (!wants(URI_POST)
-		    || compare_component(a->post, a->post ? strlen(a->post) : 0, b->post, b->post ? strlen(b->post) : 0));
+		    || compare_component(a->post, a->post ? strlen((const char *)a->post) : 0, b->post, b->post ? strlen((const char *)b->post) : 0));
 }
 
 
@@ -737,7 +737,7 @@ normalize_uri(struct uri *uri, unsigned char *uristring)
 
 		if (end_of_dir(src[0])) {
 			/* URL data contains no more path. */
-			memmove(dest, src, strlen(src) + 1);
+			memmove(dest, src, strlen((const char *)src) + 1);
 			break;
 		}
 
@@ -861,7 +861,7 @@ transform_file_url(struct uri *uri, const unsigned char *cwd)
 	/* FIXME: We will in fact assume localhost even for non-local hosts,
 	 * until we will support the FTP transformation. --pasky */
 
-	memmove(uri->data, path, strlen(path) + 1);
+	memmove(uri->data, path, strlen((const char *)path) + 1);
 	return uri;
 }
 
@@ -988,7 +988,7 @@ join_urls(struct uri *base, unsigned char *rel)
 	}
 
 	length = path - struri(base);
-	uristring = (unsigned char *)mem_alloc(length + strlen(rel) + add_slash + 1);
+	uristring = (unsigned char *)mem_alloc(length + strlen((const char *)rel) + add_slash + 1);
 	if (!uristring) return NULL;
 
 	memcpy(uristring, struri(base), length);
@@ -1161,7 +1161,7 @@ parse_uri:
 
 			if (!data) break;
 			struri(&uri)[pos] = 0;
-			insert_in_string(&struri(&uri), pos, data, strlen(data));
+			insert_in_string(&struri(&uri), pos, data, strlen((const char *)data));
 			mem_free(data);
 			return normalize_uri_reparse(struri(&uri));
 		}
@@ -1180,7 +1180,7 @@ parse_uri:
 		while (*from == '/') from++;
 
 		assert(to < from);
-		memmove(to, from, strlen(from) + 1);
+		memmove(to, from, strlen((const char *)from) + 1);
 		goto parse_uri;
 	}
 	case URI_ERRNO_NO_SLASHES:
@@ -1206,7 +1206,7 @@ parse_uri:
 		while (uri.host < to && to[-1] == '.') to--;
 
 		assert(to < from);
-		memmove(to, from, strlen(from) + 1);
+		memmove(to, from, strlen((const char *)from) + 1);
 		goto parse_uri;
 	}
 	case URI_ERRNO_NO_PORT_COLON:
@@ -1214,7 +1214,7 @@ parse_uri:
 		       && uri.string < uri.port
 		       && uri.port[-1] == ':');
 
-		memmove(uri.port - 1, uri.port, strlen(uri.port) + 1);
+		memmove(uri.port - 1, uri.port, strlen((const char *)uri.port) + 1);
 		goto parse_uri;
 
 	case URI_ERRNO_NO_HOST_SLASH:
@@ -1357,7 +1357,7 @@ encode_uri_string(struct string *string, const unsigned char *name, int namelen,
 	n[0] = '%';
 	n[3] = '\0';
 
-	if (namelen < 0) namelen = strlen(name);
+	if (namelen < 0) namelen = strlen((const char *)name);
 
 	for (end = name + namelen; name < end; name++) {
 #if 0
@@ -1385,7 +1385,7 @@ encode_win32_uri_string(struct string *string, unsigned char *name, int namelen)
 	n[0] = '%';
 	n[3] = '\0';
 
-	if (namelen < 0) namelen = strlen(name);
+	if (namelen < 0) namelen = strlen((const char *)name);
 
 	for (end = name + namelen; name < end; name++) {
 		if (safe_char(*name) || *name == ':' || *name == '\\') {
@@ -1444,7 +1444,7 @@ void
 decode_uri_string(struct string *string)
 {
 	decode_uri(string->source);
-	string->length = strlen(string->source);
+	string->length = strlen((const char *)string->source);
 }
 
 void
@@ -1461,7 +1461,7 @@ void
 decode_uri_string_for_display(struct string *string)
 {
 	decode_uri_for_display(string->source);
-	string->length = strlen(string->source);
+	string->length = strlen((const char *)string->source);
 }
 
 
@@ -1588,7 +1588,7 @@ get_uri(unsigned char *string, enum uri_component components)
 		object_nolock(&uri_cache, "uri_cache");
 	}
 
-	entry = get_uri_cache_entry(string, strlen(string));
+	entry = get_uri_cache_entry(string, strlen((const char *)string));
 	if (!entry) {
 		if (!is_object_used(&uri_cache))
 			free_hash(&uri_cache.map);
@@ -1606,7 +1606,7 @@ void
 done_uri(struct uri *uri)
 {
 	unsigned char *string = struri(uri);
-	int length = strlen(string);
+	int length = strlen((const char *)string);
 	struct hash_item *item;
 	struct uri_cache_entry *entry;
 

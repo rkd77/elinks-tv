@@ -203,7 +203,7 @@ do_send_bittorrent_tracker_request(struct connection *conn)
 	key = get_opt_str("protocol.bittorrent.tracker.key", NULL);
 	if (*key) {
 		add_to_string(&request, "&key=");
-		encode_uri_string(&request, key, strlen(key), 1);
+		encode_uri_string(&request, key, strlen((const char *)key), 1);
 	}
 
 	if (bittorrent->tracker.event != BITTORRENT_EVENT_REGULAR) {
