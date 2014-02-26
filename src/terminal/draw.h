@@ -252,11 +252,11 @@ void draw_border_cross(struct terminal *, int x, int y,
 /** Draws a char. */
 #ifdef CONFIG_UTF8
 void draw_char(struct terminal *term, int x, int y,
-	       unicode_val_T data, enum screen_char_attr attr,
+	       unicode_val_T data, int attr,
 	       struct color_pair *color);
 #else
 void draw_char(struct terminal *term, int x, int y,
-	       unsigned char data, enum screen_char_attr attr,
+	       unsigned char data, int attr,
 	       struct color_pair *color);
 #endif /* CONFIG_UTF8 */
 
@@ -265,7 +265,7 @@ void draw_space(struct terminal *term, int x, int y,
 
 /** Draws area defined by @a box using the same colors and attributes. */
 void draw_box(struct terminal *term, struct box *box,
-	      unsigned char data, enum screen_char_attr attr,
+	      unsigned char data, int attr,
 	      struct color_pair *color);
 
 /** Draws a shadow of @a width and @a height with color @a color
@@ -285,13 +285,13 @@ void fix_dwchar_around_box(struct terminal *term, struct box *box, int border,
 /** Draws @a length chars from @a text. */
 void draw_text(struct terminal *term, int x, int y,
 	       unsigned char *text, int length,
-	       enum screen_char_attr attr,
+	       int attr,
 	       struct color_pair *color);
 
 /** Draws text for dialogs. */
 void draw_dlg_text(struct dialog_data *dlg_data, int x, int y,
 	  unsigned char *text, int length,
-	  enum screen_char_attr attr, struct color_pair *color);
+	  int attr, struct color_pair *color);
 
 
 /** Draws @a length chars from @a line on the screen.  */
