@@ -29,7 +29,7 @@
 
 
 #define ACTION_(map, name, action, caption, flags)	\
-	{ name, ACT_##map##_##action, KEYMAP_ID, caption, flags }
+	{ (const unsigned char *)name, ACT_##map##_##action, KEYMAP_ID, (const unsigned char *)caption, flags }
 
 #undef KEYMAP_ID
 #define KEYMAP_ID KEYMAP_MAIN
@@ -252,9 +252,9 @@ kbd_stroke_lookup(enum keymap_id keymap_id, const unsigned char *keystroke_str)
 
 
 static struct keymap keymap_table[] = {
-	{ "main", KEYMAP_MAIN, N_("Main mapping") },
-	{ "edit", KEYMAP_EDIT, N_("Edit mapping") },
-	{ "menu", KEYMAP_MENU, N_("Menu mapping") },
+	{ (const unsigned char *)"main", KEYMAP_MAIN, (const unsigned char *)N_("Main mapping") },
+	{ (const unsigned char *)"edit", KEYMAP_EDIT, (const unsigned char *)N_("Edit mapping") },
+	{ (const unsigned char *)"menu", KEYMAP_MENU, (const unsigned char *)N_("Menu mapping") },
 };
 
 
@@ -358,33 +358,33 @@ struct named_key {
 };
 
 static const struct named_key key_table[] = {
-	{ "Enter",	KBD_ENTER },
-	{ "Space",	' ' },
-	{ "Backspace",	KBD_BS },
-	{ "Tab",	KBD_TAB },
-	{ "Escape",	KBD_ESC },
-	{ "Left",	KBD_LEFT },
-	{ "Right",	KBD_RIGHT },
-	{ "Up",		KBD_UP },
-	{ "Down",	KBD_DOWN },
-	{ "Insert",	KBD_INS },
-	{ "Delete",	KBD_DEL },
-	{ "Home",	KBD_HOME },
-	{ "End",	KBD_END },
-	{ "PageUp",	KBD_PAGE_UP },
-	{ "PageDown",	KBD_PAGE_DOWN },
-	{ "F1",		KBD_F1 },
-	{ "F2",		KBD_F2 },
-	{ "F3",		KBD_F3 },
-	{ "F4",		KBD_F4 },
-	{ "F5",		KBD_F5 },
-	{ "F6",		KBD_F6 },
-	{ "F7",		KBD_F7 },
-	{ "F8",		KBD_F8 },
-	{ "F9",		KBD_F9 },
-	{ "F10",	KBD_F10 },
-	{ "F11",	KBD_F11 },
-	{ "F12",	KBD_F12 },
+	{ (const unsigned char *)"Enter",	KBD_ENTER },
+	{ (const unsigned char *)"Space",	' ' },
+	{ (const unsigned char *)"Backspace",	KBD_BS },
+	{ (const unsigned char *)"Tab",	KBD_TAB },
+	{ (const unsigned char *)"Escape",	KBD_ESC },
+	{ (const unsigned char *)"Left",	KBD_LEFT },
+	{ (const unsigned char *)"Right",	KBD_RIGHT },
+	{ (const unsigned char *)"Up",		KBD_UP },
+	{ (const unsigned char *)"Down",	KBD_DOWN },
+	{ (const unsigned char *)"Insert",	KBD_INS },
+	{ (const unsigned char *)"Delete",	KBD_DEL },
+	{ (const unsigned char *)"Home",	KBD_HOME },
+	{ (const unsigned char *)"End",	KBD_END },
+	{ (const unsigned char *)"PageUp",	KBD_PAGE_UP },
+	{ (const unsigned char *)"PageDown",	KBD_PAGE_DOWN },
+	{ (const unsigned char *)"F1",		KBD_F1 },
+	{ (const unsigned char *)"F2",		KBD_F2 },
+	{ (const unsigned char *)"F3",		KBD_F3 },
+	{ (const unsigned char *)"F4",		KBD_F4 },
+	{ (const unsigned char *)"F5",		KBD_F5 },
+	{ (const unsigned char *)"F6",		KBD_F6 },
+	{ (const unsigned char *)"F7",		KBD_F7 },
+	{ (const unsigned char *)"F8",		KBD_F8 },
+	{ (const unsigned char *)"F9",		KBD_F9 },
+	{ (const unsigned char *)"F10",	KBD_F10 },
+	{ (const unsigned char *)"F11",	KBD_F11 },
+	{ (const unsigned char *)"F12",	KBD_F12 },
 	{ NULL, KBD_UNDEF }
 };
 
@@ -857,28 +857,28 @@ struct action_alias {
 };
 
 static const struct action_alias main_action_aliases[] = {
-	{ "back",		ACT_MAIN_HISTORY_MOVE_BACK },
-	{ "down",		ACT_MAIN_MOVE_LINK_NEXT },
-	{ "download",		ACT_MAIN_LINK_DOWNLOAD },
-	{ "download-image",	ACT_MAIN_LINK_DOWNLOAD_IMAGE },
-	{ "end",		ACT_MAIN_MOVE_DOCUMENT_END },
-	{ "enter",		ACT_MAIN_LINK_FOLLOW },
-	{ "enter-reload",	ACT_MAIN_LINK_FOLLOW_RELOAD },
-	{ "home",		ACT_MAIN_MOVE_DOCUMENT_START },
-	{ "next-frame",		ACT_MAIN_FRAME_NEXT },
-	{ "page-down",		ACT_MAIN_MOVE_PAGE_DOWN },
-	{ "page-up",		ACT_MAIN_MOVE_PAGE_UP },
-	{ "previous-frame",	ACT_MAIN_FRAME_PREV },
-	{ "resume-download",	ACT_MAIN_LINK_DOWNLOAD_RESUME },
-	{ "unback",		ACT_MAIN_HISTORY_MOVE_FORWARD },
-	{ "up",			ACT_MAIN_MOVE_LINK_PREV },
-	{ "zoom-frame",		ACT_MAIN_FRAME_MAXIMIZE },
+	{ (const unsigned char *)"back",		ACT_MAIN_HISTORY_MOVE_BACK },
+	{ (const unsigned char *)"down",		ACT_MAIN_MOVE_LINK_NEXT },
+	{ (const unsigned char *)"download",		ACT_MAIN_LINK_DOWNLOAD },
+	{ (const unsigned char *)"download-image",	ACT_MAIN_LINK_DOWNLOAD_IMAGE },
+	{ (const unsigned char *)"end",		ACT_MAIN_MOVE_DOCUMENT_END },
+	{ (const unsigned char *)"enter",		ACT_MAIN_LINK_FOLLOW },
+	{ (const unsigned char *)"enter-reload",	ACT_MAIN_LINK_FOLLOW_RELOAD },
+	{ (const unsigned char *)"home",		ACT_MAIN_MOVE_DOCUMENT_START },
+	{ (const unsigned char *)"next-frame",		ACT_MAIN_FRAME_NEXT },
+	{ (const unsigned char *)"page-down",		ACT_MAIN_MOVE_PAGE_DOWN },
+	{ (const unsigned char *)"page-up",		ACT_MAIN_MOVE_PAGE_UP },
+	{ (const unsigned char *)"previous-frame",	ACT_MAIN_FRAME_PREV },
+	{ (const unsigned char *)"resume-download",	ACT_MAIN_LINK_DOWNLOAD_RESUME },
+	{ (const unsigned char *)"unback",		ACT_MAIN_HISTORY_MOVE_FORWARD },
+	{ (const unsigned char *)"up",			ACT_MAIN_MOVE_LINK_PREV },
+	{ (const unsigned char *)"zoom-frame",		ACT_MAIN_FRAME_MAXIMIZE },
 
 	{ NULL, 0 }
 };
 
 static const struct action_alias edit_action_aliases[] = {
-	{ "edit",		ACT_EDIT_OPEN_EXTERNAL },
+	{ (const unsigned char *)"edit",		ACT_EDIT_OPEN_EXTERNAL },
 
 	{ NULL, 0 }
 };

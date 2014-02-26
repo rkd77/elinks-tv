@@ -22,10 +22,10 @@ enum keymap_id {
 };
 
 struct action {
-	unsigned char *str;
+	const unsigned char *str;
 	action_id_T num;
 	enum keymap_id keymap_id;
-	unsigned char *desc;
+	const unsigned char *desc;
 	unsigned int flags;
 };
 
@@ -34,9 +34,9 @@ struct action_list {
 	int num_actions;
 };
 struct keymap {
-	unsigned char *str;
+	const unsigned char *str;
 	enum keymap_id keymap_id;
-	unsigned char *desc;
+	const unsigned char *desc;
 };
 
 enum action_flags {
