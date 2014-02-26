@@ -63,7 +63,7 @@ display_checkbox(struct dialog_data *dlg_data, struct widget_data *widget_data)
 {
 	struct terminal *term = dlg_data->win->term;
 	struct color_pair *color;
-	unsigned char *text;
+	const unsigned char *text;
 	struct box *pos = &widget_data->box;
 	int selected = is_selected_widget(dlg_data, widget_data);
 
@@ -75,9 +75,9 @@ display_checkbox(struct dialog_data *dlg_data, struct widget_data *widget_data)
 	if (!color) return EVENT_PROCESSED;
 
 	if (widget_data->info.checkbox.checked)
-		text = widget_data->widget->info.checkbox.gid ? "(X)" : "[X]";
+		text = widget_data->widget->info.checkbox.gid ? (const unsigned char *)"(X)" : (const unsigned char *)"[X]";
 	else
-		text = widget_data->widget->info.checkbox.gid ? "( )" : "[ ]";
+		text = widget_data->widget->info.checkbox.gid ? (const unsigned char *)"( )" : (const unsigned char *)"[ ]";
 
 	draw_dlg_text(dlg_data, pos->x, pos->y, text, CHECKBOX_LEN, 0, color);
 

@@ -216,7 +216,7 @@ display_button(struct dialog_data *dlg_data, struct widget_data *widget_data)
 	}
 
 
-	draw_dlg_text(dlg_data, pos->x, pos->y, BUTTON_LEFT, BUTTON_LEFT_LEN, 0, color);
+	draw_dlg_text(dlg_data, pos->x, pos->y, (const unsigned char *)BUTTON_LEFT, BUTTON_LEFT_LEN, 0, color);
 	if (len > 0) {
 		unsigned char *text = widget_data->widget->text;
 		int hk_pos = widget_data->widget->info.button.hotkey_pos;
@@ -299,7 +299,7 @@ display_button(struct dialog_data *dlg_data, struct widget_data *widget_data)
 			  BUTTON_RIGHT, BUTTON_RIGHT_LEN, 0, color);
 	} else
 #endif /* CONFIG_UTF8 */
-		draw_dlg_text(dlg_data, x + len, pos->y, BUTTON_RIGHT,
+		draw_dlg_text(dlg_data, x + len, pos->y, (const unsigned char *)BUTTON_RIGHT,
 			  BUTTON_RIGHT_LEN, 0, color);
 	if (sel) {
 		set_dlg_cursor(term, dlg_data, x, pos->y, 1);

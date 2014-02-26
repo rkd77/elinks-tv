@@ -30,9 +30,9 @@
 /* In order to make it able to compile using -Werror this has to be a function
  * so that local @term variables will not be reported as unused. */
 static inline unsigned char *
-_(unsigned char *msg, struct terminal *term)
+_(const unsigned char *msg, struct terminal *term)
 {
-	return (unsigned char *)gettext((char *)msg);
+	return (unsigned char *)gettext((const char *)msg);
 }
 
 static inline unsigned char *

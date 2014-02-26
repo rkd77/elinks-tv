@@ -117,9 +117,9 @@ redraw_dialog(struct dialog_data *dlg_data, int layout)
 			y = dlg_data->real_box.y - 1;
 
 
-			draw_text(term, x - 1, y, " ", 1, 0, title_color);
+			draw_text(term, x - 1, y, (const unsigned char *)" ", 1, 0, title_color);
 			draw_text(term, x, y, title, titlelen, 0, title_color);
-			draw_text(term, x + titlecells, y, " ", 1, 0,
+			draw_text(term, x + titlecells, y, (const unsigned char *)" ", 1, 0,
 				  title_color);
 		}
 	}
@@ -372,7 +372,7 @@ dialog_ev_kbd(struct dialog_data *dlg_data)
 	struct widget_data *widget_data = selected_widget(dlg_data);
 	const struct widget_ops *ops = widget_data->widget->ops;
 	/* XXX: KEYMAP_EDIT ? --pasky */
-	enum menu_action action_id;
+	action_id_T action_id;
 	struct term_event *ev = dlg_data->term_event;
 
 	/* First let the widget try out. */
