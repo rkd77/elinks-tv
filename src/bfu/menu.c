@@ -402,8 +402,8 @@ draw_menu_left_text_hk(struct terminal *term, unsigned char *text,
 		       int hotkey_pos, int x, int y, int width,
 		       struct color_pair *color, int selected)
 {
-	struct color_pair *hk_color = get_bfu_color(term, "menu.hotkey.normal");
-	struct color_pair *hk_color_sel = get_bfu_color(term, "menu.hotkey.selected");
+	struct color_pair *hk_color = get_bfu_color(term, (const unsigned char *)"menu.hotkey.normal");
+	struct color_pair *hk_color_sel = get_bfu_color(term, (const unsigned char *)"menu.hotkey.selected");
 	enum screen_char_attr hk_attr = get_opt_bool("ui.dialogs.underline_hotkeys", NULL)
 				      ? SCREEN_ATTR_UNDERLINE : 0;
 	unsigned char c;
@@ -540,9 +540,9 @@ draw_menu_right_text(struct terminal *term, unsigned char *text, int len,
 static void
 display_menu(struct terminal *term, struct menu *menu)
 {
-	struct color_pair *normal_color = get_bfu_color(term, "menu.normal");
-	struct color_pair *selected_color = get_bfu_color(term, "menu.selected");
-	struct color_pair *frame_color = get_bfu_color(term, "menu.frame");
+	struct color_pair *normal_color = get_bfu_color(term, (const unsigned char *)"menu.normal");
+	struct color_pair *selected_color = get_bfu_color(term, (const unsigned char *)"menu.selected");
+	struct color_pair *frame_color = get_bfu_color(term, (const unsigned char *)"menu.frame");
 	struct box box;
 	int p;
 	int menu_height;
@@ -559,7 +559,7 @@ display_menu(struct terminal *term, struct menu *menu)
 	if (get_opt_bool("ui.dialogs.shadows", NULL)) {
 		/* Draw shadow */
 		draw_shadow(term, &menu->box,
-			    get_bfu_color(term, "dialog.shadow"), 2, 1);
+			    get_bfu_color(term, (const unsigned char *)"dialog.shadow"), 2, 1);
 #ifdef CONFIG_UTF8
 		if (term->utf8_cp)
 			fix_dwchar_around_box(term, &box, 1, 2, 1);
@@ -1067,8 +1067,8 @@ do_mainmenu(struct terminal *term, struct menu_item *items,
 static void
 display_mainmenu(struct terminal *term, struct menu *menu)
 {
-	struct color_pair *normal_color = get_bfu_color(term, "menu.normal");
-	struct color_pair *selected_color = get_bfu_color(term, "menu.selected");
+	struct color_pair *normal_color = get_bfu_color(term, (const unsigned char *)"menu.normal");
+	struct color_pair *selected_color = get_bfu_color(term, (const unsigned char *)"menu.selected");
 	int p = 0;
 	int i;
 	struct box box;

@@ -327,7 +327,7 @@ highlight_links_with_prefixes_that_start_with_n(struct terminal *term,
                                                 struct document_view *doc_view,
                                                 int n)
 {
-	struct color_pair *color = get_bfu_color(term, "searched");
+	struct color_pair *color = get_bfu_color(term, (const unsigned char *)"searched");
 	int xoffset = doc_view->box.x - doc_view->vs->x;
 	int yoffset = doc_view->box.y - doc_view->vs->y;
 	struct document *document = doc_view->document;

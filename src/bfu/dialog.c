@@ -88,11 +88,11 @@ redraw_dialog(struct dialog_data *dlg_data, int layout)
 			dlg_data->box.width - 2 * (DIALOG_LEFT_BORDER + 1),
 			dlg_data->box.height - 2 * (DIALOG_TOP_BORDER + 1));
 
-		draw_border(term, &dlg_data->real_box, get_bfu_color(term, "dialog.frame"), DIALOG_FRAME);
+		draw_border(term, &dlg_data->real_box, get_bfu_color(term, (const unsigned char *)"dialog.frame"), DIALOG_FRAME);
 
 		assert(dlg_data->dlg->title);
 
-		title_color = get_bfu_color(term, "dialog.title");
+		title_color = get_bfu_color(term, (const unsigned char *)"dialog.title");
 		if (title_color && dlg_data->real_box.width > 2) {
 			unsigned char *title = dlg_data->dlg->title;
 			int titlelen = strlen((const char *)title);
@@ -684,12 +684,12 @@ draw_dialog(struct dialog_data *dlg_data, int width, int height)
 		dlg_width, dlg_height);
 
 	draw_box(term, &dlg_data->box, ' ', 0,
-		 get_bfu_color(term, "dialog.generic"));
+		 get_bfu_color(term, (const unsigned char *)"dialog.generic"));
 
 	if (get_opt_bool("ui.dialogs.shadows", NULL)) {
 		/* Draw shadow */
 		draw_shadow(term, &dlg_data->box,
-			    get_bfu_color(term, "dialog.shadow"), 2, 1);
+			    get_bfu_color(term, (const unsigned char *)"dialog.shadow"), 2, 1);
 #ifdef CONFIG_UTF8
 		if (term->utf8_cp)
 			fix_dwchar_around_box(term, &dlg_data->box, 0, 2, 1);

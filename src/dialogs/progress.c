@@ -122,7 +122,7 @@ draw_progress_bar(struct progress *progress, struct terminal *term,
 		draw_text(term, x + width, y, "]", 1, 0, NULL);
 	}
 
-	if (!meter_color) meter_color = get_bfu_color(term, "dialog.meter");
+	if (!meter_color) meter_color = get_bfu_color(term, (const unsigned char *)"dialog.meter");
 	set_box(&barprogress,
 		x, y, int_min(width * percent / 100, width), 1);
 	draw_box(term, &barprogress, ' ', 0, meter_color);

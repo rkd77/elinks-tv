@@ -243,7 +243,7 @@ display_status_bar(struct session *ses, struct terminal *term, int tabs_count)
 	}
 
 	set_box(&box, 0, term->height - 1, term->width, 1);
-	draw_box(term, &box, ' ', 0, get_bfu_color(term, "status.status-bar"));
+	draw_box(term, &box, ' ', 0, get_bfu_color(term, (const unsigned char *)"status.status-bar"));
 
 	if (!status->show_tabs_bar && tabs_count > 1) {
 		unsigned char tab_info[8];
@@ -254,7 +254,7 @@ display_status_bar(struct session *ses, struct terminal *term, int tabs_count)
 		tab_info[tab_info_len++] = ' ';
 		tab_info[tab_info_len] = '\0';
 
-		text_color = get_bfu_color(term, "status.status-text");
+		text_color = get_bfu_color(term, (const unsigned char *)"status.status-text");
 		draw_text(term, 0, term->height - 1, tab_info, tab_info_len,
 			0, text_color);
 	}
@@ -262,7 +262,7 @@ display_status_bar(struct session *ses, struct terminal *term, int tabs_count)
 	if (!msg) return;
 
 	if (!text_color)
-		text_color = get_bfu_color(term, "status.status-text");
+		text_color = get_bfu_color(term, (const unsigned char *)"status.status-text");
 
 	msglen = strlen((const char *)msg);
 	draw_text(term, 0 + tab_info_len, term->height - 1,
@@ -290,11 +290,11 @@ display_status_bar(struct session *ses, struct terminal *term, int tabs_count)
 static inline void
 display_tab_bar(struct session *ses, struct terminal *term, int tabs_count)
 {
-	struct color_pair *normal_color = get_bfu_color(term, "tabs.normal");
-	struct color_pair *selected_color = get_bfu_color(term, "tabs.selected");
-	struct color_pair *loading_color = get_bfu_color(term, "tabs.loading");
-	struct color_pair *fresh_color = get_bfu_color(term, "tabs.unvisited");
-	struct color_pair *tabsep_color = get_bfu_color(term, "tabs.separator");
+	struct color_pair *normal_color = get_bfu_color(term, (const unsigned char *)"tabs.normal");
+	struct color_pair *selected_color = get_bfu_color(term, (const unsigned char *)"tabs.selected");
+	struct color_pair *loading_color = get_bfu_color(term, (const unsigned char *)"tabs.loading");
+	struct color_pair *fresh_color = get_bfu_color(term, (const unsigned char *)"tabs.unvisited");
+	struct color_pair *tabsep_color = get_bfu_color(term, (const unsigned char *)"tabs.separator");
 	struct session_status *status = &ses->status;
 	int tab_width = int_max(1, term->width / tabs_count);
 	int tab_total_width = tab_width * tabs_count;
@@ -408,7 +408,7 @@ display_title_bar(struct session *ses, struct terminal *term)
 		struct box box;
 
 		set_box(&box, 0, 0, term->width, 1);
-		draw_box(term, &box, ' ', 0, get_bfu_color(term, "title.title-bar"));
+		draw_box(term, &box, ' ', 0, get_bfu_color(term, (const unsigned char *)"title.title-bar"));
 	}
 
 	doc_view = current_frame(ses);
@@ -476,7 +476,7 @@ display_title_bar(struct session *ses, struct terminal *term)
 			x = int_max(term->width - 1 - title.length, 0);
 
 		draw_text(term, x, 0, title.source, title.length, 0,
-			  get_bfu_color(term, "title.title-text"));
+			  get_bfu_color(term, (const unsigned char *)"title.title-text"));
 	}
 
 	done_string(&title);

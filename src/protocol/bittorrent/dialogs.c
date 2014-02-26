@@ -472,7 +472,7 @@ draw_bittorrent_piece_progress(struct download *download, struct terminal *term,
 	if (width <= 0 || !bittorrent->cache)
 		return;
 
-	if (!color) color = get_bfu_color(term, "dialog.meter");
+	if (!color) color = get_bfu_color(term, (const unsigned char *)"dialog.meter");
 
 	if (bittorrent->meta.pieces <= width) {
 		int chars_per_piece = width / bittorrent->meta.pieces;

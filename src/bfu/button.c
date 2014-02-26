@@ -191,11 +191,11 @@ display_button(struct dialog_data *dlg_data, struct widget_data *widget_data)
 	int sel = is_selected_widget(dlg_data, widget_data);
 
 	if (sel) {
-		shortcut_color = get_bfu_color(term, "dialog.button-shortcut-selected");
-		color =  get_bfu_color(term, "dialog.button-selected");
+		shortcut_color = get_bfu_color(term, (const unsigned char *)"dialog.button-shortcut-selected");
+		color =  get_bfu_color(term, (const unsigned char *)"dialog.button-selected");
 	} else {
-		shortcut_color = get_bfu_color(term, "dialog.button-shortcut");
-		color =  get_bfu_color(term, "dialog.button");
+		shortcut_color = get_bfu_color(term, (const unsigned char *)"dialog.button-shortcut");
+		color =  get_bfu_color(term, (const unsigned char *)"dialog.button");
 	}
 	if (!color || !shortcut_color) return EVENT_PROCESSED;
 

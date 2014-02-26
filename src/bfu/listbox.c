@@ -359,12 +359,12 @@ display_listbox_item(struct listbox_item *item, void *data_, int *offset)
 	int d;
 	int x, y;
 
-	tree_color = get_bfu_color(data->term, "menu.normal");
+	tree_color = get_bfu_color(data->term, (const unsigned char *)"menu.normal");
 	if (item == data->box->sel) {
-		text_color = get_bfu_color(data->term, "menu.selected");
+		text_color = get_bfu_color(data->term, (const unsigned char *)"menu.selected");
 
 	} else if (item->marked) {
-		text_color = get_bfu_color(data->term, "menu.marked");
+		text_color = get_bfu_color(data->term, (const unsigned char *)"menu.marked");
 
 	} else {
 		text_color = tree_color;
@@ -506,7 +506,7 @@ display_listbox(struct dialog_data *dlg_data, struct widget_data *widget_data)
 	listbox_sel_move(widget_data, 0);
 
 	draw_box(term, &widget_data->box, ' ', 0,
-		 get_bfu_color(term, "menu.normal"));
+		 get_bfu_color(term, (const unsigned char *)"menu.normal"));
 
 	memset(&data, 0, sizeof(data));
 	data.term = term;

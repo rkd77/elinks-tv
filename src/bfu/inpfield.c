@@ -131,7 +131,7 @@ dlg_format_field(struct dialog_data *dlg_data,
 	}
 
 	if (label && *label) {
-		if (!format_only) text_color = get_bfu_color(term, "dialog.text");
+		if (!format_only) text_color = get_bfu_color(term, (const unsigned char *)"dialog.text");
 
 		dlg_format_text_do(dlg_data, label, x, y, w, rw, text_color, ALIGN_LEFT, format_only);
 	}
@@ -289,11 +289,11 @@ display_field_do(struct dialog_data *dlg_data, struct widget_data *widget_data,
 		int_lower_bound(&widget_data->info.field.vpos, 0);
 	}
 
-	color = get_bfu_color(term, "dialog.field");
+	color = get_bfu_color(term, (const unsigned char *)"dialog.field");
 	if (color)
 		draw_box(term, &widget_data->box, ' ', 0, color);
 
-	color = get_bfu_color(term, "dialog.field-text");
+	color = get_bfu_color(term, (const unsigned char *)"dialog.field-text");
 	if (color) {
 		unsigned char *text = widget_data->cdata + widget_data->info.field.vpos;
 		int len, w;

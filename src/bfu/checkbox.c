@@ -52,7 +52,7 @@ dlg_format_checkbox(struct dialog_data *dlg_data,
 		if (rw) *rw -= CHECKBOX_LS;
 		dlg_format_text_do(dlg_data, text, x + CHECKBOX_LS, y,
 				   w - CHECKBOX_LS, rw,
-				   get_bfu_color(term, "dialog.checkbox-label"),
+				   get_bfu_color(term, (const unsigned char *)"dialog.checkbox-label"),
 				   align, format_only);
 		if (rw) *rw += CHECKBOX_LS;
 	}
@@ -68,9 +68,9 @@ display_checkbox(struct dialog_data *dlg_data, struct widget_data *widget_data)
 	int selected = is_selected_widget(dlg_data, widget_data);
 
 	if (selected) {
-		color = get_bfu_color(term, "dialog.checkbox-selected");
+		color = get_bfu_color(term, (const unsigned char *)"dialog.checkbox-selected");
 	} else {
-		color = get_bfu_color(term, "dialog.checkbox");
+		color = get_bfu_color(term, (const unsigned char *)"dialog.checkbox");
 	}
 	if (!color) return EVENT_PROCESSED;
 

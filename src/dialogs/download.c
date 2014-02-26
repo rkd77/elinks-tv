@@ -135,7 +135,7 @@ download_dialog_layouter(struct dialog_data *dlg_data)
 	int url_len;
 	unsigned char *url;
 	struct download *download = &file_download->download;
-	struct color_pair *dialog_text_color = get_bfu_color(term, "dialog.text");
+	struct color_pair *dialog_text_color = get_bfu_color(term, (const unsigned char *)"dialog.text");
 	unsigned char *msg = get_download_msg(download, term, 1, 1, "\n");
 	int show_meter = (download_is_progressing(download)
 			  && download->progress->size >= 0);

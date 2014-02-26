@@ -812,7 +812,7 @@ draw_searched(struct terminal *term, struct document_view *doc_view)
 	get_searched(doc_view, &pt, &len, utf8);
 	if (len) {
 		int i;
-		struct color_pair *color = get_bfu_color(term, "searched");
+		struct color_pair *color = get_bfu_color(term, (const unsigned char *)"searched");
 		int xoffset = doc_view->box.x - doc_view->vs->x;
 		int yoffset = doc_view->box.y - doc_view->vs->y;
 
@@ -1285,7 +1285,7 @@ static void
 draw_typeahead_match(struct terminal *term, struct document_view *doc_view,
 		     int chars, int offset)
 {
-	struct color_pair *color = get_bfu_color(term, "searched");
+	struct color_pair *color = get_bfu_color(term, (const unsigned char *)"searched");
 	int xoffset = doc_view->box.x - doc_view->vs->x;
 	int yoffset = doc_view->box.y - doc_view->vs->y;
 	struct link *link = get_current_link(doc_view);
