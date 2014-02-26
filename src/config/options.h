@@ -188,7 +188,7 @@ typedef int (*change_hook_T)(struct session *session, struct option *current,
 struct option {
 	OBJECT_HEAD(struct option);
 
-	unsigned char *name;
+	const unsigned char *name;
 	option_flags_T flags;
 	enum option_type type;
 	long min, max;
@@ -211,7 +211,7 @@ struct option {
  * with ::INIT_OPT_INT or a similar macro.
  * @relates option */
 #define INIT_OPTION(name, flags, type, min, max, value, desc, capt) \
-	{ NULL_LIST_HEAD, INIT_OBJECT("option"), name, flags, type, min, max, { (LIST_OF(struct option) *) (value) }, desc, capt }
+	{ NULL_LIST_HEAD, INIT_OBJECT("option"), (const unsigned char *)name, flags, type, min, max, { (LIST_OF(struct option) *) (value) }, (unsigned char *)desc, (unsigned char *)capt }
 
 extern struct option *config_options;
 extern struct option *cmdline_options;
@@ -346,7 +346,7 @@ extern struct option *add_opt(struct option *, unsigned char *, unsigned char *,
  * It may of some use for people wanting a very small static non-i18n elinks binary,
  * at time of writing gain is over 25Kbytes. --Zas */
 #ifndef CONFIG_SMALL
-#define DESC(x) (x)
+#define DESC(x) (unsigned char *)(x)
 #else
 #define DESC(x) ((unsigned char *) "")
 #endif
@@ -407,10 +407,10 @@ do { \
 struct option_init {
 	/** The name of the option tree where the option should be
 	 * registered.  option.root is computed from this.  */
-	unsigned char *path;
+	const unsigned char *path;
 
 	/** The name of the option.  This goes to option.name.  */
-	unsigned char *name;
+	const unsigned char *name;
 
 	/** The caption shown in the option manager.  This goes to
 	 * option.capt.  */
@@ -486,57 +486,57 @@ extern void unregister_options(union option_info info[], struct option *tree);
 
 /*! @relates option_info */
 #define INIT_OPT_BOOL(path, capt, name, flags, def, desc) \
-	{{ path, name, capt, DESC(desc), flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, (unsigned char *)capt, DESC(desc), flags, \
 	   OPT_BOOL, 0, 1,  def, NULL, NULL }}
 
 /*! @relates option_info */
 #define INIT_OPT_INT(path, capt, name, flags, min, max, def, desc) \
-	{{ path, name, capt, DESC(desc), flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, (unsigned char *)capt, DESC(desc), flags, \
 	   OPT_INT, min, max,  def, NULL, NULL }}
 
 /*! @relates option_info */
 #define INIT_OPT_LONG(path, capt, name, flags, min, max, def, desc) \
-	{{ path, name, capt, DESC(desc), flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, (unsigned char *)capt, DESC(desc), flags, \
 	   OPT_LONG, min, max,  def, NULL, NULL }}
 
 /*! @relates option_info */
 #define INIT_OPT_STRING(path, capt, name, flags, def, desc) \
-	{{ path, name, capt, DESC(desc), flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, (unsigned char *)capt, DESC(desc), flags, \
 	   OPT_STRING, 0, MAX_STR_LEN,  0, def, NULL }}
 
 /*! @relates option_info */
 #define INIT_OPT_CODEPAGE(path, capt, name, flags, def, desc) \
-	{{ path, name, capt, DESC(desc), flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, (unsigned char *)capt, DESC(desc), flags, \
 	   OPT_CODEPAGE, 0, 0,  0, def, NULL }}
 
 /*! @relates option_info */
 #define INIT_OPT_COLOR(path, capt, name, flags, def, desc) \
-	{{ path, name, capt, DESC(desc), flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, (unsigned char *)capt, DESC(desc), flags, \
 	   OPT_COLOR, 0, 0,  0, def, NULL }}
 
 /*! @relates option_info */
 #define INIT_OPT_LANGUAGE(path, capt, name, flags, desc) \
-	{{ path, name, capt, DESC(desc), flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, (unsigned char *)capt, DESC(desc), flags, \
 	   OPT_LANGUAGE, 0, 0,  0, NULL, NULL }}
 
 /*! @relates option_info */
 #define INIT_OPT_COMMAND(path, capt, name, flags, cmd, desc) \
-	{{ path, name, capt, DESC(desc), flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, (unsigned char *)capt, DESC(desc), flags, \
 	   OPT_COMMAND, 0, 0,  0, NULL, cmd }}
 
 /*! @relates option_info */
 #define INIT_OPT_CMDALIAS(path, capt, name, flags, def, desc) \
-	{{ path, name, capt, DESC(desc), flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, (unsigned char *)capt, DESC(desc), flags, \
 	   OPT_ALIAS, 0, sizeof(def) - 1,  0, def, NULL }}
 
 /*! @relates option_info */
 #define INIT_OPT_ALIAS(path, name, flags, def) \
-	{{ path, name, NULL, NULL, flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, NULL, NULL, flags, \
 	   OPT_ALIAS, 0, sizeof(def) - 1,  0, def, NULL }}
 
 /*! @relates option_info */
 #define INIT_OPT_TREE(path, capt, name, flags, desc) \
-	{{ path, name, capt, DESC(desc), flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, (unsigned char *)capt, DESC(desc), flags, \
 	   OPT_TREE, 0, 0,  0, NULL, NULL }}
 
 
