@@ -1469,7 +1469,7 @@ field_op(struct session *ses, struct document_view *doc_view,
 {
 	struct form_control *fc;
 	struct form_state *fs;
-	enum edit_action action_id;
+	action_id_T action_id;
 	unsigned char *text;
 	int length;
 	enum frame_event_status status = FRAME_EVENT_REFRESH;

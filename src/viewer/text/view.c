@@ -1432,7 +1432,7 @@ send_mouse_event(struct session *ses, struct document_view *doc_view,
 
 static void
 try_typeahead(struct session *ses, struct document_view *doc_view,
-              struct term_event *ev, enum main_action action_id)
+              struct term_event *ev, action_id_T action_id)
 {
 	switch (get_opt_int((const unsigned char *)"document.browse.search.typeahead", ses)) {
 		case 0:
@@ -1486,7 +1486,7 @@ send_kbd_event(struct session *ses, struct document_view *doc_view,
 	       struct term_event *ev)
 {
 	int event;
-	enum main_action action_id;
+	action_id_T action_id;
 
 	if (doc_view && send_to_frame(ses, doc_view, ev) != FRAME_EVENT_IGNORED)
 		return NULL;

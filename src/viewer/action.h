@@ -17,7 +17,7 @@ enum frame_event_status {
 };
 
 enum frame_event_status do_action(struct session *ses,
-                                  enum main_action action_id, int verbose);
+                                  action_id_T action_id, int verbose);
 
 void goto_url_action(struct session *ses, unsigned char *(*get_url)(struct session *, unsigned char *, size_t));
 

@@ -141,7 +141,7 @@ select_menu_item(struct terminal *term, struct menu_item *it, void *data)
 	/* We save these values due to delete_window() call below. */
 	menu_func_T func = it->func;
 	void *it_data = it->data;
-	enum main_action action_id = it->action_id;
+	action_id_T action_id = it->action_id;
 
 	if (!mi_is_selectable(it)) return;
 
@@ -882,7 +882,7 @@ static void
 menu_kbd_handler(struct menu *menu, struct term_event *ev)
 {
 	struct window *win = menu->win;
-	enum menu_action action_id = kbd_action(KEYMAP_MENU, ev, NULL);
+	action_id_T action_id = kbd_action(KEYMAP_MENU, ev, NULL);
 	int s = 0;
 
 	switch (action_id) {
@@ -1267,7 +1267,7 @@ static void
 mainmenu_kbd_handler(struct menu *menu, struct term_event *ev)
 {
 	struct window *win = menu->win;
-	enum menu_action action_id = kbd_action(KEYMAP_MENU, ev, NULL);
+	action_id_T action_id = kbd_action(KEYMAP_MENU, ev, NULL);
 
 	switch (action_id) {
 	case ACT_MENU_ENTER:
@@ -1369,7 +1369,7 @@ new_menu(enum menu_item_flags flags)
 
 void
 add_to_menu(struct menu_item **mi, unsigned char *text, unsigned char *rtext,
-	    enum main_action action_id, menu_func_T func, void *data,
+	    action_id_T action_id, menu_func_T func, void *data,
 	    enum menu_item_flags flags)
 {
 	int n = count_items(*mi);
