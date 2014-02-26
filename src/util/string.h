@@ -208,7 +208,7 @@ struct string *add_xchar_to_string(struct string *string, unsigned char characte
 
 /** Add printf()-style format string to @a string.
  * @relates string */
-struct string *add_format_to_string(struct string *string, const unsigned char *format, ...);
+struct string *add_format_to_string(struct string *string, const char *format, ...);
 
 /** Get a regular newly allocated stream of bytes from @a string.
  * @relates string */

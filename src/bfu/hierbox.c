@@ -213,7 +213,7 @@ hierbox_ev_kbd(struct dialog_data *dlg_data)
 static widget_handler_status_T
 hierbox_ev_init(struct dialog_data *dlg_data)
 {
-	struct hierbox_browser *browser = dlg_data->dlg->udata2;
+	struct hierbox_browser *browser = (struct hierbox_browser *)dlg_data->dlg->udata2;
 	struct hierbox_dialog_list_item *item;
 	struct listbox_item *litem;
 
@@ -627,7 +627,7 @@ print_delete_error(struct listbox_item *item, struct terminal *term,
 		return;
 	}
 
-	add_format_to_string(&msg, _(errmsg, term), text);
+	add_format_to_string(&msg, (const char *)_(errmsg, term), text);
 	mem_free(text);
 
 	if (item->type == BI_LEAF) {
@@ -976,7 +976,7 @@ push_hierbox_search_button(struct dialog_data *dlg_data,
 
 	input_dialog(term, NULL, N_("Search"), N_("Name"),
 		     dlg_data, NULL,
-		     MAX_STR_LEN, "", 0, 0, NULL,
+		     MAX_STR_LEN, (const unsigned char *)"", 0, 0, NULL,
 		     search_hierbox_browser, NULL);
 
 	return EVENT_PROCESSED;

@@ -1092,7 +1092,7 @@ static void sendSequence(struct itrm *itrm, char *seq)
 	itrm->in.queue.len += len;
 	if (itrm->in.queue.len > ITRM_IN_QUEUE_SIZE)
 	{
-		ERROR(gettext("Too many bytes read from the itrm!"));
+		ERROR((const char *)gettext("Too many bytes read from the itrm!"));
 		itrm->in.queue.len = ITRM_IN_QUEUE_SIZE;
 	}
 
@@ -1475,7 +1475,7 @@ static void init_next(void)
 
 		if (!term)
 		{
-			ERROR(gettext("Unable to attach_terminal()."));
+			ERROR((const char *)gettext("Unable to attach_terminal()."));
 			program.retval = RET_FATAL;
 			program.terminate = 1;
 		}

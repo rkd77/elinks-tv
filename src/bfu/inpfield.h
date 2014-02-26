@@ -78,7 +78,7 @@ input_dialog(struct terminal *term, struct memory_list *ml,
 	     unsigned char *title,
 	     unsigned char *text,
 	     void *data, struct input_history *history, int l,
-	     unsigned char *def, int min, int max,
+	     const unsigned char *def, int min, int max,
 	     widget_handler_T *check,
 	     void (*fn)(void *, unsigned char *),
 	     void (*cancelfn)(void *));

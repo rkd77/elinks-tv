@@ -56,7 +56,7 @@ int errline;
 const unsigned char *errfile;
 
 void
-elinks_debug(unsigned char *fmt, ...)
+elinks_debug(const char *fmt, ...)
 {
 	unsigned char errbuf[4096];
 	va_list params;
@@ -72,7 +72,7 @@ elinks_debug(unsigned char *fmt, ...)
 }
 
 void
-elinks_wdebug(unsigned char *fmt, ...)
+elinks_wdebug(const char *fmt, ...)
 {
 	unsigned char errbuf[4096];
 	va_list params;
@@ -88,7 +88,7 @@ elinks_wdebug(unsigned char *fmt, ...)
 }
 
 void
-elinks_error(unsigned char *fmt, ...)
+elinks_error(const char *fmt, ...)
 {
 	unsigned char errbuf[4096];
 	va_list params;
@@ -104,7 +104,7 @@ elinks_error(unsigned char *fmt, ...)
 }
 
 void
-elinks_internal(unsigned char *fmt, ...)
+elinks_internal(const char *fmt, ...)
 {
 	unsigned char errbuf[4096];
 	va_list params;
@@ -125,7 +125,7 @@ elinks_internal(unsigned char *fmt, ...)
 
 
 void
-usrerror(unsigned char *fmt, ...)
+usrerror(const char *fmt, ...)
 {
 	va_list params;
 
@@ -143,7 +143,7 @@ usrerror(unsigned char *fmt, ...)
 int assert_failed = 0;
 
 void
-elinks_assertm(int x, unsigned char *fmt, ...)
+elinks_assertm(int x, const char *fmt, ...)
 {
 	unsigned char *buf = NULL;
 	va_list params;
@@ -200,8 +200,8 @@ done_log(void)
 }
 
 void
-elinks_log(unsigned char *msg, unsigned char *file, int line,
-	   unsigned char *fmt, ...)
+elinks_log(const char *msg, const unsigned char *file, int line,
+	   const char *fmt, ...)
 {
 	static unsigned char *log_files = NULL;
 	static unsigned char *log_msg = NULL;

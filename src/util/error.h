@@ -18,8 +18,8 @@ extern const unsigned char *errfile;
  * should not be used anywhere in the official codebase (although it is often
  * lying there commented out, as it may get handy). */
 #undef DBG
-#define DBG errfile = __FILE__, errline = __LINE__, elinks_debug
-void elinks_debug(unsigned char *fmt, ...);
+#define DBG errfile = (const unsigned char *)__FILE__, errline = __LINE__, elinks_debug
+void elinks_debug(const char *fmt, ...);
 
 /** @c WDBG(format_string) is used for printing of debugging information, akin
  * to DBG(). However, it sleep(1)s, therefore being useful when it is going
@@ -27,8 +27,8 @@ void elinks_debug(unsigned char *fmt, ...);
  * codebase (although it is often lying there commented out, as it may get
  * handy). */
 #undef WDBG
-#define WDBG errfile = __FILE__, errline = __LINE__, elinks_wdebug
-void elinks_wdebug(unsigned char *fmt, ...);
+#define WDBG errfile = (const unsigned char *)__FILE__, errline = __LINE__, elinks_wdebug
+void elinks_wdebug(const char *fmt, ...);
 
 /** @c ERROR(format_string) is used to report non-fatal unexpected errors during
  * the ELinks run. It tries to (not that agressively) draw user's attention to
@@ -37,21 +37,21 @@ void elinks_wdebug(unsigned char *fmt, ...);
  * user error (bad parameter, config file error etc.). We have usrerror() for
  * this kind of stuff, and there's nothing naughty about using that. */
 #undef ERROR
-#define ERROR errfile = __FILE__, errline = __LINE__, elinks_error
-void elinks_error(unsigned char *fmt, ...);
+#define ERROR errfile = (const unsigned char *)__FILE__, errline = __LINE__, elinks_error
+void elinks_error(const char *fmt, ...);
 
 /** @c INTERNAL(format_string) is used to report fatal errors during the ELinks
  * run. It tries to draw user's attention to the error and dumps core if ELinks
  * is running in the CONFIG_DEBUG mode. */
 #undef INTERNAL
-#define INTERNAL errfile = __FILE__, errline = __LINE__, elinks_internal
-void elinks_internal(unsigned char *fmt, ...);
+#define INTERNAL errfile = (const unsigned char *)__FILE__, errline = __LINE__, elinks_internal
+void elinks_internal(const char *fmt, ...);
 
 
 /** @c usrerror(format_string) is used to report user errors during a peaceful
  * ELinks run. It does not belong to the family above - it doesn't print code
  * location, beep nor sleep, it just wraps around fprintf(stderr, "...\n");. */
-void usrerror(unsigned char *fmt, ...);
+void usrerror(const char *fmt, ...);
 
 
 #ifdef HAVE_VARIADIC_MACROS
@@ -70,24 +70,24 @@ void usrerror(unsigned char *fmt, ...);
  * </dl>
  */
 void
-elinks_log(unsigned char *msg, unsigned char *file, int line,
+elinks_log(const char *msg, const unsigned char *file, int line,
 	   unsigned char *fmt, ...);
 
 #undef LOG_ERR
 #define LOG_ERR(args...) \
-	elinks_log("error", __FILE__, __LINE__, args)
+	elinks_log("error", (const unsigned char *)__FILE__, __LINE__, args)
 
 #undef LOG_WARN
 #define LOG_WARN(args...) \
-	elinks_log("warn", __FILE__, __LINE__, args)
+	elinks_log("warn", (const unsigned char *)__FILE__, __LINE__, args)
 
 #undef LOG_INFO
 #define LOG_INFO(args...) \
-	elinks_log("info", __FILE__, __LINE__, args)
+	elinks_log("info", (const unsigned char *)__FILE__, __LINE__, args)
 
 #undef LOG_DBG
 #define LOG_DBG(args...) \
-	elinks_log("debug", __FILE__, __LINE__, args)
+	elinks_log("debug", (const unsigned char *)__FILE__, __LINE__, args)
 
 #endif
 #endif
@@ -131,7 +131,7 @@ do { if (!assert_failed && (assert_failed = !(x))) { \
 #ifdef CONFIG_FASTMEM
 #define assertm elinks_assertm
 #else
-#define assertm errfile = __FILE__, errline = __LINE__, elinks_assertm
+#define assertm errfile = (const unsigned char *)__FILE__, errline = __LINE__, elinks_assertm
 #endif
 /* This is not nice at all, and does not really work that nice as macros do
  * But it is good to try to do at least _some_ assertm()ing even when the
