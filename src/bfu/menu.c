@@ -1358,7 +1358,7 @@ mainmenu_handler(struct window *win, struct term_event *ev)
 	mem_align_alloc(mi_, size, (size) + 2, 0xF)
 
 struct menu_item *
-new_menu(enum menu_item_flags flags)
+new_menu(menu_item_flags_T flags)
 {
 	struct menu_item *mi = NULL;
 
@@ -1370,7 +1370,7 @@ new_menu(enum menu_item_flags flags)
 void
 add_to_menu(struct menu_item **mi, unsigned char *text, unsigned char *rtext,
 	    action_id_T action_id, menu_func_T func, void *data,
-	    enum menu_item_flags flags)
+	    menu_item_flags_T flags)
 {
 	int n = count_items(*mi);
 	/* XXX: Don't clear the last and special item. */

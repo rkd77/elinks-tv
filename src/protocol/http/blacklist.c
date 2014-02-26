@@ -44,7 +44,7 @@ get_blacklist_entry(struct uri *uri)
 }
 
 void
-add_blacklist_entry(struct uri *uri, enum blacklist_flags flags)
+add_blacklist_entry(struct uri *uri, blacklist_flags_T flags)
 {
 	struct blacklist_entry *entry = get_blacklist_entry(uri);
 
@@ -62,7 +62,7 @@ add_blacklist_entry(struct uri *uri, enum blacklist_flags flags)
 }
 
 void
-del_blacklist_entry(struct uri *uri, enum blacklist_flags flags)
+del_blacklist_entry(struct uri *uri, blacklist_flags_T flags)
 {
 	struct blacklist_entry *entry = get_blacklist_entry(uri);
 

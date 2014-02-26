@@ -503,7 +503,7 @@ init_option_listbox_item(struct option *option)
 /*! @relates option */
 struct option *
 add_opt(struct option *tree, unsigned char *path, unsigned char *capt,
-	unsigned char *name, enum option_flags flags, enum option_type type,
+	unsigned char *name, option_flags_T flags, enum option_type type,
 	long min, long max, longptr_T value, unsigned char *desc)
 {
 	struct option *option = (struct option *)mem_calloc(1, sizeof(*option));

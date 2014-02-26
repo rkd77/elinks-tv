@@ -31,13 +31,14 @@ enum html_attr_flags {
 	HTML_ATTR_LITERAL_NL = 8,
 };
 
+typedef int html_attr_flags_T;
 /* Parses html element attributes.
  * - e is attr pointer previously get from parse_element,
  * DON'T PASS HERE ANY OTHER VALUE!!!
  * - name is searched attribute
  *
  * Returns allocated string containing the attribute, or NULL on unsuccess. */
-unsigned char *get_attr_value(register unsigned char *e, unsigned char *name, int cp, enum html_attr_flags flags);
+unsigned char *get_attr_value(register unsigned char *e, unsigned char *name, int cp, html_attr_flags_T flags);
 
 /* Wrappers for get_attr_value(). */
 #define get_attr_val(e, name, cp) get_attr_value(e, name, cp, HTML_ATTR_NONE)

@@ -41,7 +41,7 @@ void
 add_dlg_field_do(struct dialog *dlg, enum widget_type type, unsigned char *label,
 		 int min, int max, widget_handler_T *handler,
 		 int datalen, void *data,
-		 struct input_history *history, enum inpfield_flags flags)
+		 struct input_history *history, int flags)
 {
 	struct widget *widget = &dlg->widgets[dlg->number_of_widgets++];
 

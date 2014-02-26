@@ -570,7 +570,7 @@ download_data(struct download *download, struct file_download *file_download)
  *
  * @relates lun_hop */
 typedef void lun_callback_T(struct terminal *term, unsigned char *file,
-			    void *data, enum download_flags flags);
+			    void *data, download_flags_T flags);
 
 /** The user is being asked what to do when the local file for
  * the download already exists.  This structure is allocated by
@@ -605,7 +605,7 @@ struct lun_hop {
 	 * @invariant The ::DOWNLOAD_RESUME_SELECTED bit should be
 	 * clear here because otherwise there would have been no
 	 * reason to ask the user and initialize this structure.  */
-	enum download_flags flags;
+	download_flags_T flags;
 };
 
 /** Data saved by common_download() for the common_download_do()
@@ -761,7 +761,7 @@ lun_resume(void *lun_hop_)
  * @relates lun_hop */
 static void
 lookup_unique_name(struct terminal *term, unsigned char *ofile,
-		   enum download_flags flags,
+		   download_flags_T flags,
 		   lun_callback_T *callback, void *data)
 {
 	/* [gettext_accelerator_context(.lookup_unique_name)] */
@@ -860,7 +860,7 @@ error:
  * @relates cdf_hop */
 static void
 create_download_file_do(struct terminal *term, unsigned char *file,
-			void *data, enum download_flags flags)
+			void *data, download_flags_T flags)
 {
 	struct cdf_hop *cdf_hop = (struct cdf_hop *)data;
 	unsigned char *wd;
@@ -967,7 +967,7 @@ finish:
 void
 create_download_file(struct terminal *term, unsigned char *fi,
 		     unsigned char **real_file,
-		     enum download_flags flags,
+		     download_flags_T flags,
 		     cdf_callback_T *callback, void *data)
 {
 	struct cdf_hop *cdf_hop = (struct cdf_hop *)mem_calloc(1, sizeof(*cdf_hop));
@@ -1086,7 +1086,7 @@ subst_file(unsigned char *prog, unsigned char *file)
  * @relates cmdw_hop */
 static void
 common_download_do(struct terminal *term, int fd, void *data,
-		   enum download_flags flags)
+		   download_flags_T flags)
 {
 	struct file_download *file_download;
 	struct cmdw_hop *cmdw_hop = (struct cmdw_hop *)data;
@@ -1129,7 +1129,7 @@ finish:
  * @relates cmdw_hop */
 static void
 common_download(struct session *ses, unsigned char *file,
-		enum download_flags flags)
+		download_flags_T flags)
 {
 	struct cmdw_hop *cmdw_hop;
 
@@ -1188,7 +1188,7 @@ resume_download(void *ses, unsigned char *file)
 static void
 transform_codw_to_cmdw(struct terminal *term, int fd,
 		       struct codw_hop *codw_hop,
-		       enum download_flags flags)
+		       download_flags_T flags)
 {
 	struct type_query *type_query = codw_hop->type_query;
 	struct cmdw_hop *cmdw_hop = (struct cmdw_hop *)mem_calloc(1, sizeof(*cmdw_hop));
@@ -1212,7 +1212,7 @@ transform_codw_to_cmdw(struct terminal *term, int fd,
  * @relates codw_hop */
 static void
 continue_download_do(struct terminal *term, int fd, void *data,
-		     enum download_flags flags)
+		     download_flags_T flags)
 {
 	struct codw_hop *codw_hop = (struct codw_hop *)data;
 	struct file_download *file_download = NULL;

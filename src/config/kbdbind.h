@@ -88,6 +88,8 @@ enum kbdbind_flags {
 	KBDB_DEFAULT_BINDING = 8,
 };
 
+typedef int kbdbind_flags_T;
+
 struct keybinding {
 	OBJECT_HEAD(struct keybinding);
 
@@ -95,7 +97,7 @@ struct keybinding {
 	action_id_T action_id;
 	struct term_event_keyboard kbd;
 	int event;
-	enum kbdbind_flags flags;
+	kbdbind_flags_T flags;
 	struct listbox_item *box_item;
 };
 

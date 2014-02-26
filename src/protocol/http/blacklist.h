@@ -11,8 +11,10 @@ enum blacklist_flags {
 	SERVER_BLACKLIST_NO_TLS = 4,
 };
 
-void add_blacklist_entry(struct uri *, enum blacklist_flags);
-void del_blacklist_entry(struct uri *, enum blacklist_flags);
+typedef int blacklist_flags_T;
+
+void add_blacklist_entry(struct uri *, blacklist_flags_T);
+void del_blacklist_entry(struct uri *, blacklist_flags_T);
 enum blacklist_flags get_blacklist_flags(struct uri *);
 void free_blacklist(void);
 

@@ -20,11 +20,13 @@ enum inpfield_flags {
 	INPFIELD_FLOAT2 = 2,	/* Field label followed by value on the same line. */
 };
 
+typedef int inpfield_flags_T;
+
 struct widget_info_field {
 	int min;
 	int max;
 	struct input_history *history;
-	enum inpfield_flags flags;
+	inpfield_flags_T flags;
 };
 
 struct widget_data_info_field {
@@ -38,7 +40,7 @@ void
 add_dlg_field_do(struct dialog *dlg, enum widget_type type, unsigned char *label,
 		 int min, int max, widget_handler_T *handler,
 		 int data_len, void *data,
-		 struct input_history *history, enum inpfield_flags flags);
+		 struct input_history *history, inpfield_flags_T flags);
 
 #define add_dlg_field(dlg, label, min, max, handler, len, field, history)	\
 	add_dlg_field_do(dlg, WIDGET_FIELD, label, min, max, handler, len, field, history, INPFIELD_NONE)

@@ -139,7 +139,7 @@ end:
 
 unsigned char *
 get_attr_value(register unsigned char *e, unsigned char *name,
-	       int cp, enum html_attr_flags flags)
+	       int cp, html_attr_flags_T flags)
 {
 	unsigned char *n;
 	unsigned char *name_start;

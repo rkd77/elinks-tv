@@ -38,6 +38,8 @@ enum download_flags {
 	DOWNLOAD_EXTERNAL = 4
 };
 
+typedef int download_flags_T;
+
 struct download {
 	/* XXX: order matters there, there's some hard initialization in
 	 * src/session/session.c and src/viewer/text/view.c */
@@ -201,12 +203,12 @@ int are_there_downloads(void);
  *
  * @relates cdf_hop */
 typedef void cdf_callback_T(struct terminal *term, int fd,
-			    void *data, enum download_flags flags);
+			    void *data, download_flags_T flags);
 
 void start_download(void *, unsigned char *);
 void resume_download(void *, unsigned char *);
 void create_download_file(struct terminal *, unsigned char *, unsigned char **,
-			  enum download_flags, cdf_callback_T *, void *);
+			  download_flags_T, cdf_callback_T *, void *);
 
 void abort_all_downloads(void);
 void destroy_downloads(struct session *);
