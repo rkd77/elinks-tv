@@ -600,9 +600,9 @@ doc_loading_callback(struct download *download, struct session *ses)
 
 		draw_formatted(ses, 1);
 
-		if (get_cmd_opt_bool("auto-submit")) {
+		if (get_cmd_opt_bool((const unsigned char *)"auto-submit")) {
 			if (!list_empty(ses->doc_view->document->forms)) {
-				get_cmd_opt_bool("auto-submit") = 0;
+				get_cmd_opt_bool((const unsigned char *)"auto-submit") = 0;
 				submit = 1;
 			}
 		}
@@ -768,7 +768,7 @@ setup_first_session(struct session *ses, struct uri *uri)
 	/* [gettext_accelerator_context(setup_first_session)] */
 	struct terminal *term = ses->tab->term;
 
-	if (!*get_opt_str("protocol.http.user_agent", NULL)) {
+	if (!*get_opt_str((const unsigned char *)"protocol.http.user_agent", NULL)) {
 		info_box(term, 0,
 			 N_("Warning"), ALIGN_CENTER,
 			 N_("You have an empty string in protocol.http.user_agent - "
@@ -783,11 +783,11 @@ setup_first_session(struct session *ses, struct uri *uri)
 			 "any inconvience caused."));
 	}
 
-	if (!get_opt_bool("config.saving_style_w", NULL)) {
-		struct option *opt = get_opt_rec(config_options, "config.saving_style_w");
+	if (!get_opt_bool((const unsigned char *)"config.saving_style_w", NULL)) {
+		struct option *opt = get_opt_rec(config_options, (const unsigned char *)"config.saving_style_w");
 		opt->value.number = 1;
 		option_changed(ses, opt);
-		if (get_opt_int("config.saving_style", NULL) != 3) {
+		if (get_opt_int((const unsigned char *)"config.saving_style", NULL) != 3) {
 			info_box(term, 0,
 				 N_("Warning"), ALIGN_CENTER,
 				 N_("You have option config.saving_style set to "
@@ -827,7 +827,7 @@ setup_first_session(struct session *ses, struct uri *uri)
 		if (!uri) return 1;
 
 #ifdef CONFIG_BOOKMARKS
-	} else if (!uri && get_opt_bool("ui.sessions.auto_restore", NULL)) {
+	} else if (!uri && get_opt_bool((const unsigned char *)"ui.sessions.auto_restore", NULL)) {
 		unsigned char *folder; /* UTF-8 */
 
 		folder = get_auto_save_bookmark_foldername_utf8();
@@ -867,7 +867,7 @@ setup_session(struct session *ses, struct uri *uri, struct session *base)
 		goto_uri(ses, uri);
 
 	} else if (!goto_url_home(ses)) {
-		if (get_opt_bool("ui.startup_goto_dialog", NULL)) {
+		if (get_opt_bool((const unsigned char *)"ui.startup_goto_dialog", NULL)) {
 			dialog_goto_url_open(ses);
 		}
 	}

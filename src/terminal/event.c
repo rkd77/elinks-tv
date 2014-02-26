@@ -190,7 +190,7 @@ check_terminal_name(struct terminal *term, struct terminal_info *info)
 	 * places assume that the terminal's charset is unibyte if
 	 * UTF-8 I/O is disabled.  (bug 827) */
 	term->utf8_io = term->utf8_cp
-		|| get_opt_bool_tree(term->spec, "utf_8_io", NULL);
+		|| get_opt_bool_tree(term->spec, (const unsigned char *)"utf_8_io", NULL);
 #endif /* CONFIG_UTF8 */
 }
 
@@ -326,7 +326,7 @@ handle_interlink_event(struct terminal *term, struct interlink_event *ilev)
 		 *   this codepage cannot be UTF-8.
 		 * - Otherwise, handle_interlink_event() passes the
 		 *   bytes straight through.  */
-		utf8_io = get_opt_bool_tree(term->spec, "utf_8_io", NULL);
+		utf8_io = get_opt_bool_tree(term->spec, (const unsigned char *)"utf_8_io", NULL);
 #endif /* CONFIG_UTF8 */
 
 		/* In UTF-8 byte sequences that have more than one byte, the

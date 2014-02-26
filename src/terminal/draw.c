@@ -76,7 +76,7 @@ draw_border_cross(struct terminal *term, int x, int y,
 	}
 
 	set_term_color(screen_char, color, 0,
-		       get_opt_int_tree(term->spec, "colors", NULL));
+		       get_opt_int_tree(term->spec, (const unsigned char *)"colors", NULL));
 }
 
 void
@@ -90,7 +90,7 @@ draw_border_char(struct terminal *term, int x, int y,
 	screen_char->data = (unsigned char) border;
 	screen_char->attr = SCREEN_ATTR_FRAME;
 	set_term_color(screen_char, color, 0,
-		       get_opt_int_tree(term->spec, "colors", NULL));
+		       get_opt_int_tree(term->spec, (const unsigned char *)"colors", NULL));
 	set_screen_dirty(term->screen, y, y);
 }
 
@@ -102,7 +102,7 @@ draw_char_color(struct terminal *term, int x, int y, struct color_pair *color)
 	if (!screen_char) return;
 
 	set_term_color(screen_char, color, 0,
-		       get_opt_int_tree(term->spec, "colors", NULL));
+		       get_opt_int_tree(term->spec, (const unsigned char *)"colors", NULL));
 	set_screen_dirty(term->screen, y, y);
 }
 
@@ -363,7 +363,7 @@ draw_char(struct terminal *term, int x, int y,
 	screen_char->data = data;
 	screen_char->attr = attr;
 	set_term_color(screen_char, color, 0,
-		       get_opt_int_tree(term->spec, "colors", NULL));
+		       get_opt_int_tree(term->spec, (const unsigned char *)"colors", NULL));
 
 	set_screen_dirty(term->screen, y, y);
 }
@@ -390,7 +390,7 @@ draw_box(struct terminal *term, struct box *box,
 	end->data = data;
 	if (color) {
 		set_term_color(end, color, 0,
-			       get_opt_int_tree(term->spec, "colors", NULL));
+			       get_opt_int_tree(term->spec, (const unsigned char *)"colors", NULL));
 	} else {
 		clear_screen_char_color(end);
 	}
@@ -452,7 +452,7 @@ draw_text_utf8(struct terminal *term, int x, int y,
 	if (color) {
 		start->attr = attr;
 		set_term_color(start, color, 0,
-			       get_opt_int_tree(term->spec, "colors", NULL));
+			       get_opt_int_tree(term->spec, (const unsigned char *)"colors", NULL));
 	}
 
 	if (start->data == UCS_NO_CHAR && x - 1 > 0)
@@ -552,7 +552,7 @@ draw_text(struct terminal *term, int x, int y,
 		/* Use the last char as template. */
 		end->attr = attr;
 		set_term_color(end, color, 0,
-			       get_opt_int_tree(term->spec, "colors", NULL));
+			       get_opt_int_tree(term->spec, (const unsigned char *)"colors", NULL));
 
 		for (; pos < end && *text; text++, pos++) {
 			end->data = *text;
@@ -594,7 +594,7 @@ set_cursor(struct terminal *term, int x, int y, int blockable)
 	assert(term && term->screen);
 	if_assert_failed return;
 
-	if (blockable && get_opt_bool_tree(term->spec, "block_cursor", NULL)) {
+	if (blockable && get_opt_bool_tree(term->spec, (const unsigned char *)"block_cursor", NULL)) {
 		x = term->width - 1;
 		y = term->height - 1;
 	}

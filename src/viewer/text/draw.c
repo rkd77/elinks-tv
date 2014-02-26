@@ -73,7 +73,7 @@ check_document_fragment(struct session *ses, struct document_view *doc_view)
 			return -2;
 		}
 
-		if (get_opt_bool("document.browse.links.missing_fragment",
+		if (get_opt_bool((const unsigned char *)"document.browse.links.missing_fragment",
 		                 ses)) {
 			info_box(ses->tab->term, MSGBOX_FREE_TEXT,
 			 N_("Missing fragment"), ALIGN_CENTER,
@@ -230,10 +230,10 @@ draw_doc(struct session *ses, struct document_view *doc_view, int active)
 		}
 	}
 
-	color.foreground = get_opt_color("document.colors.text", ses);
+	color.foreground = get_opt_color((const unsigned char *)"document.colors.text", ses);
 	color.background = doc_view->document->height
 			 ? doc_view->document->color.background
-			 : get_opt_color("document.colors.background", ses);
+			 : get_opt_color((const unsigned char *)"document.colors.background", ses);
 
 	vs = doc_view->vs;
 	if (!vs) {

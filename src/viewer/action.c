@@ -96,7 +96,7 @@ do_action(struct session *ses, enum main_action action_id, int verbose)
 		goto ignore_action;
 
 	if (!action_is_anonymous_safe(KEYMAP_MAIN, action_id)
-	    && get_cmd_opt_bool("anonymous"))
+	    && get_cmd_opt_bool((const unsigned char *)"anonymous"))
 		goto ignore_action;
 
 	/* Please keep in alphabetical order for now. Later we can sort by most
@@ -155,7 +155,7 @@ do_action(struct session *ses, enum main_action action_id, int verbose)
 
 		case ACT_MAIN_COOKIES_LOAD:
 #ifdef CONFIG_COOKIES
-			if (!get_opt_bool("cookies.save", NULL)) break;
+			if (!get_opt_bool((const unsigned char *)"cookies.save", NULL)) break;
 			load_cookies();
 #endif
 			break;

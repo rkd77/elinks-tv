@@ -298,7 +298,7 @@ hierbox_browser(struct hierbox_browser *browser, struct session *ses)
 	struct listbox_data *listbox_data;
 	struct dialog *dlg;
 	int button = browser->buttons_size + 2;
-	int anonymous = get_cmd_opt_bool("anonymous");
+	int anonymous = get_cmd_opt_bool((const unsigned char *)"anonymous");
 
 	assert(ses);
 
@@ -939,7 +939,7 @@ search_hierbox_browser(void *data, unsigned char *text)
 				    scan_for_matches, context);
 
 	if (!context->item && *text) {
-		switch (get_opt_int("document.browse.search.show_not_found",
+		switch (get_opt_int((const unsigned char *)"document.browse.search.show_not_found",
 		                    NULL)) {
 		case 2:
 			info_box(term, MSGBOX_FREE_TEXT,

@@ -470,7 +470,7 @@ init_mailcap(struct module *module)
 
 	register_change_hooks(mimetypes_change_hooks);
 
-	if (get_cmd_opt_bool("anonymous"))
+	if (get_cmd_opt_bool((const unsigned char *)"anonymous"))
 		get_mailcap_enable() = 0;
 }
 

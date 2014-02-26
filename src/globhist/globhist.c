@@ -335,7 +335,7 @@ read_global_history(void)
 	FILE *f;
 
 	if (!get_globhist_enable()
-	    || get_cmd_opt_bool("anonymous"))
+	    || get_cmd_opt_bool((const unsigned char *)"anonymous"))
 		return;
 
 	if (elinks_home) {
@@ -381,7 +381,7 @@ write_global_history(void)
 
 	if (!global_history.dirty || !elinks_home
 	    || !get_globhist_enable()
-	    || get_cmd_opt_bool("anonymous"))
+	    || get_cmd_opt_bool((const unsigned char *)"anonymous"))
 		return;
 
 	file_name = straconcat(elinks_home, GLOBAL_HISTORY_FILENAME,

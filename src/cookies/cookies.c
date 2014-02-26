@@ -834,7 +834,7 @@ save_cookies(struct terminal *term) {
 	}
 	if (!cookies_dirty && !term)
 		return;
-	if (get_cmd_opt_bool("anonymous")) {
+	if (get_cmd_opt_bool((const unsigned char *)"anonymous")) {
 		CANNOT_SAVE_COOKIES(0, N_("ELinks was started with the -anonymous option."));
 		return;
 	}

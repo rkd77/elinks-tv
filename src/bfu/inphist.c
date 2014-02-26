@@ -195,7 +195,7 @@ do_tab_compl_file(struct dialog_data *dlg_data,
 {
 	struct widget_data *widget_data = selected_widget(dlg_data);
 
-	if (get_cmd_opt_bool("anonymous"))
+	if (get_cmd_opt_bool((const unsigned char *)"anonymous"))
 		return;
 
 	tab_complete_file_menu(dlg_data->win->term, widget_data->cdata, dlg_data);
@@ -290,7 +290,7 @@ load_input_history(struct input_history *history, unsigned char *filename)
 	unsigned char line[MAX_STR_LEN];
 	FILE *file;
 
-	if (get_cmd_opt_bool("anonymous")) return 0;
+	if (get_cmd_opt_bool((const unsigned char *)"anonymous")) return 0;
 	if (elinks_home) {
 		history_file = straconcat(elinks_home, filename,
 					  (unsigned char *) NULL);
@@ -328,7 +328,7 @@ save_input_history(struct input_history *history, unsigned char *filename)
 
 	if (!history->dirty
 	    || !elinks_home
-	    || get_cmd_opt_bool("anonymous"))
+	    || get_cmd_opt_bool((const unsigned char *)"anonymous"))
 		return 0;
 
 	history_file = straconcat(elinks_home, filename,

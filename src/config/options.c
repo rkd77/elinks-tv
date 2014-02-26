@@ -68,7 +68,7 @@ static struct option options_root = INIT_OPTION(
 struct option *config_options;
 struct option *cmdline_options;
 
-static void add_opt_rec(struct option *, unsigned char *, struct option *);
+static void add_opt_rec(struct option *, const unsigned char *, struct option *);
 static void free_options_tree(LIST_OF(struct option) *, int recursive);
 
 #ifdef CONFIG_DEBUG
@@ -181,7 +181,7 @@ get_opt_rec(struct option *tree, const unsigned char *name_)
 
 	/* We iteratively call get_opt_rec() each for path_elements-1, getting
 	 * appropriate tree for it and then resolving [path_elements]. */
-	if ((sep = strrchr((char *)name, '.'))) {
+	if ((sep = (unsigned char *)strrchr((char *)name, '.'))) {
 		*sep = '\0';
 
 		tree = get_opt_rec(tree, name);
@@ -206,7 +206,7 @@ get_opt_rec(struct option *tree, const unsigned char *name_)
 	}
 
 	if (tree && tree->flags & OPT_AUTOCREATE && !no_autocreate) {
-		struct option *template_ = get_opt_rec(tree, "_template_");
+		struct option *template_ = get_opt_rec(tree, (const unsigned char *)"_template_");
 
 		assertm(template_ != NULL, "Requested %s should be autocreated but "
 			"%.*s._template_ is missing!", name_, sep - name_,
@@ -284,7 +284,7 @@ get_opt_(
 #ifdef CONFIG_DEBUG
 	 unsigned char *file, int line, enum option_type option_type,
 #endif
-	 struct option *tree, unsigned char *name, struct session *ses)
+	 struct option *tree, const unsigned char *name, struct session *ses)
 {
 	struct option *opt = NULL;
 
@@ -437,7 +437,7 @@ append:
 /** Add option to tree.
  * @relates option */
 static void
-add_opt_rec(struct option *tree, unsigned char *path, struct option *option)
+add_opt_rec(struct option *tree, const unsigned char *path, struct option *option)
 {
 	int abi = 0;
 
@@ -450,10 +450,10 @@ add_opt_rec(struct option *tree, unsigned char *path, struct option *option)
 	object_nolock(option, "option");
 
 	if (option->box_item && option->name && !strcmp(option->name, "_template_"))
-		option->box_item->visible = get_opt_bool("config.show_template", NULL);
+		option->box_item->visible = get_opt_bool((const unsigned char *)"config.show_template", NULL);
 
 	if (tree->flags & OPT_AUTOCREATE && !option->desc) {
-		struct option *template_ = get_opt_rec(tree, "_template_");
+		struct option *template_ = get_opt_rec(tree, (const unsigned char *)"_template_");
 
 		assert(template_);
 		option->desc = template_->desc;
@@ -764,36 +764,36 @@ static inline void
 register_autocreated_options(void)
 {
 	/* TODO: Use table-driven initialization. --jonas */
-	get_opt_int("terminal.linux.type", NULL) = TERM_LINUX;
-	get_opt_int("terminal.linux.colors", NULL) = COLOR_MODE_16;
-	get_opt_bool("terminal.linux.m11_hack", NULL) = 1;
-	get_opt_int("terminal.vt100.type", NULL) = TERM_VT100;
-	get_opt_int("terminal.vt110.type", NULL) = TERM_VT100;
-	get_opt_int("terminal.xterm.type", NULL) = TERM_VT100;
-	get_opt_bool("terminal.xterm.underline", NULL) = 1;
-	get_opt_int("terminal.xterm-color.type", NULL) = TERM_VT100;
-	get_opt_int("terminal.xterm-color.colors", NULL) = COLOR_MODE_16;
-	get_opt_bool("terminal.xterm-color.underline", NULL) = 1;
+	get_opt_int((const unsigned char *)"terminal.linux.type", NULL) = TERM_LINUX;
+	get_opt_int((const unsigned char *)"terminal.linux.colors", NULL) = COLOR_MODE_16;
+	get_opt_bool((const unsigned char *)"terminal.linux.m11_hack", NULL) = 1;
+	get_opt_int((const unsigned char *)"terminal.vt100.type", NULL) = TERM_VT100;
+	get_opt_int((const unsigned char *)"terminal.vt110.type", NULL) = TERM_VT100;
+	get_opt_int((const unsigned char *)"terminal.xterm.type", NULL) = TERM_VT100;
+	get_opt_bool((const unsigned char *)"terminal.xterm.underline", NULL) = 1;
+	get_opt_int((const unsigned char *)"terminal.xterm-color.type", NULL) = TERM_VT100;
+	get_opt_int((const unsigned char *)"terminal.xterm-color.colors", NULL) = COLOR_MODE_16;
+	get_opt_bool((const unsigned char *)"terminal.xterm-color.underline", NULL) = 1;
 #ifdef CONFIG_88_COLORS
-	get_opt_int("terminal.xterm-88color.type", NULL) = TERM_VT100;
-	get_opt_int("terminal.xterm-88color.colors", NULL) = COLOR_MODE_88;
-	get_opt_bool("terminal.xterm-88color.underline", NULL) = 1;
+	get_opt_int((const unsigned char *)"terminal.xterm-88color.type", NULL) = TERM_VT100;
+	get_opt_int((const unsigned char *)"terminal.xterm-88color.colors", NULL) = COLOR_MODE_88;
+	get_opt_bool((const unsigned char *)"terminal.xterm-88color.underline", NULL) = 1;
 #endif
-	get_opt_int("terminal.rxvt-unicode.type", NULL) = 1;
+	get_opt_int((const unsigned char *)"terminal.rxvt-unicode.type", NULL) = 1;
 #ifdef CONFIG_88_COLORS
-	get_opt_int("terminal.rxvt-unicode.colors", NULL) = COLOR_MODE_88;
+	get_opt_int((const unsigned char *)"terminal.rxvt-unicode.colors", NULL) = COLOR_MODE_88;
 #else
-	get_opt_int("terminal.rxvt-unicode.colors", NULL) = COLOR_MODE_16;
+	get_opt_int((const unsigned char *)"terminal.rxvt-unicode.colors", NULL) = COLOR_MODE_16;
 #endif
-	get_opt_bool("terminal.rxvt-unicode.italic", NULL) = 1;
-	get_opt_bool("terminal.rxvt-unicode.underline", NULL) = 1;
+	get_opt_bool((const unsigned char *)"terminal.rxvt-unicode.italic", NULL) = 1;
+	get_opt_bool((const unsigned char *)"terminal.rxvt-unicode.underline", NULL) = 1;
 #ifdef CONFIG_256_COLORS
-	get_opt_int("terminal.xterm-256color.type", NULL) = TERM_VT100;
-	get_opt_int("terminal.xterm-256color.colors", NULL) = COLOR_MODE_256;
-	get_opt_bool("terminal.xterm-256color.underline", NULL) = 1;
-	get_opt_int("terminal.fbterm.type", NULL) = TERM_FBTERM;
-	get_opt_int("terminal.fbterm.colors", NULL) = COLOR_MODE_256;
-	get_opt_bool("terminal.fbterm.underline", NULL) = 0;
+	get_opt_int((const unsigned char *)"terminal.xterm-256color.type", NULL) = TERM_VT100;
+	get_opt_int((const unsigned char *)"terminal.xterm-256color.colors", NULL) = COLOR_MODE_256;
+	get_opt_bool((const unsigned char *)"terminal.xterm-256color.underline", NULL) = 1;
+	get_opt_int((const unsigned char *)"terminal.fbterm.type", NULL) = TERM_FBTERM;
+	get_opt_int((const unsigned char *)"terminal.fbterm.colors", NULL) = COLOR_MODE_256;
+	get_opt_bool((const unsigned char *)"terminal.fbterm.underline", NULL) = 0;
 #endif
 }
 
@@ -1146,7 +1146,7 @@ void
 update_options_visibility(void)
 {
 	update_visibility(config_options->value.tree,
-			  get_opt_bool("config.show_template", NULL));
+			  get_opt_bool((const unsigned char *)"config.show_template", NULL));
 }
 
 void

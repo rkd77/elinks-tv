@@ -1295,7 +1295,7 @@ supports_html_media_attr(const unsigned char *media)
 	if (media == NULL || *media == '\0')
 		return 1;
 
-	optstr = get_opt_str("document.css.media", NULL);
+	optstr = get_opt_str((const unsigned char *)"document.css.media", NULL);
 
 	while (*media != '\0') {
 		const unsigned char *beg, *end;

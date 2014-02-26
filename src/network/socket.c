@@ -537,13 +537,13 @@ connect_socket(struct socket *csocket, struct connection_state state)
 	struct connect_info *connect_info = csocket->connect_info;
 	int i;
 	int trno = connect_info->triedno;
-	int only_local = get_cmd_opt_bool("localhost");
+	int only_local = get_cmd_opt_bool((const unsigned char *)"localhost");
 	int saved_errno = 0;
 	int at_least_one_remote_ip = 0;
 #ifdef CONFIG_IPV6
-	int try_ipv6 = get_opt_bool("connection.try_ipv6", NULL);
+	int try_ipv6 = get_opt_bool((const unsigned char *)"connection.try_ipv6", NULL);
 #endif
-	int try_ipv4 = get_opt_bool("connection.try_ipv4", NULL);
+	int try_ipv4 = get_opt_bool((const unsigned char *)"connection.try_ipv4", NULL);
 	/* We tried something but we failed in such a way that we would rather
 	 * prefer the connection to retain the information about previous
 	 * failures.  That is, we i.e. decided we are forbidden to even think

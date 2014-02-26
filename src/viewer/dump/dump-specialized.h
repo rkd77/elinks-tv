@@ -29,16 +29,16 @@ DUMP_FUNCTION_SPECIALIZED(struct document *document, struct dump_output *out)
 	int y;
 #ifdef DUMP_COLOR_MODE_16
 	unsigned char color = 0;
-	const int width = get_opt_int("document.dump.width", NULL);
+	const int width = get_opt_int((const unsigned char *)"document.dump.width", NULL);
 #elif defined(DUMP_COLOR_MODE_256)
 	unsigned char foreground = 0;
 	unsigned char background = 0;
-	const int width = get_opt_int("document.dump.width", NULL);
+	const int width = get_opt_int((const unsigned char *)"document.dump.width", NULL);
 #elif defined(DUMP_COLOR_MODE_TRUE)
 	static const unsigned char color[6] = {255, 255, 255, 0, 0, 0};
 	const unsigned char *foreground = &color[0];
 	const unsigned char *background = &color[3];
-	const int width = get_opt_int("document.dump.width", NULL);
+	const int width = get_opt_int((const unsigned char *)"document.dump.width", NULL);
 #endif	/* DUMP_COLOR_MODE_TRUE */
 
 	for (y = 0; y < document->height; y++) {

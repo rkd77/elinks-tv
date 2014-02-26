@@ -157,8 +157,8 @@ add_dir_entries(struct directory_entry *entries, unsigned char *dirpath,
 	int i;
 
 	/* Setup @dircolor so it's easy to check if we should color dirs. */
-	if (get_opt_bool("document.browse.links.color_dirs", NULL)) {
-		color_to_string(get_opt_color("document.colors.dirs", NULL),
+	if (get_opt_bool((const unsigned char *)"document.browse.links.color_dirs", NULL)) {
+		color_to_string(get_opt_color((const unsigned char *)"document.colors.dirs", NULL),
 				(unsigned char *) &dircolor);
 	} else {
 		dircolor[0] = 0;
@@ -181,7 +181,7 @@ static inline struct connection_state
 list_directory(struct connection *conn, unsigned char *dirpath,
 	       struct string *page)
 {
-	int show_hidden_files = get_opt_bool("protocol.file.show_hidden_files",
+	int show_hidden_files = get_opt_bool((const unsigned char *)"protocol.file.show_hidden_files",
 	                                     NULL);
 	struct directory_entry *entries;
 	struct connection_state state;
@@ -249,7 +249,7 @@ file_protocol_handler(struct connection *connection)
 	struct connection_state state;
 	int set_dir_content_type = 0;
 
-	if (get_cmd_opt_bool("anonymous")) {
+	if (get_cmd_opt_bool((const unsigned char *)"anonymous")) {
 		if (strcmp(connection->uri->string, "file:///dev/stdin")
 		    || isatty(STDIN_FILENO)) {
 			abort_connection(connection,

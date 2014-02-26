@@ -413,15 +413,15 @@ static INIT_LIST_OF(struct screen_driver, active_screen_drivers);
 static void
 set_screen_driver_opt(struct screen_driver *driver, struct option *term_spec)
 {
-	const int cp = get_opt_codepage_tree(term_spec, "charset", NULL);
-	int utf8_io = get_opt_bool_tree(term_spec, "utf_8_io", NULL);
+	const int cp = get_opt_codepage_tree(term_spec, (const unsigned char *)"charset", NULL);
+	int utf8_io = get_opt_bool_tree(term_spec, (const unsigned char *)"utf_8_io", NULL);
 
 	/* Copy all the original options from constants, so that this
 	 * function need not carefully restore options one by one.  */
 	copy_struct(&driver->opt, screen_driver_opts[driver->type]);
 
 #ifdef CONFIG_COMBINE
-	driver->opt.combine = get_opt_bool_tree(term_spec, "combine", NULL);
+	driver->opt.combine = get_opt_bool_tree(term_spec, (const unsigned char *)"combine", NULL);
 #endif /* CONFIG_COMBINE */
 #ifdef CONFIG_UTF8
 	/* Force UTF-8 I/O if the UTF-8 charset is selected.  Various
@@ -435,17 +435,17 @@ set_screen_driver_opt(struct screen_driver *driver, struct option *term_spec)
 	}
 #endif /* CONFIG_UTF8 */
 
-	driver->opt.color_mode = get_opt_int_tree(term_spec, "colors", NULL);
-	driver->opt.transparent = get_opt_bool_tree(term_spec, "transparency",
+	driver->opt.color_mode = get_opt_int_tree(term_spec, (const unsigned char *)"colors", NULL);
+	driver->opt.transparent = get_opt_bool_tree(term_spec, (const unsigned char *)"transparency",
 	                                            NULL);
 
-	if (get_opt_bool_tree(term_spec, "italic", NULL)) {
+	if (get_opt_bool_tree(term_spec, (const unsigned char *)"italic", NULL)) {
 		driver->opt.italic = italic_seqs;
 	} else {
 		driver->opt.italic = NULL;
 	}
 
-	if (get_opt_bool_tree(term_spec, "underline", NULL)) {
+	if (get_opt_bool_tree(term_spec, (const unsigned char *)"underline", NULL)) {
 		driver->opt.underline = underline_seqs;
 	} else {
 		driver->opt.underline = NULL;
@@ -460,7 +460,7 @@ set_screen_driver_opt(struct screen_driver *driver, struct option *term_spec)
 		driver->opt.frame_seqs = NULL;
 
 		if (driver->type == TERM_LINUX || driver->type == TERM_FBTERM) {
-			if (get_opt_bool_tree(term_spec, "restrict_852", NULL))
+			if (get_opt_bool_tree(term_spec, (const unsigned char *)"restrict_852", NULL))
 				driver->opt.frame = frame_restrict;
 			driver->opt.charsets[1] = get_cp_index("cp437");
 
@@ -491,14 +491,14 @@ set_screen_driver_opt(struct screen_driver *driver, struct option *term_spec)
 		driver->opt.charsets[0] = -1;
 
 		if (driver->type == TERM_LINUX) {
-			if (get_opt_bool_tree(term_spec, "restrict_852", NULL))
+			if (get_opt_bool_tree(term_spec, (const unsigned char *)"restrict_852", NULL))
 				driver->opt.frame = frame_restrict;
 
-			if (get_opt_bool_tree(term_spec, "m11_hack", NULL))
+			if (get_opt_bool_tree(term_spec, (const unsigned char *)"m11_hack", NULL))
 				driver->opt.frame_seqs = m11_hack_frame_seqs;
 
 		} else if (driver->type == TERM_FREEBSD) {
-			if (get_opt_bool_tree(term_spec, "m11_hack", NULL))
+			if (get_opt_bool_tree(term_spec, (const unsigned char *)"m11_hack", NULL))
 				driver->opt.frame_seqs = m11_hack_frame_seqs;
 
 		} else if (driver->type == TERM_VT100) {
@@ -511,7 +511,7 @@ static int
 screen_driver_change_hook(struct session *ses, struct option *term_spec,
 			  struct option *changed)
 {
-	enum term_mode_type type = get_opt_int_tree(term_spec, "type", NULL);
+	enum term_mode_type type = get_opt_int_tree(term_spec, (const unsigned char *)"type", NULL);
 	struct screen_driver *driver;
 	unsigned char *name = term_spec->name;
 
@@ -552,7 +552,7 @@ add_screen_driver(enum term_mode_type type, struct terminal *term, int env_len)
 static inline struct screen_driver *
 get_screen_driver(struct terminal *term)
 {
-	enum term_mode_type type = get_opt_int_tree(term->spec, "type", NULL);
+	enum term_mode_type type = get_opt_int_tree(term->spec, (const unsigned char *)"type", NULL);
 	unsigned char *name = term->spec->name;
 	int len = strlen((const char *)name);
 	struct screen_driver *driver;

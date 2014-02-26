@@ -372,7 +372,7 @@ ssl_want_read(struct socket *socket)
 	switch (ssl_do_connect(socket)) {
 		case SSL_ERROR_NONE:
 #ifdef CONFIG_GNUTLS
-			if (get_opt_bool("connection.ssl.cert_verify", NULL)
+			if (get_opt_bool((const unsigned char *)"connection.ssl.cert_verify", NULL)
 			    && verify_certificates(socket)) {
 				socket->ops->retry(socket, connection_state(S_SSL_ERROR));
 				return;
@@ -426,20 +426,20 @@ ssl_connect(struct socket *socket)
 #ifdef USE_OPENSSL
 	SSL_set_fd((SSL *)socket->ssl, socket->fd);
 
-	if (get_opt_bool("connection.ssl.cert_verify", NULL))
+	if (get_opt_bool((const unsigned char *)"connection.ssl.cert_verify", NULL))
 		SSL_set_verify((SSL *)socket->ssl, SSL_VERIFY_PEER
 					  | SSL_VERIFY_FAIL_IF_NO_PEER_CERT,
 			       verify_callback);
 
-	if (get_opt_bool("connection.ssl.client_cert.enable", NULL)) {
+	if (get_opt_bool((const unsigned char *)"connection.ssl.client_cert.enable", NULL)) {
 		unsigned char *client_cert;
 
 #ifdef CONFIG_NSS_COMPAT_OSSL
 		client_cert = get_opt_str(
-				"connection.ssl.client_cert.nickname", NULL);
+				(const unsigned char *)"connection.ssl.client_cert.nickname", NULL);
 #else
 		client_cert = get_opt_str(
-				"connection.ssl.client_cert.file", NULL);
+				(const unsigned char *)"connection.ssl.client_cert.file", NULL);
 #endif
 		if (!*client_cert) {
 			client_cert = getenv("X509_CLIENT_CERT");
@@ -488,7 +488,7 @@ ssl_connect(struct socket *socket)
 
 		case SSL_ERROR_NONE:
 #ifdef CONFIG_GNUTLS
-			if (!get_opt_bool("connection.ssl.cert_verify", NULL))
+			if (!get_opt_bool((const unsigned char *)"connection.ssl.cert_verify", NULL))
 				break;
 
 			if (!verify_certificates(socket))

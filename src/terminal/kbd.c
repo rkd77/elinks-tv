@@ -328,7 +328,7 @@ handle_trm(int std_in, int std_out, int sock_in, int sock_out, int ctl_in,
 		info.session_info = remote;
 		info.magic = INTERLINK_REMOTE_MAGIC;
 	} else {
-		info.session_info = get_cmd_opt_int("base-session");
+		info.session_info = get_cmd_opt_int((const unsigned char *)"base-session");
 		info.magic = INTERLINK_NORMAL_MAGIC;
 	}
 

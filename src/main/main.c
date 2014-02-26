@@ -72,19 +72,19 @@ check_stdio(LIST_OF(struct string_list_item) *url_list)
 		/* Only start reading from stdin if no URL was given on the
 		 * command line. */
 		if (url_list && list_empty(*url_list)) {
-			get_opt_bool("protocol.file.allow_special_files",
+			get_opt_bool((const unsigned char *)"protocol.file.allow_special_files",
 			             NULL) = 1;
 			add_to_string_list(url_list, "file:///dev/stdin", 17);
 		}
-		get_cmd_opt_bool("no-connect") = 1;
+		get_cmd_opt_bool((const unsigned char *)"no-connect") = 1;
 	}
 
 	/* If called for outputting to a pipe without -dump or -source
 	 * specified default to using dump viewer. */
 	if (!isatty(STDOUT_FILENO)) {
-		int *dump = &get_cmd_opt_bool("dump");
+		int *dump = &get_cmd_opt_bool((const unsigned char *)"dump");
 
-		if (!*dump && !get_cmd_opt_bool("source"))
+		if (!*dump && !get_cmd_opt_bool((const unsigned char *)"source"))
 			*dump = 1;
 	}
 }
@@ -161,16 +161,16 @@ init(void)
 		exit(1);
 	}
 
-	if (!get_cmd_opt_bool("no-home")) {
+	if (!get_cmd_opt_bool((const unsigned char *)"no-home")) {
 		init_home();
 	}
 
 	/* If there's no -no-connect, -dump or -source option, check if there's
 	 * no other ELinks running. If we found any, by-pass initialization of
 	 * non critical subsystems, open socket and act as a slave for it. */
-	if (get_cmd_opt_bool("no-connect")
-	    || get_cmd_opt_bool("dump")
-	    || get_cmd_opt_bool("source")
+	if (get_cmd_opt_bool((const unsigned char *)"no-connect")
+	    || get_cmd_opt_bool((const unsigned char *)"dump")
+	    || get_cmd_opt_bool((const unsigned char *)"source")
 	    || (fd = init_interlink()) == -1) {
 
 		load_config();
@@ -188,19 +188,19 @@ init(void)
 		init_modules(builtin_modules);
 	}
 
-	if (get_cmd_opt_bool("dump")
-	    || get_cmd_opt_bool("source")) {
+	if (get_cmd_opt_bool((const unsigned char *)"dump")
+	    || get_cmd_opt_bool((const unsigned char *)"source")) {
 		/* Dump the URL list */
 #ifdef CONFIG_ECMASCRIPT
 		/* The ECMAScript code is not good at coping with this. And it
 		 * makes currently no sense to evaluate ECMAScript in this
 		 * context anyway. */
-		get_opt_bool("ecmascript.enable", NULL) = 0;
+		get_opt_bool((const unsigned char *)"ecmascript.enable", NULL) = 0;
 #endif
 		if (!list_empty(url_list)) {
 			dump_next(&url_list);
 		} else {
-			unsigned char *arg = get_cmd_opt_bool("dump")
+			unsigned char *arg = get_cmd_opt_bool((const unsigned char *)"dump")
 					   ? "dump" : "source";
 
 			usrerror(gettext("URL expected after -%s"), arg);
@@ -307,7 +307,7 @@ init2(void)
 		return;
 	}
 
-	if (!get_cmd_opt_bool("no-home")) {
+	if (!get_cmd_opt_bool((const unsigned char *)"no-home")) {
 		init_home();
 	}
 

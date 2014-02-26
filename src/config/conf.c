@@ -535,7 +535,7 @@ parse_bind(struct option *opt_tree, struct conf_parsing_state *state,
 	if (!mirror) {
 		/* loading a configuration file */
 		/* We don't bother to bind() if -default-keys. */
-		if (!get_cmd_opt_bool("default-keys")
+		if (!get_cmd_opt_bool((const unsigned char *)"default-keys")
 		    && bind_do(keymap, keystroke, action, is_system_conf)) {
 			/* bind_do() tried but failed. */
 			err = show_parse_error(state, ERROR_VALUE);
@@ -697,7 +697,7 @@ parse_config_file(struct option *options, unsigned char *name,
 	state.pos.look = file;
 	state.pos.line = 1;
 	state.mirrored = file;
-	if (!mirror && get_cmd_opt_int("verbose") >= VERBOSE_WARNINGS)
+	if (!mirror && get_cmd_opt_int((const unsigned char *)"verbose") >= VERBOSE_WARNINGS)
 		state.filename = name;
 
 	while (state.pos.look && *state.pos.look) {
@@ -752,8 +752,8 @@ parse_config_file(struct option *options, unsigned char *name,
 
 	fputc('\a', stderr);
 
-	if (get_cmd_opt_bool("dump")
-	    || get_cmd_opt_bool("source"))
+	if (get_cmd_opt_bool((const unsigned char *)"dump")
+	    || get_cmd_opt_bool((const unsigned char *)"source"))
 		return;
 
 	sleep(1);
@@ -839,7 +839,7 @@ load_config_from(unsigned char *file, struct option *tree)
 void
 load_config(void)
 {
-	load_config_from(get_cmd_opt_str("config-file"),
+	load_config_from(get_cmd_opt_str((const unsigned char *)"config-file"),
 			 config_options);
 }
 
@@ -1020,8 +1020,8 @@ create_config_string(unsigned char *prefix, unsigned char *name)
 	/* Don't write headers if nothing will be added anyway. */
 	struct string tmpstring;
 	int origlen;
-	int savestyle = get_opt_int("config.saving_style", NULL);
-	int i18n = get_opt_bool("config.i18n", NULL);
+	int savestyle = get_opt_int((const unsigned char *)"config.saving_style", NULL);
+	int i18n = get_opt_bool((const unsigned char *)"config.i18n", NULL);
 
 	if (!init_string(&config)) return NULL;
 
@@ -1084,8 +1084,8 @@ create_config_string(unsigned char *prefix, unsigned char *name)
 
 	if (savestyle == 0) goto get_me_out;
 
-	indentation = get_opt_int("config.indentation", NULL);
-	comments = get_opt_int("config.comments", NULL);
+	indentation = get_opt_int((const unsigned char *)"config.indentation", NULL);
+	comments = get_opt_int((const unsigned char *)"config.comments", NULL);
 
 	if (!init_string(&tmpstring)) goto get_me_out;
 
@@ -1177,11 +1177,11 @@ write_config(struct terminal *term)
 	assert(term);
 
 	if (!elinks_home) {
-		write_config_dialog(term, get_cmd_opt_str("config-file"),
+		write_config_dialog(term, get_cmd_opt_str((const unsigned char *)"config-file"),
 				    SS_ERR_DISABLED, 0);
 		return -1;
 	}
 
-	return write_config_file(elinks_home, get_cmd_opt_str("config-file"),
+	return write_config_file(elinks_home, get_cmd_opt_str((const unsigned char *)"config-file"),
 	                         term);
 }

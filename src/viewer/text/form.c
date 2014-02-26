@@ -1028,7 +1028,7 @@ encode_multipart(struct session *ses, LIST_OF(struct submitted_value) *l,
 				unsigned char *filename;
 				struct files_offset *bfs_new;
 
-				if (get_cmd_opt_bool("anonymous")) {
+				if (get_cmd_opt_bool((const unsigned char *)"anonymous")) {
 					errno = EPERM;
 					goto encode_error;
 				}
@@ -1255,7 +1255,7 @@ get_form_uri(struct session *ses, struct document_view *doc_view,
 	 * a file that is to be uploaded. TODO: Distinguish between
 	 * these two classes of errors (is it worth it?). -- Miciah */
 	if (data.source
-	    && get_opt_bool("document.browse.forms.show_formhist", ses))
+	    && get_opt_bool((const unsigned char *)"document.browse.forms.show_formhist", ses))
 		memorize_form(ses, &submit, form);
 #endif
 
@@ -1653,7 +1653,7 @@ field_op(struct session *ses, struct document_view *doc_view,
 			 * submit the form or the posting fails. */
 			/* FIXME: We should maybe have ACT_EDIT_ENTER_RELOAD */
 			if ((has_form_submit(fc->form)
-			      && !get_opt_bool("document.browse.forms.auto_submit", ses))
+			      && !get_opt_bool((const unsigned char *)"document.browse.forms.auto_submit", ses))
 			    || goto_link(ses, doc_view, link, 0)) {
 				if (ses->insert_mode == INSERT_MODE_ON)
 					ses->insert_mode = INSERT_MODE_OFF;
@@ -2011,7 +2011,7 @@ get_form_info(struct session *ses, struct document_view *doc_view)
 
 		if (!fc->form->action
 		    || (has_form_submit(fc->form)
-		        && !get_opt_bool("document.browse.forms.auto_submit",
+		        && !get_opt_bool((const unsigned char *)"document.browse.forms.auto_submit",
 			                 ses)))
 			break;
 
@@ -2060,7 +2060,7 @@ get_form_info(struct session *ses, struct document_view *doc_view)
 	}
 
 	if (link->accesskey
-	    && get_opt_bool("document.browse.accesskey.display", ses)) {
+	    && get_opt_bool((const unsigned char *)"document.browse.accesskey.display", ses)) {
 		add_to_string(&str, " (");
 		add_accesskey_to_string(&str, link->accesskey);
 		add_char_to_string(&str, ')');

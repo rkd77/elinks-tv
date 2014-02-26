@@ -64,7 +64,7 @@ add_snippets(struct ecmascript_interpreter *interpreter,
 #endif
 
 	if (list_empty(*doc_snippets)
-	    || !get_opt_bool("ecmascript.enable", NULL))
+	    || !get_opt_bool((const unsigned char *)"ecmascript.enable", NULL))
 		return;
 
 	/* We do this all only once per view_state now. */
@@ -465,9 +465,9 @@ render_document_frames(struct session *ses, int no_cache)
 		if (ses->status.show_tabs_bar_at_top) doc_opts.box.y++;
 	}
 
-	doc_opts.color_mode = get_opt_int_tree(ses->tab->term->spec, "colors",
+	doc_opts.color_mode = get_opt_int_tree(ses->tab->term->spec, (const unsigned char *)"colors",
 	                                       NULL);
-	if (!get_opt_bool_tree(ses->tab->term->spec, "underline", NULL))
+	if (!get_opt_bool_tree(ses->tab->term->spec, (const unsigned char *)"underline", NULL))
 		doc_opts.color_flags |= COLOR_ENHANCE_UNDERLINE;
 
 	doc_opts.cp = get_terminal_codepage(ses->tab->term);

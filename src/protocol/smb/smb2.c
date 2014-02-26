@@ -206,8 +206,8 @@ add_smb_dir_entries(struct directory_entry *entries, unsigned char *dirpath,
 	int i;
 
 	/* Setup @dircolor so it's easy to check if we should color dirs. */
-	if (get_opt_bool("document.browse.links.color_dirs", NULL)) {
-		color_to_string(get_opt_color("document.colors.dirs", NULL),
+	if (get_opt_bool((const unsigned char *)"document.browse.links.color_dirs", NULL)) {
+		color_to_string(get_opt_color((const unsigned char *)"document.colors.dirs", NULL),
 				(unsigned char *) &dircolor);
 	} else {
 		dircolor[0] = 0;

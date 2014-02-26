@@ -124,7 +124,7 @@ get_home(void)
 		strip_trailing_dir_sep(home);
 
 	home_elinks = test_confdir(home,
-				   get_cmd_opt_str("config-dir"),
+				   get_cmd_opt_str((const unsigned char *)"config-dir"),
 				   N_("Commandline options -config-dir set to %s, "
 				      "but could not create directory %s."));
 	if (home_elinks) goto end;

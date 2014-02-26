@@ -81,9 +81,9 @@ secure_open_umask(unsigned char *file_name)
 	/* XXX: This is inherently evil and has no place in util/, which
 	 * should be independent on such stuff. What do we do, except blaming
 	 * Jonas for noticing it? --pasky */
-	if ((get_cmd_opt_bool("no-connect")
-	     || get_cmd_opt_int("session-ring"))
-	    && !get_cmd_opt_bool("touch-files")) {
+	if ((get_cmd_opt_bool((const unsigned char *)"no-connect")
+	     || get_cmd_opt_int((const unsigned char *)"session-ring"))
+	    && !get_cmd_opt_bool((const unsigned char *)"touch-files")) {
 		secsave_errno = SS_ERR_DISABLED;
 		return NULL;
 	}
@@ -94,7 +94,7 @@ secure_open_umask(unsigned char *file_name)
 		goto end;
 	}
 
-	ssi->secure_save = get_opt_bool("infofiles.secure_save", NULL);
+	ssi->secure_save = get_opt_bool((const unsigned char *)"infofiles.secure_save", NULL);
 
 	ssi->file_name = stracpy(file_name);
 	if (!ssi->file_name) {
@@ -252,7 +252,7 @@ secure_close(struct secure_save_info *ssi)
 #endif
 
 #ifdef HAVE_FSYNC
-		if (!fail && get_opt_bool("infofiles.secure_save_fsync", NULL))
+		if (!fail && get_opt_bool((const unsigned char *)"infofiles.secure_save_fsync", NULL))
 			fail = fsync(fileno(ssi->fp));
 #endif
 

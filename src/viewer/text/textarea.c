@@ -625,7 +625,7 @@ textarea_edit(int op, struct terminal *term_, struct form_state *fs_,
 	assert ((op == 0 || op == 1) && term_);
 	if_assert_failed return;
 
-	if (op == 0 && get_cmd_opt_bool("anonymous")) {
+	if (op == 0 && get_cmd_opt_bool((const unsigned char *)"anonymous")) {
 		info_box(term_, 0, N_("Error"), ALIGN_CENTER,
 			 N_("You cannot launch an external"
 			    " editor in the anonymous mode."));
@@ -642,7 +642,7 @@ textarea_edit(int op, struct terminal *term_, struct form_state *fs_,
 		if (!td)
 			return;
 
-		ed = get_opt_str("document.browse.forms.editor",
+		ed = get_opt_str((const unsigned char *)"document.browse.forms.editor",
 		                 doc_view_->session);
 		if (!ed || !*ed) {
 			ed = getenv("EDITOR");

@@ -450,7 +450,7 @@ kbd_field(struct dialog_data *dlg_data, struct widget_data *widget_data)
 	action_id = kbd_action(KEYMAP_EDIT, ev, NULL);
 	if (action_id != -1
 	    && !action_is_anonymous_safe(KEYMAP_EDIT, action_id)
-	    && get_cmd_opt_bool("anonymous"))
+	    && get_cmd_opt_bool((const unsigned char *)"anonymous"))
 		return EVENT_NOT_PROCESSED;
 
 	switch (action_id) {

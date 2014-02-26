@@ -355,7 +355,7 @@ init_async_dns_lookup(struct dnsquery *dnsquery, int force_async)
 	dnsquery->h = -1;
 	return 0;
 
-	if (!force_async && !get_opt_bool("connection.async_dns", NULL)) {
+	if (!force_async && !get_opt_bool((const unsigned char *)"connection.async_dns", NULL)) {
 		dnsquery->h = -1;
 		return 0;
 	}

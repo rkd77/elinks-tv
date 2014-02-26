@@ -147,7 +147,7 @@ void
 menu_list_ext(struct terminal *term, void *fn_, void *xxx)
 {
 	menu_func_T fn = (menu_func_T)fn_;
-	LIST_OF(struct option) *opt_tree = get_opt_tree("mime.extension", NULL);
+	LIST_OF(struct option) *opt_tree = get_opt_tree((const unsigned char *)"mime.extension", NULL);
 	struct option *opt;
 	struct menu_item *mi = NULL;
 

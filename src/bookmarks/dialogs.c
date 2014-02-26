@@ -951,7 +951,7 @@ bookmark_terminal_tabs_dialog(struct terminal *term)
 
 #ifdef HAVE_STRFTIME
 	add_to_string(&string, " - ");
-	add_date_to_string(&string, get_opt_str("ui.date_format", NULL), NULL);
+	add_date_to_string(&string, get_opt_str((const unsigned char *)"ui.date_format", NULL), NULL);
 #endif
 
 	input_dialog(term, NULL,

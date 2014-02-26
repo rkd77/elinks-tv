@@ -360,7 +360,7 @@ window_open(JSContext *ctx, uintN argc, jsval *rval)
 	doc_view = vs->doc_view;
 	ses = doc_view->session;
 
-	if (get_opt_bool("ecmascript.block_window_opening", ses)) {
+	if (get_opt_bool((const unsigned char *)"ecmascript.block_window_opening", ses)) {
 #ifdef CONFIG_LEDS
 		set_led_value(ses->status.popup_led, 'P');
 #endif
@@ -419,9 +419,9 @@ window_open(JSContext *ctx, uintN argc, jsval *rval)
 		}
 	}
 
-	if (!get_cmd_opt_bool("no-connect")
-	    && !get_cmd_opt_bool("no-home")
-	    && !get_cmd_opt_bool("anonymous")
+	if (!get_cmd_opt_bool((const unsigned char *)"no-connect")
+	    && !get_cmd_opt_bool((const unsigned char *)"no-home")
+	    && !get_cmd_opt_bool((const unsigned char *)"anonymous")
 	    && can_open_in_new(ses->tab->term)) {
 		open_uri_in_new_window(ses, uri, NULL, ENV_ANY,
 				       CACHE_MODE_NORMAL, TASK_NONE);

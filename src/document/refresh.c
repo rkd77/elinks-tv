@@ -100,7 +100,7 @@ static void
 start_document_refresh(struct document_refresh *refresh,
                        struct document_view *doc_view)
 {
-	milliseconds_T minimum = (milliseconds_T) get_opt_int("document.browse.minimum_refresh_time", doc_view->session);
+	milliseconds_T minimum = (milliseconds_T) get_opt_int((const unsigned char *)"document.browse.minimum_refresh_time", doc_view->session);
 	milliseconds_T refresh_delay = sec_to_ms(refresh->seconds);
 	milliseconds_T time = ms_max(refresh_delay, minimum);
 	struct type_query *type_query;
@@ -140,7 +140,7 @@ start_document_refreshes(struct session *ses)
 
 	if (!ses->doc_view
 	    || !ses->doc_view->document
-	    || !get_opt_bool("document.browse.refresh", ses))
+	    || !get_opt_bool((const unsigned char *)"document.browse.refresh", ses))
 		return;
 
 	if (document_has_frames(ses->doc_view->document)) {

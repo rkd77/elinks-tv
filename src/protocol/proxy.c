@@ -172,7 +172,7 @@ get_proxy_worker(struct uri *uri, unsigned char *proxy,
 
 		if (slash) *slash = 0;
 
-		no_proxy = get_opt_str("protocol.no_proxy", NULL);
+		no_proxy = get_opt_str((const unsigned char *)"protocol.no_proxy", NULL);
 		if (!*no_proxy) no_proxy = getenv("NO_PROXY");
 		if (!no_proxy || !*no_proxy) no_proxy = getenv("no_proxy");
 

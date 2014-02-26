@@ -329,10 +329,10 @@ init_regex(regex_t *regex, UCHAR *pattern)
 	int regex_flags = REG_NEWLINE;
 	int reg_err;
 
-	if (get_opt_int("document.browse.search.regex", NULL) == 2)
+	if (get_opt_int((const unsigned char *)"document.browse.search.regex", NULL) == 2)
 		regex_flags |= REG_EXTENDED;
 
-	if (!get_opt_bool("document.browse.search.case", NULL))
+	if (!get_opt_bool((const unsigned char *)"document.browse.search.case", NULL))
 		regex_flags |= REG_ICASE;
 
 	reg_err = Regcomp(regex, (PATTERN *)pattern, regex_flags);
@@ -545,7 +545,7 @@ is_in_range_plain(struct document *document, int y, int height,
 	int yy = y + height;
 	UCHAR *txt;
 	int found = 0;
-	int case_sensitive = get_opt_bool("document.browse.search.case", NULL);
+	int case_sensitive = get_opt_bool((const unsigned char *)"document.browse.search.case", NULL);
 
 	txt = case_sensitive ? memacpy_u(text, textlen, utf8) : lowered_string(text, textlen, utf8);
 	if (!txt) return -1;
@@ -614,7 +614,7 @@ is_in_range(struct document *document, int y, int height,
 		return 0;
 
 #ifdef CONFIG_TRE
-	if (get_opt_int("document.browse.search.regex", NULL))
+	if (get_opt_int((const unsigned char *)"document.browse.search.regex", NULL))
 		return is_in_range_regex(document, y, height, text, textlen,
 					 min, max, s1, s2, utf8);
 #endif
@@ -634,7 +634,7 @@ get_searched_plain(struct document_view *doc_view, struct point **pt, int *pl,
 	struct box *box;
 	int xoffset, yoffset;
 	int len = 0;
-	int case_sensitive = get_opt_bool("document.browse.search.case", NULL);
+	int case_sensitive = get_opt_bool((const unsigned char *)"document.browse.search.case", NULL);
 
 	txt = case_sensitive ? memacpy_u(*doc_view->search_word, l, utf8)
 			     : lowered_string(*doc_view->search_word, l, utf8);
@@ -785,7 +785,7 @@ get_searched(struct document_view *doc_view, struct point **pt, int *pl, int utf
 	}
 
 #ifdef CONFIG_TRE
-	if (get_opt_int("document.browse.search.regex", NULL))
+	if (get_opt_int((const unsigned char *)"document.browse.search.regex", NULL))
 		get_searched_regex(doc_view, pt, pl, l, s1, s2, utf8);
 	else
 #endif
@@ -1074,7 +1074,7 @@ static void
 print_find_error_not_found(struct session *ses, unsigned char *title,
 			   unsigned char *message, unsigned char *search_string)
 {
-	switch (get_opt_int("document.browse.search.show_not_found", NULL)) {
+	switch (get_opt_int((const unsigned char *)"document.browse.search.show_not_found", NULL)) {
 		case 2:
 			info_box(ses->tab->term, MSGBOX_FREE_TEXT,
 				 title, ALIGN_CENTER,
@@ -1100,7 +1100,7 @@ print_find_error(struct session *ses, enum find_error find_error)
 		case FIND_ERROR_HIT_TOP:
 			hit_top = 1;
 		case FIND_ERROR_HIT_BOTTOM:
-			if (!get_opt_bool("document.browse.search"
+			if (!get_opt_bool((const unsigned char *)"document.browse.search"
 					  ".show_hit_top_bottom", NULL))
 				break;
 
@@ -1212,8 +1212,8 @@ search_link_text(struct document *document, int current_link, int i,
 		 unsigned char *text, int direction, int *offset)
 {
 	int upper_link, lower_link;
-	int case_sensitive = get_opt_bool("document.browse.search.case", NULL);
-	int wraparound = get_opt_bool("document.browse.search.wraparound",
+	int case_sensitive = get_opt_bool((const unsigned char *)"document.browse.search.case", NULL);
+	int wraparound = get_opt_bool((const unsigned char *)"document.browse.search.wraparound",
 	                              NULL);
 	int textlen = strlen((const char *)text);
 
@@ -1347,10 +1347,10 @@ do_typeahead(struct session *ses, struct document_view *doc_view,
 	}
 
 	if (i < 0 || i >= doc_view->document->nlinks) {
-		if (!get_opt_bool("document.browse.search.wraparound", NULL)) {
+		if (!get_opt_bool((const unsigned char *)"document.browse.search.wraparound", NULL)) {
 			if (match_link_text(&document->links[current],
 			                    text, strlen((const char *)text),
-			                    get_opt_bool("document.browse"
+			                    get_opt_bool((const unsigned char *)"document.browse"
 			                                 ".search.case", NULL))
 			     >= 0) {
 				return TYPEAHEAD_ERROR_NO_FURTHER;
@@ -1426,7 +1426,7 @@ text_typeahead_handler(struct input_line *line, int action_id)
 		case ACT_EDIT_SEARCH_TOGGLE_REGEX: {
 			struct option *opt =
 				get_opt_rec(config_options,
-					    "document.browse.search.regex");
+					    (const unsigned char *)"document.browse.search.regex");
 
 			if (opt) {
 				opt->value.number = (opt->value.number + 1)
@@ -1486,7 +1486,7 @@ link_typeahead_handler(struct input_line *line, int action_id)
 		bufferlen = strlen((const char *)buffer);
 		offset = match_link_text(&doc_view->document->links[current],
 					 buffer, bufferlen,
-					 get_opt_bool("document.browse"
+					 get_opt_bool((const unsigned char *)"document.browse"
 						      ".search.case", NULL));
 
 		if (offset >= 0) {
@@ -1640,7 +1640,7 @@ search_dlg_ok(struct dialog_data *dlg_data, struct widget_data *widget_data)
 	update_dialog_data(dlg_data);
 
 	commit_option_values(resolvers, get_opt_rec(config_options,
-						    "document.browse.search"),
+						    (const unsigned char *)"document.browse.search"),
 			     hop->values, SEARCH_OPTIONS);
 
 	if (check_dialog(dlg_data)) return EVENT_NOT_PROCESSED;
@@ -1669,7 +1669,7 @@ search_dlg_do(struct terminal *term, struct memory_list *ml,
 	hop = (struct search_dlg_hop *)mem_calloc(1, sizeof(*hop));
 	if (!hop) return;
 
-	search_options = get_opt_rec(config_options, "document.browse.search");
+	search_options = get_opt_rec(config_options, (const unsigned char *)"document.browse.search");
 	checkout_option_values(resolvers, search_options,
 			       hop->values, SEARCH_OPTIONS);
 	hop->data = data;

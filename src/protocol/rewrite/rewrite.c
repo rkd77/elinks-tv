@@ -328,7 +328,7 @@ goto_url_hook(va_list ap, void *data)
 	    && !strchr((char *)*url, ':')
 	    && !strchr((char *)*url, '.')
 	    && !strchr((char *)*url, '/')) {
-		uu = get_opt_str("protocol.rewrite.default_template", NULL);
+		uu = get_opt_str((const unsigned char *)"protocol.rewrite.default_template", NULL);
 		if (uu && *uu) {
 			arg = *url;
 		} else {

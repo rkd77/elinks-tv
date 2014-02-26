@@ -180,7 +180,7 @@ static void
 init_gnutls(struct module *module)
 {
 	int ret = gnutls_global_init();
-	unsigned char *ca_file = get_opt_str("connection.ssl.trusted_ca_file",
+	unsigned char *ca_file = get_opt_str((const unsigned char *)"connection.ssl.trusted_ca_file",
 					     NULL);
 
 	if (ret < 0)

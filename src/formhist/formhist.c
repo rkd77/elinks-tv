@@ -220,7 +220,7 @@ save_formhist_to_file(void)
 	struct formhist_data *form;
 	int r;
 
-	if (!elinks_home || get_cmd_opt_bool("anonymous"))
+	if (!elinks_home || get_cmd_opt_bool((const unsigned char *)"anonymous"))
 		return 0;
 
 	file = straconcat(elinks_home, FORMS_HISTORY_FILENAME,

@@ -295,10 +295,10 @@ extern struct option *get_opt_rec(struct option *, const unsigned char *);
 extern struct option *get_opt_rec_real(struct option *, const unsigned char *);
 struct option *indirect_option(struct option *);
 #ifdef CONFIG_DEBUG
-extern union option_value *get_opt_(unsigned char *, int, enum option_type, struct option *, unsigned char *, struct session *);
+extern union option_value *get_opt_(unsigned char *, int, enum option_type, struct option *, const unsigned char *, struct session *);
 #define get_opt(tree, name, ses, type) get_opt_(__FILE__, __LINE__, type, tree, name, ses)
 #else
-extern union option_value *get_opt_(struct option *, unsigned char *, struct session *);
+extern union option_value *get_opt_(struct option *, const unsigned char *, struct session *);
 #define get_opt(tree, name, ses, type) get_opt_(tree, name, ses)
 #endif
 

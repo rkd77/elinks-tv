@@ -129,7 +129,7 @@ move_part_page_down(struct session *ses, struct document_view *doc_view, int ove
 enum frame_event_status
 move_page_down(struct session *ses, struct document_view *doc_view)
 {
-	return move_part_page_down(ses, doc_view, get_opt_int("document.browse.scrolling.vertical_overlap", ses));
+	return move_part_page_down(ses, doc_view, get_opt_int((const unsigned char *)"document.browse.scrolling.vertical_overlap", ses));
 }
 
 enum frame_event_status
@@ -190,7 +190,7 @@ move_part_page_up(struct session *ses, struct document_view *doc_view, int overl
 enum frame_event_status
 move_page_up(struct session *ses, struct document_view *doc_view)
 {
-	return move_part_page_up(ses, doc_view, get_opt_int("document.browse.scrolling.vertical_overlap", ses));
+	return move_part_page_up(ses, doc_view, get_opt_int((const unsigned char *)"document.browse.scrolling.vertical_overlap", ses));
 }
 
 enum frame_event_status
@@ -217,7 +217,7 @@ move_link(struct session *ses, struct document_view *doc_view, int direction,
 	} else {
 		/* We only bother this option if there's some links
 		 * in document. */
-		wraparound = get_opt_bool("document.browse.links.wraparound", ses);
+		wraparound = get_opt_bool((const unsigned char *)"document.browse.links.wraparound", ses);
 	}
 
 	count = eat_kbd_repeat_count(ses);
@@ -345,7 +345,7 @@ horizontal_scroll(struct session *ses, struct document_view *doc_view, int steps
 
 	x = doc_view->vs->x + steps;
 
-	if (get_opt_bool("document.browse.scrolling.horizontal_extended", ses)) {
+	if (get_opt_bool((const unsigned char *)"document.browse.scrolling.horizontal_extended", ses)) {
 		max = doc_view->document->width - 1;
 	} else {
 		max = int_max(doc_view->vs->x,
@@ -371,7 +371,7 @@ scroll_up(struct session *ses, struct document_view *doc_view)
 	int steps = eat_kbd_repeat_count(ses);
 
 	if (!steps)
-		steps = get_opt_int("document.browse.scrolling.vertical_step", ses);
+		steps = get_opt_int((const unsigned char *)"document.browse.scrolling.vertical_step", ses);
 
 	return vertical_scroll(ses, doc_view, -steps);
 }
@@ -382,7 +382,7 @@ scroll_down(struct session *ses, struct document_view *doc_view)
 	int steps = eat_kbd_repeat_count(ses);
 
 	if (!steps)
-		steps = get_opt_int("document.browse.scrolling.vertical_step", ses);
+		steps = get_opt_int((const unsigned char *)"document.browse.scrolling.vertical_step", ses);
 
 	return vertical_scroll(ses, doc_view, steps);
 }
@@ -393,7 +393,7 @@ scroll_left(struct session *ses, struct document_view *doc_view)
 	int steps = eat_kbd_repeat_count(ses);
 
 	if (!steps)
-		steps = get_opt_int("document.browse.scrolling.horizontal_step", ses);
+		steps = get_opt_int((const unsigned char *)"document.browse.scrolling.horizontal_step", ses);
 
 	return horizontal_scroll(ses, doc_view, -steps);
 }
@@ -404,7 +404,7 @@ scroll_right(struct session *ses, struct document_view *doc_view)
 	int steps = eat_kbd_repeat_count(ses);
 
 	if (!steps)
-		steps = get_opt_int("document.browse.scrolling.horizontal_step", ses);
+		steps = get_opt_int((const unsigned char *)"document.browse.scrolling.horizontal_step", ses);
 
 	return horizontal_scroll(ses, doc_view, steps);
 }
@@ -413,7 +413,7 @@ scroll_right(struct session *ses, struct document_view *doc_view)
 static enum frame_event_status
 scroll_mouse_up(struct session *ses, struct document_view *doc_view)
 {
-	int steps = get_opt_int("document.browse.scrolling.vertical_step", ses);
+	int steps = get_opt_int((const unsigned char *)"document.browse.scrolling.vertical_step", ses);
 
 	return vertical_scroll(ses, doc_view, -steps);
 }
@@ -421,7 +421,7 @@ scroll_mouse_up(struct session *ses, struct document_view *doc_view)
 static enum frame_event_status
 scroll_mouse_down(struct session *ses, struct document_view *doc_view)
 {
-	int steps = get_opt_int("document.browse.scrolling.vertical_step", ses);
+	int steps = get_opt_int((const unsigned char *)"document.browse.scrolling.vertical_step", ses);
 
 	return vertical_scroll(ses, doc_view, steps);
 }
@@ -429,7 +429,7 @@ scroll_mouse_down(struct session *ses, struct document_view *doc_view)
 static enum frame_event_status
 scroll_mouse_left(struct session *ses, struct document_view *doc_view)
 {
-	int steps = get_opt_int("document.browse.scrolling.horizontal_step", ses);
+	int steps = get_opt_int((const unsigned char *)"document.browse.scrolling.horizontal_step", ses);
 
 	return horizontal_scroll(ses, doc_view, -steps);
 }
@@ -437,7 +437,7 @@ scroll_mouse_left(struct session *ses, struct document_view *doc_view)
 static enum frame_event_status
 scroll_mouse_right(struct session *ses, struct document_view *doc_view)
 {
-	int steps = get_opt_int("document.browse.scrolling.horizontal_step", ses);
+	int steps = get_opt_int((const unsigned char *)"document.browse.scrolling.horizontal_step", ses);
 
 	return horizontal_scroll(ses, doc_view, steps);
 }
@@ -1123,7 +1123,7 @@ frame_ev_kbd(struct session *ses, struct document_view *doc_view, struct term_ev
 	if (status != FRAME_EVENT_IGNORED)
 		return status;
 #endif
-	accesskey_priority = get_opt_int("document.browse.accesskey.priority", ses);
+	accesskey_priority = get_opt_int((const unsigned char *)"document.browse.accesskey.priority", ses);
 
 	if (accesskey_priority >= 2) {
 		status = try_document_key(ses, doc_view, ev);
@@ -1202,7 +1202,7 @@ frame_ev_mouse(struct session *ses, struct document_view *doc_view, struct term_
 	if (check_mouse_button(ev, B_LEFT)) {
 		/* Clicking the edge of screen will scroll the document. */
 
-		int scrollmargin = get_opt_int("document.browse.scrolling.margin", ses);
+		int scrollmargin = get_opt_int((const unsigned char *)"document.browse.scrolling.margin", ses);
 
 		/* XXX: This is code duplication with kbd handlers. But
 		 * repeatcount-free here. */
@@ -1434,7 +1434,7 @@ static void
 try_typeahead(struct session *ses, struct document_view *doc_view,
               struct term_event *ev, enum main_action action_id)
 {
-	switch (get_opt_int("document.browse.search.typeahead", ses)) {
+	switch (get_opt_int((const unsigned char *)"document.browse.search.typeahead", ses)) {
 		case 0:
 			return;
 		case 1:
@@ -1526,7 +1526,7 @@ quit:
 		}
 
 		if (doc_view
-		    && get_opt_int("document.browse.accesskey"
+		    && get_opt_int((const unsigned char *)"document.browse.accesskey"
 				   ".priority", ses) <= 0
 		    && try_document_key(ses, doc_view, ev)
 		       == FRAME_EVENT_REFRESH) {

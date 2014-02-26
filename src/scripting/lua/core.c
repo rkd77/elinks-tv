@@ -511,7 +511,7 @@ l_set_option(LS)
 
 	/* Get option record */
 	name = lua_tostring(S, 1);
-	opt = get_opt_rec(config_options, (unsigned char *) name);
+	opt = get_opt_rec(config_options, (const unsigned char *) name);
 	if (opt == NULL)
 		goto lua_error;
 
@@ -568,7 +568,7 @@ l_get_option(LS)
 	if (nargs != 1)
 		goto lua_error;
 	name = lua_tostring(S, 1);
-	opt = get_opt_rec(config_options, (unsigned char *) name);
+	opt = get_opt_rec(config_options, (const unsigned char *) name);
 	if (opt == NULL)
 		goto lua_error;
 

@@ -464,7 +464,7 @@ tree_dup(struct option *opt, struct option *template_, int flags)
 		if (!new_opt->box_item) continue;
 
 		if (new_opt->name && !strcmp(new_opt->name, "_template_"))
-			new_opt->box_item->visible = get_opt_bool("config.show_template", NULL);
+			new_opt->box_item->visible = get_opt_bool((const unsigned char *)"config.show_template", NULL);
 
 		if (opt->box_item) {
 			add_to_list(opt->box_item->child,

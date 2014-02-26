@@ -218,8 +218,8 @@ fsp_directory(FSP_SESSION *ses, struct uri *uri)
 
 	puts(buf.source);
 
-	if (get_opt_bool("document.browse.links.color_dirs", NULL)) {
-		color_to_string(get_opt_color("document.colors.dirs", NULL),
+	if (get_opt_bool((const unsigned char *)"document.browse.links.color_dirs", NULL)) {
+		color_to_string(get_opt_color((const unsigned char *)"document.colors.dirs", NULL),
 				dircolor);
 	}
 

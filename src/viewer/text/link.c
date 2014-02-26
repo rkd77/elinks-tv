@@ -1199,7 +1199,7 @@ goto_link_number_do(struct session *ses, struct document_view *doc_view, int n)
 
 	link = &doc_view->document->links[n];
 	if (!link_is_textinput(link)
-	    && get_opt_bool("document.browse.accesskey.auto_follow", ses))
+	    && get_opt_bool((const unsigned char *)"document.browse.accesskey.auto_follow", ses))
 		enter(ses, doc_view, 0);
 }
 
@@ -1319,7 +1319,7 @@ link_menu(struct terminal *term, void *xxx, void *ses_)
 			add_menu_action(&mi, N_("Open in new tab in ~background"),
 					ACT_MAIN_OPEN_LINK_IN_NEW_TAB_IN_BACKGROUND);
 
-			if (!get_cmd_opt_bool("anonymous")) {
+			if (!get_cmd_opt_bool((const unsigned char *)"anonymous")) {
 				add_menu_separator(&mi);
 				add_menu_action(&mi, N_("~Download link"), ACT_MAIN_LINK_DOWNLOAD);
 
@@ -1376,7 +1376,7 @@ link_menu(struct terminal *term, void *xxx, void *ses_)
 						ACT_MAIN_OPEN_LINK_IN_NEW_TAB_IN_BACKGROUND);
 			}
 
-			if (!get_cmd_opt_bool("anonymous"))
+			if (!get_cmd_opt_bool((const unsigned char *)"anonymous"))
 				add_menu_action(&mi, N_("Submit form and ~download"), ACT_MAIN_LINK_DOWNLOAD);
 
 			add_menu_action(&mi, N_("~Reset form"), ACT_MAIN_RESET_FORM);
@@ -1392,7 +1392,7 @@ link_menu(struct terminal *term, void *xxx, void *ses_)
 	if (link->where_img) {
 		/* [gettext_accelerator_context(link_menu.map, link_menu.std, link_menu.form)] */
 		add_menu_action(&mi, N_("V~iew image"), ACT_MAIN_VIEW_IMAGE);
-		if (!get_cmd_opt_bool("anonymous"))
+		if (!get_cmd_opt_bool((const unsigned char *)"anonymous"))
 			add_menu_action(&mi, N_("Download ima~ge"), ACT_MAIN_LINK_DOWNLOAD_IMAGE);
 		/* [gettext_accelerator_context()] */
 	}
@@ -1486,7 +1486,7 @@ get_current_link_info(struct session *ses, struct document_view *doc_view)
 		/* Add the uri with password and post info stripped */
 		add_string_uri_to_string(&str, uristring, URI_PUBLIC);
 		if (link->accesskey > 0
-		    && get_opt_bool("document.browse.accesskey.display",
+		    && get_opt_bool((const unsigned char *)"document.browse.accesskey.display",
 		                    ses)) {
 			add_to_string(&str, " (");
 			add_accesskey_to_string(&str, link->accesskey);

@@ -132,7 +132,7 @@ ses_history_move(struct session *ses)
 
 	/* Maybe trash the unhistory. */
 
-	if (get_opt_bool("document.history.keep_unhistory", ses))
+	if (get_opt_bool((const unsigned char *)"document.history.keep_unhistory", ses))
 		clean_unhistory(&ses->history);
 }
 

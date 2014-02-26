@@ -46,7 +46,7 @@ count_down(void *xxx)
 	/* The expired timer ID has now been erased.  */
 
 	keybinding = kbd_nm_lookup(KEYMAP_MAIN,
-	                           get_opt_str("ui.timer.action", NULL));
+	                           get_opt_str((const unsigned char *)"ui.timer.action", NULL));
 	if (keybinding) {
 		struct terminal *terminal;
 		struct term_event ev;
@@ -67,9 +67,9 @@ reset_timer(void)
 {
 	kill_timer(&countdown);
 
-	if (!get_opt_int("ui.timer.enable", NULL)) return;
+	if (!get_opt_int((const unsigned char *)"ui.timer.enable", NULL)) return;
 
-	timer_duration = get_opt_int("ui.timer.duration", NULL);
+	timer_duration = get_opt_int((const unsigned char *)"ui.timer.duration", NULL);
 	install_timer(&countdown, COUNT_DOWN_DELAY, count_down, NULL);
 }
 

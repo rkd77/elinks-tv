@@ -686,7 +686,7 @@ draw_dialog(struct dialog_data *dlg_data, int width, int height)
 	draw_box(term, &dlg_data->box, ' ', 0,
 		 get_bfu_color(term, (const unsigned char *)"dialog.generic"));
 
-	if (get_opt_bool("ui.dialogs.shadows", NULL)) {
+	if (get_opt_bool((const unsigned char *)"ui.dialogs.shadows", NULL)) {
 		/* Draw shadow */
 		draw_shadow(term, &dlg_data->box,
 			    get_bfu_color(term, (const unsigned char *)"dialog.shadow"), 2, 1);

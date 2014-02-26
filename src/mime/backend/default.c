@@ -118,7 +118,7 @@ get_content_type_default(unsigned char *extension)
 
 	if (extend < extension)	return NULL;
 
-	opt_tree = get_opt_rec_real(config_options, "mime.extension");
+	opt_tree = get_opt_rec_real(config_options, (const unsigned char *)"mime.extension");
 	assert(opt_tree);
 
 	foreach (opt, *opt_tree->value.tree) {
@@ -153,7 +153,7 @@ get_mime_type_option(unsigned char *type)
 	struct option *opt;
 	struct string name;
 
-	opt = get_opt_rec_real(config_options, "mime.type");
+	opt = get_opt_rec_real(config_options, (const unsigned char *)"mime.type");
 	if (!opt) return NULL;
 
 	if (!init_string(&name)) return NULL;
@@ -182,7 +182,7 @@ get_mime_handler_option(struct option *type_opt, int xwin)
 
 	assert(type_opt);
 
-	handler_opt = get_opt_rec_real(config_options, "mime.handler");
+	handler_opt = get_opt_rec_real(config_options, (const unsigned char *)"mime.handler");
 	if (!handler_opt) return NULL;
 
 	handler_opt = get_opt_rec_real(handler_opt, type_opt->value.string);
@@ -202,11 +202,11 @@ get_mime_handler_default(unsigned char *type, int have_x)
 	handler_opt = get_mime_handler_option(type_opt, have_x);
 	if (!handler_opt) return NULL;
 
-	return init_mime_handler(get_opt_str_tree(handler_opt, "program", NULL),
+	return init_mime_handler(get_opt_str_tree(handler_opt, (const unsigned char *)"program", NULL),
 				 type_opt->value.string,
 				 default_mime_module.name,
-				 get_opt_bool_tree(handler_opt, "ask", NULL),
-				 get_opt_bool_tree(handler_opt, "block", NULL));
+				 get_opt_bool_tree(handler_opt, (const unsigned char *)"ask", NULL),
+				 get_opt_bool_tree(handler_opt, (const unsigned char *)"block", NULL));
 }
 
 

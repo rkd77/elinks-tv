@@ -125,7 +125,7 @@ get_sun_path(struct string *sun_path)
 	add_to_string(sun_path, elinks_home);
 	add_to_string(sun_path, ELINKS_SOCK_NAME);
 	add_long_to_string(sun_path,
-			   get_cmd_opt_int("session-ring"));
+			   get_cmd_opt_int((const unsigned char *)"session-ring"));
 
 	return 1;
 }
@@ -259,7 +259,7 @@ get_address(struct socket_info *info, enum addr_type type)
 	if_assert_failed return -1;
 
 	/* Each ring is bind to ELINKS_PORT + ring number. */
-	port = ELINKS_PORT + get_cmd_opt_int("session-ring");
+	port = ELINKS_PORT + get_cmd_opt_int((const unsigned char *)"session-ring");
 	if (port < IPPORT_USERRESERVED)
 		return -1; /* Just in case of... */
 

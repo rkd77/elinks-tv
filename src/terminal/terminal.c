@@ -143,7 +143,7 @@ init_term(int fdin, int fdout)
 int
 get_terminal_codepage(const struct terminal *term)
 {
-	return get_opt_codepage_tree(term->spec, "charset", NULL);
+	return get_opt_codepage_tree(term->spec, (const unsigned char *)"charset", NULL);
 }
 
 void
@@ -220,7 +220,7 @@ static void
 check_if_no_terminal(void)
 {
 	program.terminate = list_empty(terminals) && 0
-			    && !get_opt_bool("ui.sessions.keep_session_active", NULL);
+			    && !get_opt_bool((const unsigned char *)"ui.sessions.keep_session_active", NULL);
 }
 
 void
@@ -418,9 +418,9 @@ set_terminal_title(struct terminal *term, unsigned char *title)
 	from_cp = get_terminal_codepage(term);
 
 	/* In which codepage does the terminal want the title?  */
-	if (get_opt_bool_tree(term->spec, "latin1_title", NULL))
+	if (get_opt_bool_tree(term->spec, (const unsigned char *)"latin1_title", NULL))
 		to_cp = get_cp_index("ISO-8859-1");
-	else if (get_opt_bool_tree(term->spec, "utf_8_io", NULL))
+	else if (get_opt_bool_tree(term->spec, (const unsigned char *)"utf_8_io", NULL))
 		to_cp = get_cp_index("UTF-8");
 	else
 		to_cp = from_cp;

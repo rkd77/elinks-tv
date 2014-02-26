@@ -182,7 +182,7 @@ write_bookmarks_default(struct secure_save_info *ssi,
 	struct write_bookmarks_default out;
 
 	out.ssi = ssi;
-	out.save_folder_state = get_opt_bool("bookmarks.folder_state", NULL);
+	out.save_folder_state = get_opt_bool((const unsigned char *)"bookmarks.folder_state", NULL);
 	out.codepage = get_cp_index("System");
 	out.conv_table = get_translation_table(get_cp_index("UTF-8"),
 					       out.codepage);

@@ -182,7 +182,7 @@ ses_goto(struct session *ses, struct uri *uri, unsigned char *target_frame,
 	struct task *task;
 	int referrer_incomplete = 0;
 	int malicious_uri = 0;
-	int confirm_submit = uri->form && get_opt_bool("document.browse.forms"
+	int confirm_submit = uri->form && get_opt_bool((const unsigned char *)"document.browse.forms"
 	                                               ".confirm_submit", ses);
 	unsigned char *m1 = NULL, *message = NULL;
 	struct memory_list *mlist = NULL;
@@ -208,7 +208,7 @@ ses_goto(struct session *ses, struct uri *uri, unsigned char *target_frame,
 	 * posting form data so this should be more correct. */
 
 	if (uri->user && uri->userlen
-	    && get_opt_bool("document.browse.links.warn_malicious", ses)
+	    && get_opt_bool((const unsigned char *)"document.browse.links.warn_malicious", ses)
 	    && check_malicious_uri(uri)) {
 		malicious_uri = 1;
 		confirm_submit = 1;
@@ -406,8 +406,8 @@ ses_imgmap(struct session *ses)
 			  &doc_view->document->options,
 			  ses->task.target.frame,
 			  get_terminal_codepage(ses->tab->term),
-			  get_opt_codepage("document.codepage.assume", ses),
-			  get_opt_bool("document.codepage.force_assumed", ses)))
+			  get_opt_codepage((const unsigned char *)"document.codepage.assume", ses),
+			  get_opt_bool((const unsigned char *)"document.codepage.force_assumed", ses)))
 		return;
 
 	add_empty_window(ses->tab->term, (void (*)(void *)) freeml, ml);
@@ -601,14 +601,14 @@ do_follow_url(struct session *ses, struct uri *uri, unsigned char *target,
 	}
 
 	if (target && !strcmp(target, "_blank")) {
-		int mode = get_opt_int("document.browse.links.target_blank",
+		int mode = get_opt_int((const unsigned char *)"document.browse.links.target_blank",
 		                       ses);
 
 		if (mode == 3
-		    && !get_cmd_opt_bool("anonymous")
+		    && !get_cmd_opt_bool((const unsigned char *)"anonymous")
 		    && can_open_in_new(ses->tab->term)
-		    && !get_cmd_opt_bool("no-connect")
-		    && !get_cmd_opt_bool("no-home")) {
+		    && !get_cmd_opt_bool((const unsigned char *)"no-connect")
+		    && !get_cmd_opt_bool((const unsigned char *)"no-home")) {
 			enum term_env_type env = ses->tab->term->environment;
 
 			open_uri_in_new_window(ses, uri, referrer, env,
@@ -779,7 +779,7 @@ goto_url_with_hook(struct session *ses, unsigned char *url)
 int
 goto_url_home(struct session *ses)
 {
-	unsigned char *homepage = get_opt_str("ui.sessions.homepage", ses);
+	unsigned char *homepage = get_opt_str((const unsigned char *)"ui.sessions.homepage", ses);
 
 	if (!*homepage) homepage = getenv("WWW_HOME");
 	if (!homepage || !*homepage) homepage = WWW_HOME_URL;

@@ -193,7 +193,7 @@ get_validated_cache_entry(struct uri *uri, enum cache_mode cache_mode)
 	 * remove the redirect or the entry expired. Please enlighten me.
 	 * --jonas */
 	if ((cached->cache_mode == CACHE_MODE_NEVER && cache_mode != CACHE_MODE_ALWAYS)
-	    || (cached->redirect && !get_opt_bool("document.cache.cache_redirects", NULL))
+	    || (cached->redirect && !get_opt_bool((const unsigned char *)"document.cache.cache_redirects", NULL))
 	    || (cached->expire && cache_entry_has_expired(cached))) {
 		if (!is_object_used(cached)) delete_cache_entry(cached);
 		return NULL;
@@ -202,8 +202,8 @@ get_validated_cache_entry(struct uri *uri, enum cache_mode cache_mode)
 	if (cached->cache_mode <= CACHE_MODE_CHECK_IF_MODIFIED
 	    && cache_mode <= CACHE_MODE_CHECK_IF_MODIFIED
 	    && (cached->last_modified || cached->etag)
-	    && get_opt_int("document.cache.revalidation_interval", NULL) >= 0) {
-		if (cached->seconds + get_opt_int("document.cache.revalidation_interval", NULL) < time(NULL))
+	    && get_opt_int((const unsigned char *)"document.cache.revalidation_interval", NULL) >= 0) {
+		if (cached->seconds + get_opt_int((const unsigned char *)"document.cache.revalidation_interval", NULL) < time(NULL))
 			return NULL;
 	}
 
@@ -780,7 +780,7 @@ garbage_collection(int whole)
 	/* The maximal cache size tolerated by user. Note that this is only
 	 * size of the "just stored" unused cache entries, used cache entries
 	 * are not counted to that. */
-	unsigned longlong opt_cache_size = get_opt_long("document.cache.memory.size", NULL);
+	unsigned longlong opt_cache_size = get_opt_long((const unsigned char *)"document.cache.memory.size", NULL);
 	/* The low-treshold cache size. Basically, when the cache size is
 	 * higher than opt_cache_size, we free the cache so that there is no
 	 * more than this value in the cache anymore. This is to make sure we
@@ -922,7 +922,7 @@ shrinked_enough:
 		DBG("garbage collection doesn't work, cache size %ld > %ld, "
 		      "document.cache.memory.size set to: %ld bytes",
 		      cache_size, gc_cache_size,
-		      get_opt_long("document.cache.memory.size", NULL));
+		      get_opt_long((const unsigned char *)"document.cache.memory.size", NULL));
 	}
 #endif
 }

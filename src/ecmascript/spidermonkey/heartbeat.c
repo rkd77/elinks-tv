@@ -59,7 +59,7 @@ check_heartbeats(void *data)
 			    && hb->interpreter->vs->doc_view->session->tab->term) {
 				struct session *ses = hb->interpreter->vs->doc_view->session;
 				struct terminal *term = ses->tab->term;
-				int max_exec_time = get_opt_int("ecmascript.max_exec_time", ses);
+				int max_exec_time = get_opt_int((const unsigned char *)"ecmascript.max_exec_time", ses);
 
 				ecmascript_timeout_dialog(term, max_exec_time);
 			}
@@ -88,7 +88,7 @@ add_heartbeat(struct ecmascript_interpreter *interpreter)
         hb = (struct heartbeat *)mem_alloc(sizeof(struct heartbeat));
         if (!hb) return NULL;
 
-        hb->ttl = get_opt_int("ecmascript.max_exec_time", ses);
+        hb->ttl = get_opt_int((const unsigned char *)"ecmascript.max_exec_time", ses);
         hb->interpreter = interpreter;
 
         add_to_list(heartbeats, hb);

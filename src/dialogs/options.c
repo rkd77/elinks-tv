@@ -30,7 +30,7 @@ static void
 display_codepage(struct terminal *term, void *name_, void *xxx)
 {
 	unsigned char *name = (unsigned char *)name_;
-	struct option *opt = get_opt_rec(term->spec, "charset");
+	struct option *opt = get_opt_rec(term->spec, (const unsigned char *)"charset");
 	int index = get_cp_index(name);
 
 	assertm(index != -1, "%s", name);

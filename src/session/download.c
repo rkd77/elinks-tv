@@ -318,7 +318,7 @@ write_cache_entry_to_file(struct cache_entry *cached, struct file_download *file
 static void
 abort_download_and_beep(struct file_download *file_download, struct terminal *term)
 {
-	if (term && get_opt_int("document.download.notify_bell",
+	if (term && get_opt_int((const unsigned char *)"document.download.notify_bell",
 	                        file_download->ses)
 		    + file_download->notify >= 2) {
 		beep_terminal(term);
@@ -491,7 +491,7 @@ download_data_store(struct download *download, struct file_download *file_downlo
 	}
 
 	if (file_download->remotetime
-	    && get_opt_bool("document.download.set_original_time",
+	    && get_opt_bool((const unsigned char *)"document.download.set_original_time",
 	                    file_download->ses)) {
 		struct utimbuf foo;
 
@@ -782,7 +782,7 @@ lookup_unique_name(struct terminal *term, unsigned char *ofile,
 
 	/* !overwrite means always silently overwrite, which may be admitelly
 	 * indeed a little confusing ;-) */
-	overwrite = get_opt_int("document.download.overwrite", NULL);
+	overwrite = get_opt_int((const unsigned char *)"document.download.overwrite", NULL);
 	if (!overwrite) {
 		/* Nothing special to do... */
 		callback(term, ofile, data, flags);
@@ -907,7 +907,7 @@ create_download_file_do(struct terminal *term, unsigned char *file,
 		set_bin(h);
 
 		if (!(flags & DOWNLOAD_EXTERNAL)) {
-			unsigned char *download_dir = get_opt_str("document.download.directory", NULL);
+			unsigned char *download_dir = get_opt_str((const unsigned char *)"document.download.directory", NULL);
 			int i;
 
 			safe_strncpy(download_dir, file, MAX_STR_LEN);
@@ -1596,7 +1596,7 @@ do_type_query(struct type_query *type_query, unsigned char *ct, struct mime_hand
 	add_dlg_text(dlg, text, ALIGN_LEFT, 0);
 
 	/* Add input field or text widget with info about the program handler. */
-	if (!get_cmd_opt_bool("anonymous")) {
+	if (!get_cmd_opt_bool((const unsigned char *)"anonymous")) {
 		unsigned char *field = (unsigned char *)mem_calloc(1, MAX_STR_LEN);
 
 		if (!field) {
@@ -1639,14 +1639,14 @@ do_type_query(struct type_query *type_query, unsigned char *ct, struct mime_hand
 
 	/* Add buttons if they are both usable and allowed. */
 
-	if (!get_cmd_opt_bool("anonymous") || handler) {
+	if (!get_cmd_opt_bool((const unsigned char *)"anonymous") || handler) {
 		add_dlg_ok_button(dlg, _("~Open", term), B_ENTER,
 				  (done_handler_T *) tp_open, type_query);
 	} else {
 		widgets--;
 	}
 
-	if (!get_cmd_opt_bool("anonymous")) {
+	if (!get_cmd_opt_bool((const unsigned char *)"anonymous")) {
 		add_dlg_ok_button(dlg, _("Sa~ve", term), B_ENTER,
 				  (done_handler_T *) tp_save, type_query);
 	} else {
@@ -1744,7 +1744,7 @@ setup_download_handler(struct session *ses, struct download *loading,
 			 * to use the type_query this is easier. */
 			if ((!c_strcasecmp(ctype, "application/x-bittorrent")
 				|| !c_strcasecmp(ctype, "application/x-torrent"))
-			    && !get_cmd_opt_bool("anonymous"))
+			    && !get_cmd_opt_bool((const unsigned char *)"anonymous"))
 				query_bittorrent_dialog(type_query);
 			else
 #endif

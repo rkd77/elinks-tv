@@ -325,7 +325,7 @@ static int
 dump_references(struct document *document, int fd, unsigned char buf[D_BUF])
 {
 	if (document->nlinks
-	    && get_opt_bool("document.dump.references", NULL)) {
+	    && get_opt_bool((const unsigned char *)"document.dump.references", NULL)) {
 		int x;
 		unsigned char *header = "\nReferences\n\n   Visible links\n";
 		int headlen = strlen((const char *)header);
@@ -396,14 +396,14 @@ dump_formatted(int fd, struct download *download, struct cache_entry *cached)
 	memset(&formatted, 0, sizeof(formatted));
 
 	init_document_options(NULL, &o);
-	width = get_opt_int("document.dump.width", NULL);
+	width = get_opt_int((const unsigned char *)"document.dump.width", NULL);
 	set_box(&o.box, 0, 1, width, DEFAULT_TERMINAL_HEIGHT);
 
-	o.cp = get_opt_codepage("document.dump.codepage", NULL);
-	o.color_mode = get_opt_int("document.dump.color_mode", NULL);
+	o.cp = get_opt_codepage((const unsigned char *)"document.dump.codepage", NULL);
+	o.color_mode = get_opt_int((const unsigned char *)"document.dump.color_mode", NULL);
 	o.plain = 0;
 	o.frames = 0;
-	o.links_numbering = get_opt_bool("document.dump.numbering", NULL);
+	o.links_numbering = get_opt_bool((const unsigned char *)"document.dump.numbering", NULL);
 
 	init_vs(&vs, cached->uri, -1);
 
@@ -588,7 +588,7 @@ dump_loading_callback(struct download *download, void *p)
 
 	if (is_in_queued_state(download->state)) return;
 
-	if (get_cmd_opt_bool("dump")) {
+	if (get_cmd_opt_bool((const unsigned char *)"dump")) {
 		if (is_in_transfering_state(download->state))
 			return;
 

@@ -776,7 +776,7 @@ abort_connection(struct connection *conn, struct connection_state state)
 void
 retry_connection(struct connection *conn, struct connection_state state)
 {
-	int max_tries = get_opt_int("connection.retries", NULL);
+	int max_tries = get_opt_int((const unsigned char *)"connection.retries", NULL);
 
 	assertm(is_in_result_state(state),
 		"connection didn't end in result state (%d)", state);
@@ -830,8 +830,8 @@ static void
 check_queue(void)
 {
 	struct connection *conn;
-	int max_conns_to_host = get_opt_int("connection.max_connections_to_host", NULL);
-	int max_conns = get_opt_int("connection.max_connections", NULL);
+	int max_conns_to_host = get_opt_int((const unsigned char *)"connection.max_connections_to_host", NULL);
+	int max_conns = get_opt_int((const unsigned char *)"connection.max_connections", NULL);
 
 again:
 	conn = (struct connection *)connection_queue.next;
@@ -1138,7 +1138,7 @@ detach_connection(struct download *download, off_t pos)
 		total_len = (conn->est_length == -1) ? conn->from
 						     : conn->est_length;
 
-		if (total_len < (get_opt_long("document.cache.memory.size",
+		if (total_len < (get_opt_long((const unsigned char *)"document.cache.memory.size",
 		                              NULL)
 				 * MAX_CACHED_OBJECT_PERCENT / 100)) {
 			/* This whole thing will fit to the memory anyway, so
@@ -1191,8 +1191,8 @@ connection_timeout_1(struct connection *conn)
 {
 	install_timer(&conn->timer, (milliseconds_T)
 			((conn->unrestartable
-			 ? get_opt_int("connection.unrestartable_receive_timeout", NULL)
-			 : get_opt_int("connection.receive_timeout", NULL))
+			 ? get_opt_int((const unsigned char *)"connection.unrestartable_receive_timeout", NULL)
+			 : get_opt_int((const unsigned char *)"connection.receive_timeout", NULL))
 			* 500), (void (*)(void *)) connection_timeout, conn);
 	/* The expired timer ID has now been erased.  */
 }
@@ -1204,8 +1204,8 @@ set_connection_timeout(struct connection *conn)
 
 	install_timer(&conn->timer, (milliseconds_T)
 			((conn->unrestartable
-			 ? get_opt_int("connection.unrestartable_receive_timeout", NULL)
-			 : get_opt_int("connection.receive_timeout", NULL))
+			 ? get_opt_int((const unsigned char *)"connection.unrestartable_receive_timeout", NULL)
+			 : get_opt_int((const unsigned char *)"connection.receive_timeout", NULL))
 			* 500), (void (*)(void *)) connection_timeout_1, conn);
 }
 

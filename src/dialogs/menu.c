@@ -227,7 +227,7 @@ tab_menu(struct session *ses, int x, int y, int place_above_cursor)
 	struct menu_item *menu;
 	int tabs_count;
 #ifdef CONFIG_BOOKMARKS
-	int anonymous = get_cmd_opt_bool("anonymous");
+	int anonymous = get_cmd_opt_bool((const unsigned char *)"anonymous");
 #endif
 
 	assert(ses && ses->tab);
@@ -351,7 +351,7 @@ do_file_menu(struct terminal *term, void *xxx, void *ses_)
 {
 	/* [gettext_accelerator_context(.file_menu)] */
 	struct menu_item *file_menu, *e, *f;
-	int anonymous = get_cmd_opt_bool("anonymous");
+	int anonymous = get_cmd_opt_bool((const unsigned char *)"anonymous");
 	int x, o;
 
 	file_menu = (struct menu_item *)mem_alloc(sizeof(file_menu11) + sizeof(file_menu21)
@@ -362,8 +362,8 @@ do_file_menu(struct terminal *term, void *xxx, void *ses_)
 	e = file_menu;
 
 	if (!anonymous
-	    && !get_cmd_opt_bool("no-connect")
-	    && !get_cmd_opt_bool("no-home"))
+	    && !get_cmd_opt_bool((const unsigned char *)"no-connect")
+	    && !get_cmd_opt_bool((const unsigned char *)"no-home"))
 		o = can_open_in_new(term);
 	else
 		o = 0;
@@ -514,7 +514,7 @@ do_setup_menu(struct terminal *term, void *xxx, void *ses_)
 {
 	struct session *ses = (struct session *)ses_;
 
-	if (!get_cmd_opt_bool("anonymous"))
+	if (!get_cmd_opt_bool((const unsigned char *)"anonymous"))
 		do_menu(term, setup_menu, ses, 1);
 	else
 		do_menu(term, setup_menu_anon, ses, 1);
@@ -584,7 +584,7 @@ query_file(struct session *ses, struct uri *uri, void *data,
 
 	if (!init_string(&def)) return;
 
-	add_to_string(&def, get_opt_str("document.download.directory", NULL));
+	add_to_string(&def, get_opt_str((const unsigned char *)"document.download.directory", NULL));
 	if (def.length && !dir_sep(def.source[def.length - 1]))
 		add_char_to_string(&def, '/');
 
@@ -635,7 +635,7 @@ open_uri_in_new_window(struct session *ses, struct uri *uri, struct uri *referre
 		       enum term_env_type env, enum cache_mode cache_mode,
 		       enum task_type task)
 {
-	int ring = get_cmd_opt_int("session-ring");
+	int ring = get_cmd_opt_int((const unsigned char *)"session-ring");
 	struct string parameters;
 	int id;
 
@@ -749,9 +749,9 @@ add_new_win_to_menu(struct menu_item **mi, unsigned char *text,
 	 * instance in the new window so with -no-connect or -no-home enabled
 	 * it is not possible to open links URIs. For -anonymous one window
 	 * should be enough. */
-	if (get_cmd_opt_bool("no-connect")
-	    || get_cmd_opt_bool("no-home")
-	    || get_cmd_opt_bool("anonymous"))
+	if (get_cmd_opt_bool((const unsigned char *)"no-connect")
+	    || get_cmd_opt_bool((const unsigned char *)"no-home")
+	    || get_cmd_opt_bool((const unsigned char *)"anonymous"))
 		return;
 
 	add_to_menu(mi, text, NULL, ACT_MAIN_OPEN_LINK_IN_NEW_WINDOW,
@@ -818,7 +818,7 @@ enum frame_event_status
 pass_uri_to_command(struct session *ses, struct document_view *doc_view,
 		    int which_type)
 {
-	LIST_OF(struct option) *tree = get_opt_tree("document.uri_passing",
+	LIST_OF(struct option) *tree = get_opt_tree((const unsigned char *)"document.uri_passing",
 	                                            NULL);
 	enum pass_uri_type type = which_type;
 	struct menu_item *items;
@@ -894,7 +894,7 @@ void
 add_uri_command_to_menu(struct menu_item **mi, enum pass_uri_type type,
 			unsigned char *text)
 {
-	LIST_OF(struct option) *tree = get_opt_tree("document.uri_passing",
+	LIST_OF(struct option) *tree = get_opt_tree((const unsigned char *)"document.uri_passing",
 	                                            NULL);
 	struct option *option;
 	int commands = 0;
@@ -1053,7 +1053,7 @@ auto_complete_file(struct terminal *term, int no_elevator, unsigned char *path,
 
 	assert(term && data && file_func && dir_func && data);
 
-	if (get_cmd_opt_bool("anonymous"))
+	if (get_cmd_opt_bool((const unsigned char *)"anonymous"))
 		return;
 
 	if (!*path) path = "./";

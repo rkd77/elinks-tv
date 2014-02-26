@@ -289,7 +289,7 @@ not_processed:
 		unsigned char *import_url;
 		struct uri *uri;
 
-		if (!get_opt_bool("ecmascript.enable", NULL)) {
+		if (!get_opt_bool((const unsigned char *)"ecmascript.enable", NULL)) {
 			mem_free(src);
 			html_top->invisible++;
 			return;
@@ -1125,8 +1125,8 @@ html_noscript(struct html_context *html_context, unsigned char *a,
 	/* We shouldn't throw <noscript> away until our ECMAScript support is
 	 * halfway decent. */
 #ifdef CONFIG_ECMASCRIPT
-	if (get_opt_bool("ecmascript.enable", NULL)
-            && get_opt_bool("ecmascript.ignore_noscript", NULL))
+	if (get_opt_bool((const unsigned char *)"ecmascript.enable", NULL)
+            && get_opt_bool((const unsigned char *)"ecmascript.ignore_noscript", NULL))
 		html_skip(html_context, a);
 #endif
 }
