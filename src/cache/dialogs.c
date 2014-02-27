@@ -63,7 +63,7 @@ get_cache_entry_info(struct listbox_item *item, struct terminal *term)
 	if (!init_string(&msg)) return NULL;
 
 	add_to_string(&msg, _("URL", term));
-	add_to_string(&msg, ": ");
+	add_to_string(&msg, (const unsigned char *)": ");
 	add_uri_to_string(&msg, cached->uri, URI_PUBLIC);
 
 	/* No need to use compare_uri() here we only want to check whether they
@@ -78,7 +78,7 @@ get_cache_entry_info(struct listbox_item *item, struct terminal *term)
 		add_uri_to_string(&msg, cached->redirect, URI_PUBLIC);
 
 		if (cached->redirect_get) {
-			add_to_string(&msg, " (GET)");
+			add_to_string(&msg, (const unsigned char *)" (GET)");
 		}
 	}
 
@@ -110,7 +110,7 @@ get_cache_entry_info(struct listbox_item *item, struct terminal *term)
 	if (cached->incomplete || !cached->valid) {
 		add_char_to_string(&msg, '\n');
 		add_to_string(&msg, _("Flags", term));
-		add_to_string(&msg, ": ");
+		add_to_string(&msg, (const unsigned char *)": ");
 		if (cached->incomplete) {
 			add_to_string(&msg, _("incomplete", term));
 			add_char_to_string(&msg, ' ');
@@ -193,8 +193,8 @@ match_cache_entry(struct listbox_item *item, struct terminal *term,
 {
 	struct cache_entry *cached = (struct cache_entry *)item->udata;
 
-	if (c_strcasestr(struri(cached->uri), text)
-	    || (cached->head && c_strcasestr(cached->head, text)))
+	if (c_strcasestr((const char *)struri(cached->uri), (const char *)text)
+	    || (cached->head && c_strcasestr((const char *)cached->head, (const char *)text)))
 		return LISTBOX_MATCH_OK;
 
 	return LISTBOX_MATCH_NO;
@@ -207,7 +207,7 @@ match_cache_entry_contents(struct listbox_item *item, struct terminal *term,
 	struct cache_entry *cached = (struct cache_entry *)item->udata;
 	struct fragment *fragment = get_cache_fragment(cached);
 
-	if (fragment && strlcasestr(fragment->data, fragment->length, text, -1))
+	if (fragment && strlcasestr((const char *)fragment->data, fragment->length, (const char *)text, -1))
 		return LISTBOX_MATCH_OK;
 
 	return LISTBOX_MATCH_NO;
