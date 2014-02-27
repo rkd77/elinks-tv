@@ -79,10 +79,10 @@ accept_cookie_dialog(struct session *ses, void *data)
 	del_from_list(cookie);
 
 	add_format_to_string(&string,
-		_("Do you want to accept a cookie from %s?", ses->tab->term),
+		(const char *)_("Do you want to accept a cookie from %s?", ses->tab->term),
 		cookie->server->host);
 
-	add_to_string(&string, "\n\n");
+	add_to_string(&string, (const unsigned char *)"\n\n");
 
 	add_cookie_info_to_string(&string, cookie, ses->tab->term);
 
@@ -294,7 +294,7 @@ set_cookie_expires(struct dialog_data *dlg_data, struct widget_data *widget_data
 
 	/* Bug 923: Assumes time_t values fit in long.  */
 	errno = 0;
-	number = strtol(value, (char **) &end, 10);
+	number = strtol((const char *)value, (char **) &end, 10);
 	if (errno || *end || number < 0) return EVENT_NOT_PROCESSED;
 
 	cookie->expires = (time_t) number;
@@ -313,7 +313,7 @@ set_cookie_secure(struct dialog_data *dlg_data, struct widget_data *widget_data)
 	if (!value || !cookie) return EVENT_NOT_PROCESSED;
 
 	errno = 0;
-	number = strtol(value, (char **) &end, 10);
+	number = strtol((const char *)value, (char **) &end, 10);
 	if (errno || *end) return EVENT_NOT_PROCESSED;
 
 	cookie->secure = (number != 0);
@@ -414,9 +414,9 @@ push_add_button(struct dialog_data *dlg_data, struct widget_data *button)
 
 	object_lock(server);	/* ref consumed by init_cookie */
 
-	new_cookie = init_cookie(stracpy("") /* name */,
-				 stracpy("") /* value */,
-				 stracpy("/") /* path */,
+	new_cookie = init_cookie(stracpy((const unsigned char *)"") /* name */,
+				 stracpy((const unsigned char *)"") /* value */,
+				 stracpy((const unsigned char *)"/") /* path */,
 				 stracpy(server->host) /* domain */,
 				 server);
 	if (!new_cookie) return EVENT_PROCESSED;
@@ -437,9 +437,9 @@ add_server_do(void *data)
 
 	if (!value) return;
 
-	dummy_cookie = init_cookie(stracpy("empty") /* name */,
-				   stracpy("1") /* value */,
-				   stracpy("/") /* path */,
+	dummy_cookie = init_cookie(stracpy((const unsigned char *)"empty") /* name */,
+				   stracpy((const unsigned char *)"1") /* value */,
+				   stracpy((const unsigned char *)"/") /* path */,
 				   stracpy(value) /* domain */,
 				   get_cookie_server(value, strlen((const char *)value)));
 	if (!dummy_cookie) return;

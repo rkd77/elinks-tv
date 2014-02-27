@@ -145,7 +145,7 @@ get_cookie_server(unsigned char *host, int hostlen)
 		/* XXX: We must count with cases like "x.co" vs "x.co.uk"
 		 * below! */
 		int cslen = strlen((const char *)cs->host);
-		int cmp = c_strncasecmp(cs->host, host, hostlen);
+		int cmp = c_strncasecmp((const char *)cs->host, (const char *)host, hostlen);
 
 		if (!sort_spot && (cmp > 0 || (cmp == 0 && cslen > hostlen))) {
 			/* This is the first @cs with name greater than @host,
@@ -242,7 +242,7 @@ is_domain_security_ok(unsigned char *domain, unsigned char *server, int server_l
 
 	/* Ensure that the domain is atleast a substring of the server before
 	 * continuing. */
-	if (c_strncasecmp(domain, server + server_len - domain_len, domain_len))
+	if (c_strncasecmp((const char *)domain, (const char *)(server + server_len - domain_len), domain_len))
 		return 0;
 
 	/* Allow domains which are same as servers. --<rono@sentuny.com.au> */
@@ -352,16 +352,16 @@ set_cookie(struct uri *uri, unsigned char *str)
 
 	if (!parse_cookie_str(&cstr, str)) return;
 
-	switch (parse_header_param(str, "path", &path)) {
+	switch (parse_header_param(str, (unsigned char *)"path", &path)) {
 		unsigned char *path_end;
 
 	case HEADER_PARAM_FOUND:
 		if (!path[0]
 		    || path[strlen((const char *)path) - 1] != '/')
-			add_to_strn(&path, "/");
+			add_to_strn(&path, (const unsigned char *)"/");
 
 		if (path[0] != '/') {
-			add_to_strn(&path, "x");
+			add_to_strn(&path, (const unsigned char *)"x");
 			memmove(path + 1, path, strlen((const char *)path) - 1);
 			path[0] = '/';
 		}
@@ -372,7 +372,7 @@ set_cookie(struct uri *uri, unsigned char *str)
 		if (!path)
 			return;
 
-		path_end = strrchr((char *)path, '/');
+		path_end = (unsigned char *)strrchr((char *)path, '/');
 		if (path_end)
 			path_end[1] = '\0';
 		break;
@@ -381,7 +381,7 @@ set_cookie(struct uri *uri, unsigned char *str)
 		return;
 	}
 
-	if (parse_header_param(str, "domain", &domain) == HEADER_PARAM_NOT_FOUND)
+	if (parse_header_param(str, (unsigned char *)"domain", &domain) == HEADER_PARAM_NOT_FOUND)
 		domain = memacpy(uri->host, uri->hostlen);
 	if (domain && domain[0] == '.')
 		memmove(domain, domain + 1, strlen((const char *)domain));
@@ -424,7 +424,7 @@ set_cookie(struct uri *uri, unsigned char *str)
 		unsigned char *date;
 		time_t expires;
 
-		switch (parse_header_param(str, "expires", &date)) {
+		switch (parse_header_param(str, (unsigned char *)"expires", &date)) {
 		case HEADER_PARAM_FOUND:
 			expires = parse_date(&date, NULL, 0, 1); /* Convert date to seconds. */
 
@@ -452,7 +452,7 @@ set_cookie(struct uri *uri, unsigned char *str)
 		}
 	}
 
-	cookie->secure = (parse_header_param(str, "secure", NULL)
+	cookie->secure = (parse_header_param(str, (unsigned char *)"secure", NULL)
 	                  == HEADER_PARAM_FOUND);
 
 #ifdef DEBUG_COOKIES
@@ -662,7 +662,7 @@ send_cookies(struct uri *uri)
 			continue;
 
 		if (header.length)
-			add_to_string(&header, "; ");
+			add_to_string(&header, (const unsigned char *)"; ");
 
 		add_to_string(&header, c->name);
 		add_char_to_string(&header, '=');
@@ -691,7 +691,7 @@ load_cookies(void) {
 	 * save_cookies may write. 6 is choosen after the fprintf(..) call
 	 * in save_cookies(). --Zas */
 	unsigned char in_buffer[6 * MAX_STR_LEN];
-	unsigned char *cookfile = COOKIES_FILENAME;
+	unsigned char *cookfile = (unsigned char *)COOKIES_FILENAME;
 	FILE *fp;
 	time_t now;
 
@@ -707,7 +707,7 @@ load_cookies(void) {
 	done_cookies(&cookies_module);
 	cookies_nosave = 0;
 
-	fp = fopen(cookfile, "rb");
+	fp = fopen((const char *)cookfile, "rb");
 	if (elinks_home) mem_free(cookfile);
 	if (!fp) return;
 
@@ -716,7 +716,7 @@ load_cookies(void) {
 	cookies_nosave = 1;
 
 	now = time(NULL);
-	while (fgets(in_buffer, 6 * MAX_STR_LEN, fp)) {
+	while (fgets((char *)in_buffer, 6 * MAX_STR_LEN, fp)) {
 		struct cookie *cookie;
 		unsigned char *p, *q = in_buffer;
 		enum { NAME = 0, VALUE, SERVER, PATH, DOMAIN, EXPIRES, SECURE, MEMBERS } member_;
@@ -729,10 +729,10 @@ load_cookies(void) {
 
 		/* First find all members. */
 		for (member = NAME; member < MEMBERS; member++, q = ++p) {
-			p = strchr((char *)q, '\t');
+			p = (unsigned char *)strchr((char *)q, '\t');
 			if (!p) {
 				if (member + 1 != MEMBERS) break; /* last field ? */
-				p = strchr((char *)q, '\n');
+				p = (unsigned char *)strchr((char *)q, '\n');
 				if (!p) break;
 			}
 
@@ -743,7 +743,7 @@ load_cookies(void) {
 		if (member != MEMBERS) continue;	/* Invalid line. */
 
 		/* Skip expired cookies if any. */
-		expires = str_to_time_t(members[EXPIRES].pos);
+		expires = str_to_time_t((const char *)members[EXPIRES].pos);
 		if (!expires || expires <= now) {
 			set_cookies_dirty();
 			continue;
@@ -767,7 +767,7 @@ load_cookies(void) {
 		}
 
 		cookie->expires = expires;
-		cookie->secure  = !!atoi(members[SECURE].pos);
+		cookie->secure  = !!atoi((const char *)members[SECURE].pos);
 
 		accept_cookie(cookie);
 	}
