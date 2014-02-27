@@ -107,7 +107,7 @@ get_range_string(struct option *option)
 	if (!init_string(&info)) return NULL;
 
 	if (option->type == OPT_BOOL)
-		add_to_string(&info, "[0|1]");
+		add_to_string(&info, (const unsigned char *)"[0|1]");
 	else if (option->type == OPT_INT || option->type == OPT_LONG)
 		add_format_to_string(&info, "[%li..%li]", option->min, option->max);
 
@@ -118,7 +118,7 @@ static unsigned char *
 get_option_text(struct listbox_item *item, struct terminal *term)
 {
 	struct option *option = (struct option *)item->udata;
-	unsigned char *desc = option->capt ? option->capt : option->name;
+	const unsigned char *desc = option->capt ? option->capt : option->name;
 
 	if (option->flags & OPT_TOUCHED)
 		return straconcat(_(desc, term),
@@ -166,7 +166,7 @@ get_option_info(struct listbox_item *item, struct terminal *term)
 		range = get_range_string(option);
 		if (range) {
 			if (*range) {
-				add_to_string(&info, " ");
+				add_to_string(&info, (const unsigned char *)" ");
 				add_to_string(&info, range);
 			}
 			mem_free(range);
@@ -476,7 +476,7 @@ invalid_option:
 
 	input_dialog(term, getml(ctx, (void *) NULL), N_("Add option"), N_("Name"),
 		     ctx, NULL,
-		     MAX_STR_LEN, "", 0, 0, check_option_name,
+		     MAX_STR_LEN, (const unsigned char *)"", 0, 0, check_option_name,
 		     add_option_to_tree, NULL);
 
 	return EVENT_PROCESSED;
@@ -536,7 +536,7 @@ static int keybinding_text_toggle;
 static struct listbox_item *action_box_items[KEYMAP_MAX][ACTION_BOX_SIZE];
 
 struct listbox_item *
-get_keybinding_action_box_item(enum keymap_id keymap_id, action_id_T action_id)
+get_keybinding_action_box_item(int keymap_id, action_id_T action_id)
 {
 	assert(action_id < ACTION_BOX_SIZE);
 	if_assert_failed return NULL;
@@ -552,7 +552,7 @@ init_keybinding_listboxes(struct keymap keymap_table[KEYMAP_MAX],
 {
 	struct listbox_item *root = &keybinding_browser.root;
 	const struct action *act;
-	enum keymap_id keymap_id2;
+	int keymap_id2;
 	int keymap_id = (int)keymap_id2;
 
 	/* Do it backwards because add_listbox_item() add to front
@@ -702,7 +702,7 @@ match_keybinding(struct listbox_item *item, struct terminal *term,
 		 unsigned char *text)
 {
 	const struct action *action = (const struct action *)item->udata;
-	unsigned char *desc;
+	const unsigned char *desc;
 
 	if (item->depth != 1)
 		return LISTBOX_MATCH_IMPOSSIBLE;
@@ -752,7 +752,7 @@ static const struct listbox_ops keybinding_listbox_ops = {
 struct kbdbind_add_hop {
 	struct terminal *term;
 	action_id_T action_id;
-	enum keymap_id keymap_id;
+	int keymap_id;
 	struct term_event_keyboard kbd;
 	struct widget_data *widget_data;
 };
@@ -895,7 +895,7 @@ push_kbdbind_add_button(struct dialog_data *dlg_data,
 	input_dialog(term, getml(hop, (void *) text, (void *) NULL),
 		     N_("Add keybinding"), text,
 		     hop, NULL,
-		     MAX_STR_LEN, "", 0, 0, check_keystroke,
+		     MAX_STR_LEN, (const unsigned char *)"", 0, 0, check_keystroke,
 		     really_add_keybinding, NULL);
 
 	return EVENT_PROCESSED;

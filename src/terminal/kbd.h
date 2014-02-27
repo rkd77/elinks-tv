@@ -28,7 +28,7 @@ typedef int32_t term_event_key_T;
 
 /** Values for term_event_keyboard.modifier and
  * interlink_event_keyboard.modifier */
-typedef enum {
+enum term_event_modifier {
 	KBD_MOD_NONE	= 0,
 	KBD_MOD_SHIFT	= 1,
 	KBD_MOD_CTRL	= 2,
@@ -39,7 +39,9 @@ typedef enum {
 	 * keystrokes that include it cannot be bound to any actions,
 	 * and ELinks will instead insert the characters if possible.  */
 	KBD_MOD_PASTE   = 8,
-} term_event_modifier_T;
+};
+
+typedef int term_event_modifier_T;
 
 /** A key received from a terminal, with modifiers.  */
 struct term_event_keyboard {

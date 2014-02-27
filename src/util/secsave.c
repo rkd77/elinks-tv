@@ -360,7 +360,7 @@ secure_fprintf(struct secure_save_info *ssi, const char *format, ...)
 }
 
 unsigned char *
-secsave_strerror(enum secsave_errno secsave_error, struct terminal *term)
+secsave_strerror(int secsave_error, struct terminal *term)
 {
 	switch (secsave_error) {
 	case SS_ERR_OPEN_READ:

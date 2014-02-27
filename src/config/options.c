@@ -199,7 +199,7 @@ get_opt_rec(struct option *tree, const unsigned char *name_)
 	}
 
 	foreach (option, *tree->value.tree) {
-		if (option->name && !strcmp(option->name, name)) {
+		if (option->name && !strcmp((const char *)option->name, (const char *)name)) {
 			mem_free(aname);
 			return option;
 		}
@@ -226,9 +226,9 @@ get_opt_rec(struct option *tree, const unsigned char *name_)
 			mem_free(aname);
 			return NULL;
 		}
-		mem_free_set(&option->name, stracpy(name));
+		mem_free_set((void **)&option->name, stracpy(name));
 
-		add_opt_rec(tree, "", option);
+		add_opt_rec(tree, (const unsigned char *)"", option);
 
 		mem_free(aname);
 		return option;
@@ -282,7 +282,7 @@ indirect_option(struct option *alias)
 union option_value *
 get_opt_(
 #ifdef CONFIG_DEBUG
-	 unsigned char *file, int line, enum option_type option_type,
+	 unsigned char *file, int line, int option_type,
 #endif
 	 struct option *tree, const unsigned char *name, struct session *ses)
 {
@@ -297,7 +297,7 @@ get_opt_(
 	 * option has a shadow in the domain tree that matches the current
 	 * document in that session, return that shadow. */
 	if (!opt && ses)
-		opt = get_domain_option_from_session(name, ses);
+		opt = get_domain_option_from_session((unsigned char *)name, ses);
 
 	/* Else, return the real option. */
 	if (!opt)
@@ -370,8 +370,8 @@ add_opt_sort(struct option *tree, struct option *option, int abi)
 	 * optimizes the most expensive BUT most common case ;-). */
 	} else if ((option->type != OPT_TREE
 		    || ((struct option *) cat->prev)->type == OPT_TREE)
-		   && strcmp(((struct option *) cat->prev)->name,
-			     option->name) <= 0) {
+		   && strcmp((const char *)((struct option *) cat->prev)->name,
+			     (const char *)option->name) <= 0) {
 append:
 		add_to_list_end(*cat, option);
 		if (abi) add_to_list_end(*bcat, option->box_item);
@@ -399,7 +399,7 @@ append:
 
 			if ((option->type != OPT_TREE
 			     || pos->type == OPT_TREE)
-			    && strcmp(pos->name, option->name) <= 0)
+			    && strcmp((const char *)pos->name, (const char *)option->name) <= 0)
 				continue;
 
 			/* Ordinary options always sort behind trees. */
@@ -418,7 +418,7 @@ append:
 			 * of a rotated T (ascii: +-) when displaying it. */
 			if (option->type == pos->type
 			    && *option->name <= '_'
-			    && !strcmp(pos->name, "_template_")) {
+			    && !strcmp((const char *)pos->name, "_template_")) {
 				if (abi) add_at_pos(bpos, option->box_item);
 				add_at_pos(pos, option);
 				break;
@@ -449,7 +449,7 @@ add_opt_rec(struct option *tree, const unsigned char *path, struct option *optio
 
 	object_nolock(option, "option");
 
-	if (option->box_item && option->name && !strcmp(option->name, "_template_"))
+	if (option->box_item && option->name && !strcmp((const char *)option->name, "_template_"))
 		option->box_item->visible = get_opt_bool((const unsigned char *)"config.show_template", NULL);
 
 	if (tree->flags & OPT_AUTOCREATE && !option->desc) {
@@ -503,7 +503,7 @@ init_option_listbox_item(struct option *option)
 /*! @relates option */
 struct option *
 add_opt(struct option *tree, unsigned char *path, unsigned char *capt,
-	unsigned char *name, option_flags_T flags, enum option_type type,
+	unsigned char *name, option_flags_T flags, int type,
 	long min, long max, longptr_T value, unsigned char *desc)
 {
 	struct option *option = (struct option *)mem_calloc(1, sizeof(*option));
@@ -595,7 +595,7 @@ done_option(struct option *option)
 		done_listbox_item(&option_browser, option->box_item);
 
 	if (option->flags & OPT_ALLOC) {
-		mem_free_if(option->name);
+		mem_free_if((void *)option->name);
 		mem_free(option);
 	} else if (!option->capt) {
 		/* We are probably dealing with a built-in autocreated option
@@ -829,7 +829,7 @@ update_visibility(LIST_OF(struct option) *tree, int show)
 	foreach (opt, *tree) {
 		if (opt->flags & OPT_DELETED) continue;
 
-		if (!strcmp(opt->name, "_template_")) {
+		if (!strcmp((const char *)opt->name, "_template_")) {
 			if (opt->box_item)
 				opt->box_item->visible = (show & 1);
 
@@ -915,21 +915,21 @@ change_hook_language(struct session *ses, struct option *current, struct option 
 
 
 static const struct change_hook_info change_hooks[] = {
-	{ "config.show_template",	change_hook_stemplate },
-	{ "connection",			change_hook_connection },
-	{ "document.browse",		change_hook_html },
-	{ "document.browse.forms.insert_mode",
+	{ (const unsigned char *)"config.show_template",	change_hook_stemplate },
+	{ (const unsigned char *)"connection",			change_hook_connection },
+	{ (const unsigned char *)"document.browse",		change_hook_html },
+	{ (const unsigned char *)"document.browse.forms.insert_mode",
 					change_hook_insert_mode },
-	{ "document.browse.links.active_link",
+	{ (const unsigned char *)"document.browse.links.active_link",
 					change_hook_active_link },
-	{ "document.cache",		change_hook_cache },
-	{ "document.codepage",		change_hook_html },
-	{ "document.colors",		change_hook_html },
-	{ "document.html",		change_hook_html },
-	{ "document.plain",		change_hook_html },
-	{ "terminal",			change_hook_terminal },
-	{ "ui.language",		change_hook_language },
-	{ "ui",				change_hook_ui },
+	{ (const unsigned char *)"document.cache",		change_hook_cache },
+	{ (const unsigned char *)"document.codepage",		change_hook_html },
+	{ (const unsigned char *)"document.colors",		change_hook_html },
+	{ (const unsigned char *)"document.html",		change_hook_html },
+	{ (const unsigned char *)"document.plain",		change_hook_html },
+	{ (const unsigned char *)"terminal",			change_hook_terminal },
+	{ (const unsigned char *)"ui.language",		change_hook_language },
+	{ (const unsigned char *)"ui",				change_hook_ui },
 	{ NULL,				NULL },
 };
 
@@ -938,12 +938,12 @@ static const struct change_hook_info change_hooks[] = {
 void
 init_options(void)
 {
-	cmdline_options = add_opt_tree_tree(&options_root, "", "",
-					    "cmdline", 0, "");
+	cmdline_options = add_opt_tree_tree(&options_root, (unsigned char *)"", (unsigned char *)"",
+					    (unsigned char *)"cmdline", 0, (unsigned char *)"");
 	register_options(cmdline_options_info, cmdline_options);
 
-	config_options = add_opt_tree_tree(&options_root, "", "",
-					 "config", OPT_SORT, "");
+	config_options = add_opt_tree_tree(&options_root, (unsigned char *)"", (unsigned char *)"",
+					 (unsigned char *)"config", OPT_SORT, (unsigned char *)"");
 	config_options->flags |= OPT_LISTBOX;
 	config_options->box_item = &option_browser.root;
 	register_options(config_options_info, config_options);
@@ -1064,7 +1064,7 @@ smart_config_string(struct string *str, int print_comment, int i18n,
 
 		if (option->flags & OPT_HIDDEN ||
 		    option->type == OPT_ALIAS ||
-		    !strcmp(option->name, "_template_"))
+		    !strcmp((const char *)option->name, "_template_"))
 			continue;
 
 		/* Is there anything to be printed anyway? */
@@ -1089,7 +1089,7 @@ smart_config_string(struct string *str, int print_comment, int i18n,
 		 * power. I have better things to think about, personally.
 		 * Maybe we should just mark autocreated options somehow ;). */
 		if (!print_comment || (print_comment == 1
-					&& (strcmp(option->name, "_template_")
+					&& (strcmp((const char *)option->name, "_template_")
 					    && (option->flags & OPT_AUTOCREATE
 					        && option->type == OPT_TREE))))
 			do_print_comment = 0;
@@ -1120,7 +1120,7 @@ smart_config_string(struct string *str, int print_comment, int i18n,
 
 			if (pc == 2 && option->flags & OPT_AUTOCREATE)
 				pc = 1;
-			else if (pc == 1 && strcmp(option->name, "_template_"))
+			else if (pc == 1 && strcmp((const char *)option->name, "_template_"))
 				pc = 0;
 
 			fn(str, option, path, depth, /*pc*/1, 3, i18n);

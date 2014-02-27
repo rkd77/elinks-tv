@@ -43,6 +43,6 @@ int secure_fputc(struct secure_save_info *, int);
 
 int secure_fprintf(struct secure_save_info *, const char *, ...);
 
-unsigned char *secsave_strerror(enum secsave_errno, struct terminal *);
+unsigned char *secsave_strerror(int secsave_errno, struct terminal *);
 
 #endif

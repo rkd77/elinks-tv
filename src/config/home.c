@@ -58,8 +58,8 @@ test_confdir(unsigned char *home, unsigned char *path,
 
 	strip_trailing_dir_sep(confdir);
 
-	if (stat(confdir, &st)) {
-		if (!mkdir(confdir, 0700)) {
+	if (stat((const char *)confdir, &st)) {
+		if (!mkdir((const char *)confdir, 0700)) {
 #if 0
 		/* I've no idea if following is needed for newly created
 		 * directories.  It's bad thing to do it everytime. --pasky */
@@ -76,7 +76,7 @@ test_confdir(unsigned char *home, unsigned char *path,
 	}
 
 	if (error_message) {
-		usrerror(gettext(error_message), path, confdir);
+		usrerror(gettext((const char *)error_message), path, confdir);
 		sleep(3);
 	}
 
@@ -110,7 +110,7 @@ static unsigned char *
 get_home(void)
 {
 	unsigned char *home_elinks;
-	unsigned char *envhome = getenv("HOME");
+	unsigned char *envhome = (unsigned char *)getenv("HOME");
 	unsigned char *home = NULL;
 
 	if (!home && envhome)
@@ -129,19 +129,19 @@ get_home(void)
 				      "but could not create directory %s."));
 	if (home_elinks) goto end;
 
-	home_elinks = test_confdir(home, getenv("ELINKS_CONFDIR"),
+	home_elinks = test_confdir(home, (unsigned char *)getenv("ELINKS_CONFDIR"),
 				   N_("ELINKS_CONFDIR set to %s, "
 				      "but could not create directory %s."));
 	if (home_elinks) goto end;
 
-	home_elinks = test_confdir(home, ".elinks", NULL);
+	home_elinks = test_confdir(home, (unsigned char *)".elinks", NULL);
 	if (home_elinks) goto end;
 
-	home_elinks = test_confdir(home, "elinks", NULL);
+	home_elinks = test_confdir(home, (unsigned char *)"elinks", NULL);
 
 end:
 	if (home_elinks)
-		add_to_strn(&home_elinks, STRING_DIR_SEP);
+		add_to_strn(&home_elinks, (const unsigned char *)STRING_DIR_SEP);
 	mem_free_if(home);
 
 	return home_elinks;

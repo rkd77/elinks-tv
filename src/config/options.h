@@ -190,7 +190,7 @@ struct option {
 
 	const unsigned char *name;
 	option_flags_T flags;
-	enum option_type type;
+	int type;
 	long min, max;
 	union option_value value;
 	unsigned char *desc;
@@ -297,7 +297,7 @@ extern struct option *get_opt_rec(struct option *, const unsigned char *);
 extern struct option *get_opt_rec_real(struct option *, const unsigned char *);
 struct option *indirect_option(struct option *);
 #ifdef CONFIG_DEBUG
-extern union option_value *get_opt_(unsigned char *, int, enum option_type, struct option *, const unsigned char *, struct session *);
+extern union option_value *get_opt_(unsigned char *, int, int, struct option *, const unsigned char *, struct session *);
 #define get_opt(tree, name, ses, type) get_opt_(__FILE__, __LINE__, type, tree, name, ses)
 #else
 extern union option_value *get_opt_(struct option *, const unsigned char *, struct session *);
@@ -329,7 +329,7 @@ extern union option_value *get_opt_(struct option *, const unsigned char *, stru
 #define get_cmd_opt_tree(name) get_opt_tree_tree(cmdline_options, name, NULL)
 
 extern struct option *add_opt(struct option *, unsigned char *, unsigned char *,
-			      unsigned char *, option_flags_T, enum option_type,
+			      unsigned char *, option_flags_T, int,
 			      long, long, longptr_T, unsigned char *);
 
 /** Check whether the character @a c may be used in the name of an
@@ -424,7 +424,7 @@ struct option_init {
 	option_flags_T flags;
 
 	/** Type of the option.  This goes to option.type.  */
-	enum option_type type;
+	int type;
 
 	/** Minimum value of the option.  This goes to option.min.  */
 	long min;

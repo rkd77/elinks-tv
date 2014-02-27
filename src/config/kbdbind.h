@@ -24,7 +24,7 @@ enum keymap_id {
 struct action {
 	const unsigned char *str;
 	action_id_T num;
-	enum keymap_id keymap_id;
+	int keymap_id;
 	const unsigned char *desc;
 	unsigned int flags;
 };
@@ -35,7 +35,7 @@ struct action_list {
 };
 struct keymap {
 	const unsigned char *str;
-	enum keymap_id keymap_id;
+	int keymap_id;
 	const unsigned char *desc;
 };
 
@@ -93,7 +93,7 @@ typedef int kbdbind_flags_T;
 struct keybinding {
 	OBJECT_HEAD(struct keybinding);
 
-	enum keymap_id keymap_id;
+	int keymap_id;
 	action_id_T action_id;
 	struct term_event_keyboard kbd;
 	int event;
@@ -102,18 +102,18 @@ struct keybinding {
 };
 
 
-struct keybinding *add_keybinding(enum keymap_id keymap_id, action_id_T action_id, struct term_event_keyboard *kbd, int event);
-int keybinding_exists(enum keymap_id keymap_id, struct term_event_keyboard *kbd, action_id_T *action_id);
+struct keybinding *add_keybinding(int keymap_id, action_id_T action_id, struct term_event_keyboard *kbd, int event);
+int keybinding_exists(int keymap_id, struct term_event_keyboard *kbd, action_id_T *action_id);
 void free_keybinding(struct keybinding *);
 
-const struct action *get_action(enum keymap_id keymap_id, action_id_T action_id);
-unsigned char *get_action_name(enum keymap_id keymap_id, action_id_T action_id);
-action_id_T get_action_from_string(enum keymap_id keymap_id, unsigned char *str);
-unsigned char *get_action_name_from_keystroke(enum keymap_id keymap_id,
+const struct action *get_action(int keymap_id, action_id_T action_id);
+unsigned char *get_action_name(int keymap_id, action_id_T action_id);
+action_id_T get_action_from_string(int keymap_id, unsigned char *str);
+unsigned char *get_action_name_from_keystroke(int keymap_id,
                                               const unsigned char *keystroke_str);
 
 static inline unsigned int
-action_is_anonymous_safe(enum keymap_id keymap_id, action_id_T action_id)
+action_is_anonymous_safe(int keymap_id, action_id_T action_id)
 {
 	const struct action *action = get_action(keymap_id, action_id);
 
@@ -121,7 +121,7 @@ action_is_anonymous_safe(enum keymap_id keymap_id, action_id_T action_id)
 }
 
 static inline unsigned int
-action_requires_view_state(enum keymap_id keymap_id, action_id_T action_id)
+action_requires_view_state(int keymap_id, action_id_T action_id)
 {
 	const struct action *action = get_action(keymap_id, action_id);
 
@@ -129,7 +129,7 @@ action_requires_view_state(enum keymap_id keymap_id, action_id_T action_id)
 }
 
 static inline unsigned int
-action_requires_location(enum keymap_id keymap_id, action_id_T action_id)
+action_requires_location(int keymap_id, action_id_T action_id)
 {
 	const struct action *action = get_action(keymap_id, action_id);
 
@@ -137,7 +137,7 @@ action_requires_location(enum keymap_id keymap_id, action_id_T action_id)
 }
 
 static inline unsigned int
-action_prefix_is_link_number(enum keymap_id keymap_id, action_id_T action_id)
+action_prefix_is_link_number(int keymap_id, action_id_T action_id)
 {
 	const struct action *action = get_action(keymap_id, action_id);
 
@@ -145,7 +145,7 @@ action_prefix_is_link_number(enum keymap_id keymap_id, action_id_T action_id)
 }
 
 static inline unsigned int
-action_requires_link(enum keymap_id keymap_id, action_id_T action_id)
+action_requires_link(int keymap_id, action_id_T action_id)
 {
 	const struct action *action = get_action(keymap_id, action_id);
 
@@ -153,7 +153,7 @@ action_requires_link(enum keymap_id keymap_id, action_id_T action_id)
 }
 
 static inline unsigned int
-action_requires_form(enum keymap_id keymap_id, action_id_T action_id)
+action_requires_form(int keymap_id, action_id_T action_id)
 {
 	const struct action *action = get_action(keymap_id, action_id);
 
@@ -161,7 +161,7 @@ action_requires_form(enum keymap_id keymap_id, action_id_T action_id)
 }
 
 term_event_key_T read_key(const unsigned char *);
-unsigned char *get_keymap_name(enum keymap_id);
+unsigned char *get_keymap_name(int);
 
 int parse_keystroke(const unsigned char *, struct term_event_keyboard *);
 void add_keystroke_to_string(struct string *str, struct term_event_keyboard *kbd, int escape);
@@ -180,9 +180,9 @@ void add_keystroke_to_string(struct string *str, struct term_event_keyboard *kbd
 	add_keystroke_to_string(str, &kbd, 0); 			\
 } while (0)
 
-action_id_T kbd_action(enum keymap_id, struct term_event *, int *);
-struct keybinding *kbd_ev_lookup(enum keymap_id, struct term_event_keyboard *kbd, int *);
-struct keybinding *kbd_nm_lookup(enum keymap_id, unsigned char *);
+action_id_T kbd_action(int, struct term_event *, int *);
+struct keybinding *kbd_ev_lookup(int, struct term_event_keyboard *kbd, int *);
+struct keybinding *kbd_nm_lookup(int, unsigned char *);
 
 int bind_do(unsigned char *, const unsigned char *, unsigned char *, int);
 unsigned char *bind_act(unsigned char *, const unsigned char *);
@@ -193,11 +193,11 @@ int bind_key_to_event_name(unsigned char *, const unsigned char *, unsigned char
 			   unsigned char **);
 #endif
 
-void add_keystroke_action_to_string(struct string *string, action_id_T action_id, enum keymap_id keymap_id);
-unsigned char *get_keystroke(action_id_T action_id, enum keymap_id keymap_id);
+void add_keystroke_action_to_string(struct string *string, action_id_T action_id, int keymap_id);
+unsigned char *get_keystroke(action_id_T action_id, int keymap_id);
 
 void add_actions_to_string(struct string *string, action_id_T actions[],
-			   enum keymap_id keymap_id, struct terminal *term);
+			   int keymap_id, struct terminal *term);
 
 extern struct module kbdbind_module;
 

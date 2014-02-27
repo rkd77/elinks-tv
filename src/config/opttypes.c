@@ -35,7 +35,7 @@ gen_cmd(struct option *o, unsigned char ***argv, int *argc)
 	unsigned char *str;
 	int dummy_line = 0;
 
-	if (!*argc) return gettext("Parameter expected");
+	if (!*argc) return (unsigned char *)gettext("Parameter expected");
 
 	/* FIXME!! We will modify argv! (maybe) */
 	commandline = 1;
@@ -51,7 +51,7 @@ gen_cmd(struct option *o, unsigned char ***argv, int *argc)
 		mem_free(str);
 	}
 
-	return gettext("Read error");
+	return (unsigned char *)gettext("Read error");
 }
 
 /* If 0 follows, disable option and eat 0. If 1 follows, enable option and
@@ -332,7 +332,7 @@ str_set(struct option *opt, unsigned char *str)
 static int
 str_eq(struct option *opt, const unsigned char *str)
 {
-	return str && strcmp(opt->value.string, str) == 0;
+	return str && strcmp((const char *)opt->value.string, (const char *)str) == 0;
 }
 
 static void
@@ -408,7 +408,7 @@ lang_wr(struct option *o, struct string *s)
 #ifdef CONFIG_NLS
 	lang = language_to_name(current_language);
 #else
-	lang = "System";
+	lang = (unsigned char *)"System";
 #endif
 
 	add_optstring_to_string(s, lang, strlen((const char *)lang));
@@ -463,7 +463,7 @@ tree_dup(struct option *opt, struct option *template_, int flags)
 
 		if (!new_opt->box_item) continue;
 
-		if (new_opt->name && !strcmp(new_opt->name, "_template_"))
+		if (new_opt->name && !strcmp((const char *)new_opt->name, "_template_"))
 			new_opt->box_item->visible = get_opt_bool((const unsigned char *)"config.show_template", NULL);
 
 		if (opt->box_item) {
@@ -493,20 +493,20 @@ const struct option_type_info option_types[] = {
 	{ N_("Color"),    gen_cmd,   str_rd,   color_wr, NULL,     color_set, color_eq, N_("<color|#rrggbb>") },
 
 	/* OPT_COMMAND */
-	{ N_("Special"),  exec_cmd,  NULL,     NULL,     NULL,     NULL,      NULL,     "" },
+	{ N_("Special"),  exec_cmd,  NULL,     NULL,     NULL,     NULL,      NULL,     (unsigned char *)"" },
 
 	/* OPT_ALIAS */
-	{ N_("Alias"),    redir_cmd, redir_rd, redir_wr, NULL,     redir_set, redir_eq, "" },
+	{ N_("Alias"),    redir_cmd, redir_rd, redir_wr, NULL,     redir_set, redir_eq, (unsigned char *)"" },
 
 	/* OPT_TREE */
-	{ N_("Folder"),   NULL,      NULL,     NULL,     tree_dup, NULL,      NULL,      "" },
+	{ N_("Folder"),   NULL,      NULL,     NULL,     tree_dup, NULL,      NULL,      (unsigned char *)"" },
 };
 
 unsigned char *
 get_option_type_name(enum option_type type)
 {
 	assert(type >= 0 && type < sizeof(option_types)/sizeof(struct option_type_info));
-	if_assert_failed return "";
+	if_assert_failed return (unsigned char *)"";
 
 	return option_types[type].name;
 }

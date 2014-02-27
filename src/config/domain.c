@@ -75,7 +75,7 @@ get_domain_tree(unsigned char *domain_name)
 	assert(*domain_name);
 
 	foreach (domain, domain_trees)
-		if (!strcasecmp(domain->name, domain_name))
+		if (!strcasecmp((const char *)domain->name, (const char *)domain_name))
 			return domain->tree;
 
 	domain_len = strlen((const char *)domain_name);

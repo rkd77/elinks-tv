@@ -30,7 +30,7 @@ periodic_save_handler(void *xxx)
 
 	/* Don't trigger anything at startup */
 	if (periodic_save_event_id == EVENT_NONE)
-		set_event_id(periodic_save_event_id, "periodic-saving");
+		set_event_id(periodic_save_event_id, (unsigned char *)"periodic-saving");
 	else
 		trigger_event(periodic_save_event_id);
 
@@ -64,7 +64,7 @@ static void
 init_timer(struct module *module)
 {
 	static const struct change_hook_info timer_change_hooks[] = {
-		{ "infofiles.save_interval", periodic_save_change_hook },
+		{ (const unsigned char *)"infofiles.save_interval", periodic_save_change_hook },
 		{ NULL,	NULL },
 	};
 

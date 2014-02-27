@@ -66,7 +66,7 @@ static LIST_OF(struct keybinding) keymaps[KEYMAP_MAX];
 static void add_default_keybindings(void);
 
 static int
-delete_keybinding(enum keymap_id keymap_id, struct term_event_keyboard *kbd)
+delete_keybinding(int keymap_id, struct term_event_keyboard *kbd)
 {
 	struct keybinding *keybinding;
 
@@ -96,7 +96,7 @@ delete_keybinding(enum keymap_id keymap_id, struct term_event_keyboard *kbd)
 static int keybinding_is_default(struct keybinding *keybinding);
 
 struct keybinding *
-add_keybinding(enum keymap_id keymap_id, action_id_T action_id,
+add_keybinding(int keymap_id, action_id_T action_id,
 	       struct term_event_keyboard *kbd, int event)
 {
 	struct keybinding *keybinding;
@@ -161,7 +161,7 @@ free_keybinding(struct keybinding *keybinding)
 }
 
 int
-keybinding_exists(enum keymap_id keymap_id, struct term_event_keyboard *kbd,
+keybinding_exists(int keymap_id, struct term_event_keyboard *kbd,
 		  action_id_T *action_id)
 {
 	struct keybinding *keybinding;
@@ -183,7 +183,7 @@ keybinding_exists(enum keymap_id keymap_id, struct term_event_keyboard *kbd,
 
 
 action_id_T
-kbd_action(enum keymap_id keymap_id, struct term_event *ev, int *event)
+kbd_action(int keymap_id, struct term_event *ev, int *event)
 {
 	struct keybinding *keybinding;
 
@@ -194,7 +194,7 @@ kbd_action(enum keymap_id keymap_id, struct term_event *ev, int *event)
 }
 
 struct keybinding *
-kbd_ev_lookup(enum keymap_id keymap_id, struct term_event_keyboard *kbd, int *event)
+kbd_ev_lookup(int keymap_id, struct term_event_keyboard *kbd, int *event)
 {
 	struct keybinding *keybinding;
 
@@ -215,7 +215,7 @@ kbd_ev_lookup(enum keymap_id keymap_id, struct term_event_keyboard *kbd, int *ev
 }
 
 static struct keybinding *
-kbd_act_lookup(enum keymap_id keymap_id, action_id_T action_id)
+kbd_act_lookup(int keymap_id, action_id_T action_id)
 {
 	struct keybinding *keybinding;
 
@@ -230,7 +230,7 @@ kbd_act_lookup(enum keymap_id keymap_id, action_id_T action_id)
 }
 
 struct keybinding *
-kbd_nm_lookup(enum keymap_id keymap_id, unsigned char *name)
+kbd_nm_lookup(int keymap_id, unsigned char *name)
 {
 	action_id_T action_id = get_action_from_string(keymap_id, name);
 
@@ -240,7 +240,7 @@ kbd_nm_lookup(enum keymap_id keymap_id, unsigned char *name)
 }
 
 static struct keybinding *
-kbd_stroke_lookup(enum keymap_id keymap_id, const unsigned char *keystroke_str)
+kbd_stroke_lookup(int keymap_id, const unsigned char *keystroke_str)
 {
 	struct term_event_keyboard kbd;
 
@@ -263,7 +263,7 @@ static struct keymap keymap_table[] = {
  */
 
 static const struct action *
-get_action_from_keystroke(enum keymap_id keymap_id,
+get_action_from_keystroke(int keymap_id,
                           const unsigned char *keystroke_str)
 {
 	struct keybinding *keybinding = kbd_stroke_lookup(keymap_id,
@@ -273,7 +273,7 @@ get_action_from_keystroke(enum keymap_id keymap_id,
 }
 
 unsigned char *
-get_action_name_from_keystroke(enum keymap_id keymap_id,
+get_action_name_from_keystroke(int keymap_id,
                                const unsigned char *keystroke_str)
 {
 	const struct action *action = get_action_from_keystroke(keymap_id,
@@ -283,21 +283,21 @@ get_action_name_from_keystroke(enum keymap_id keymap_id,
 }
 
 action_id_T
-get_action_from_string(enum keymap_id keymap_id, unsigned char *str)
+get_action_from_string(int keymap_id, unsigned char *str)
 {
 	const struct action *action;
 
 	assert(keymap_id >= 0 && keymap_id < KEYMAP_MAX);
 
 	for (action = action_table[keymap_id].actions; action->str; action++)
-		if (!strcmp(action->str, str))
+		if (!strcmp((const char *)action->str, (const char *)str))
 			return action->num;
 
 	return -1;
 }
 
 const struct action *
-get_action(enum keymap_id keymap_id, action_id_T action_id)
+get_action(int keymap_id, action_id_T action_id)
 {
 	assert(keymap_id >= 0 && keymap_id < KEYMAP_MAX);
 
@@ -308,7 +308,7 @@ get_action(enum keymap_id keymap_id, action_id_T action_id)
 }
 
 unsigned char *
-get_action_name(enum keymap_id keymap_id, action_id_T action_id)
+get_action_name(int keymap_id, action_id_T action_id)
 {
 	const struct action *action = get_action(keymap_id, action_id);
 
@@ -316,7 +316,7 @@ get_action_name(enum keymap_id keymap_id, action_id_T action_id)
 }
 
 static unsigned char *
-get_action_desc(enum keymap_id keymap_id, action_id_T action_id)
+get_action_desc(int keymap_id, action_id_T action_id)
 {
 	const struct action *action = get_action(keymap_id, action_id);
 
@@ -326,29 +326,29 @@ get_action_desc(enum keymap_id keymap_id, action_id_T action_id)
 
 
 static struct keymap *
-get_keymap(enum keymap_id keymap_id)
+get_keymap(int keymap_id)
 {
 	assert(keymap_id >= 0 && keymap_id < KEYMAP_MAX);
 
 	return &keymap_table[keymap_id];
 }
 
-static enum keymap_id
+static int
 get_keymap_id(unsigned char *keymap_str)
 {
 	int keymap_id;
 
 	for (keymap_id = 0; keymap_id < KEYMAP_MAX; keymap_id++)
-		if (!strcmp(keymap_table[keymap_id].str, keymap_str))
+		if (!strcmp((const char *)keymap_table[keymap_id].str, (const char *)keymap_str))
 			return keymap_id;
 
 	return KEYMAP_INVALID;
 }
 
 unsigned char *
-get_keymap_name(enum keymap_id keymap_id)
+get_keymap_name(int keymap_id)
 {
-	return get_keymap(keymap_id)->str;
+	return (unsigned char *)get_keymap(keymap_id)->str;
 }
 
 
@@ -397,7 +397,7 @@ read_key(const unsigned char *key_str)
 		return key_str[0];
 
 	for (key = key_table; key->str; key++)
-		if (!c_strcasecmp(key->str, key_str))
+		if (!c_strcasecmp((const char *)key->str, (const char *)key_str))
 			return key->num;
 
 	return KBD_UNDEF;
@@ -414,17 +414,17 @@ parse_keystroke(const unsigned char *s, struct term_event_keyboard *kbd)
 {
 	kbd->modifier = KBD_MOD_NONE;
 	while (1) {
-		if (!c_strncasecmp(s, "Shift", 5) && (s[5] == '-' || s[5] == '+')) {
+		if (!c_strncasecmp((const char *)s, "Shift", 5) && (s[5] == '-' || s[5] == '+')) {
 			/* Shift+a == shiFt-a == Shift-a */
 			kbd->modifier |= KBD_MOD_SHIFT;
 			s += 6;
 
-		} else if (!c_strncasecmp(s, "Ctrl", 4) && (s[4] == '-' || s[4] == '+')) {
+		} else if (!c_strncasecmp((const char *)s, "Ctrl", 4) && (s[4] == '-' || s[4] == '+')) {
 			/* Ctrl+a == ctRl-a == Ctrl-a */
 			kbd->modifier |= KBD_MOD_CTRL;
 			s += 5;
 
-		} else if (!c_strncasecmp(s, "Alt", 3) && (s[3] == '-' || s[3] == '+')) {
+		} else if (!c_strncasecmp((const char *)s, "Alt", 3) && (s[3] == '-' || s[3] == '+')) {
 			/* Alt+a == aLt-a == Alt-a */
 			kbd->modifier |= KBD_MOD_ALT;
 			s += 4;
@@ -483,11 +483,11 @@ add_keystroke_to_string(struct string *str, struct term_event_keyboard *kbd,
 	/* Don't map KBD_MOD_PASTE to "Paste-" because parse_keystroke
 	 * would not understand the result.  */
 	if (kbd->modifier & KBD_MOD_SHIFT)
-		add_to_string(str, "Shift-");
+		add_to_string(str, (const unsigned char *)"Shift-");
 	if (kbd->modifier & KBD_MOD_CTRL)
-		add_to_string(str, "Ctrl-");
+		add_to_string(str, (const unsigned char *)"Ctrl-");
 	if (kbd->modifier & KBD_MOD_ALT)
-		add_to_string(str, "Alt-");
+		add_to_string(str, (const unsigned char *)"Alt-");
 
 	for (key = key_table; key->str; key++) {
 		if (kbd->key == key->num) {
@@ -508,7 +508,7 @@ add_keystroke_to_string(struct string *str, struct term_event_keyboard *kbd,
 
 void
 add_keystroke_action_to_string(struct string *string, action_id_T action_id,
-                               enum keymap_id keymap_id)
+                               int keymap_id)
 {
 	struct keybinding *keybinding = kbd_act_lookup(keymap_id, action_id);
 
@@ -517,7 +517,7 @@ add_keystroke_action_to_string(struct string *string, action_id_T action_id,
 }
 
 unsigned char *
-get_keystroke(action_id_T action_id, enum keymap_id keymap_id)
+get_keystroke(action_id_T action_id, int keymap_id)
 {
 	struct string keystroke;
 
@@ -533,7 +533,7 @@ get_keystroke(action_id_T action_id, enum keymap_id keymap_id)
 
 void
 add_actions_to_string(struct string *string, action_id_T action_ids[],
-		      enum keymap_id keymap_id, struct terminal *term)
+		      int keymap_id, struct terminal *term)
 {
 	int i;
 
@@ -591,7 +591,7 @@ bind_key_to_event(unsigned char *ckmap, const unsigned char *ckey, int event)
 {
 	struct term_event_keyboard kbd;
 	action_id_T action_id;
-	enum keymap_id keymap_id = get_keymap_id(ckmap);
+	int keymap_id = get_keymap_id(ckmap);
 
 	if (keymap_id == KEYMAP_INVALID)
 		return gettext("Unrecognised keymap");
@@ -890,7 +890,7 @@ static const struct action_alias *action_aliases[KEYMAP_MAX] = {
 };
 
 static action_id_T
-get_aliased_action(enum keymap_id keymap_id, unsigned char *action_str)
+get_aliased_action(int keymap_id, unsigned char *action_str)
 {
 	assert(keymap_id >= 0 && keymap_id < KEYMAP_MAX);
 
@@ -898,7 +898,7 @@ get_aliased_action(enum keymap_id keymap_id, unsigned char *action_str)
 		const struct action_alias *alias;
 
 		for (alias = action_aliases[keymap_id]; alias->str; alias++)
-			if (!strcmp(alias->str, action_str))
+			if (!strcmp((const char *)alias->str, (const char *)action_str))
 				return alias->action_id;
 	}
 
@@ -910,7 +910,7 @@ int
 bind_do(unsigned char *keymap_str, const unsigned char *keystroke_str,
 	unsigned char *action_str, int is_system_conf)
 {
-	enum keymap_id keymap_id;
+	int keymap_id;
 	action_id_T action_id;
 	struct term_event_keyboard kbd;
 	struct keybinding *keybinding;
@@ -933,7 +933,7 @@ bind_do(unsigned char *keymap_str, const unsigned char *keystroke_str,
 unsigned char *
 bind_act(unsigned char *keymap_str, const unsigned char *keystroke_str)
 {
-	enum keymap_id keymap_id;
+	int keymap_id;
 	unsigned char *action;
 	struct keybinding *keybinding;
 
@@ -949,11 +949,11 @@ bind_act(unsigned char *keymap_str, const unsigned char *keystroke_str)
 		return NULL;
 
 	keybinding->flags |= KBDB_WATERMARK;
-	return straconcat("\"", action, "\"", (unsigned char *) NULL);
+	return straconcat((const unsigned char *)"\"", action, "\"", (unsigned char *) NULL);
 }
 
 static void
-single_bind_config_string(struct string *file, enum keymap_id keymap_id,
+single_bind_config_string(struct string *file, int keymap_id,
 			  struct keybinding *keybinding)
 {
 	unsigned char *keymap_str = get_keymap_name(keymap_id);
@@ -968,11 +968,11 @@ single_bind_config_string(struct string *file, enum keymap_id keymap_id,
 	}
 
 	/* TODO: Maybe we should use string.write.. */
-	add_to_string(file, "bind \"");
+	add_to_string(file, (const unsigned char *)"bind \"");
 	add_to_string(file, keymap_str);
-	add_to_string(file, "\" \"");
+	add_to_string(file, (const unsigned char *)"\" \"");
 	add_keystroke_to_string(file, &keybinding->kbd, 1);
-	add_to_string(file, "\" = \"");
+	add_to_string(file, (const unsigned char *)"\" = \"");
 	add_to_string(file, action_str);
 	add_char_to_string(file, '\"');
 	add_char_to_string(file, '\n');
@@ -981,7 +981,7 @@ single_bind_config_string(struct string *file, enum keymap_id keymap_id,
 void
 bind_config_string(struct string *file)
 {
-	//enum keymap_id keymap_id2;
+	//int keymap_id2;
 	int keymap_id;
 
 	for (keymap_id = 0; keymap_id < KEYMAP_MAX; keymap_id++) {

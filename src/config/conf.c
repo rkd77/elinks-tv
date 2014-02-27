@@ -121,7 +121,7 @@ skip_white(struct conf_parsing_pos *pos)
 		}
 
 		if (*start == '#') {
-			start += strcspn(start, "\n");
+			start += strcspn((const char *)start, "\n");
 		} else {
 			pos->look = start;
 			return;
@@ -363,7 +363,7 @@ parse_set_common(struct option *opt_tree, struct conf_parsing_state *state,
 			if (flagsite->flags & OPT_DELETED) {
 				/* Replace the "set" command with an
 				 * "unset" command.  */
-				add_to_string(mirror, "unset ");
+				add_to_string(mirror, (const unsigned char *)"unset ");
 				add_bytes_to_string(mirror, optname_orig,
 						    optname_len);
 				state->mirrored = state->pos.look;
@@ -460,10 +460,10 @@ parse_unset(struct option *opt_tree, struct conf_parsing_state *state,
 			} else if (option_types[opt->type].write) {
 				/* Replace the "unset" command with a
 				 * "set" command.  */
-				add_to_string(mirror, "set ");
+				add_to_string(mirror, (const unsigned char *)"set ");
 				add_bytes_to_string(mirror, optname_orig,
 						    optname_len);
-				add_to_string(mirror, " = ");
+				add_to_string(mirror, (const unsigned char *)" = ");
 				option_types[opt->type].write(opt, mirror);
 				state->mirrored = state->pos.look;
 			}
@@ -626,11 +626,11 @@ struct parse_handler {
 };
 
 static const struct parse_handler parse_handlers[] = {
-	{ "set_domain", parse_set_domain },
-	{ "set", parse_set },
-	{ "unset", parse_unset },
-	{ "bind", parse_bind },
-	{ "include", parse_include },
+	{ (const unsigned char *)"set_domain", parse_set_domain },
+	{ (const unsigned char *)"set", parse_set },
+	{ (const unsigned char *)"unset", parse_unset },
+	{ (const unsigned char *)"bind", parse_bind },
+	{ (const unsigned char *)"include", parse_include },
 	{ NULL, NULL }
 };
 
@@ -650,7 +650,7 @@ parse_config_command(struct option *options, struct conf_parsing_state *state,
 	     handler++) {
 		int cmdlen = strlen((const char *)handler->command);
 
-		if (!strncmp(state->pos.look, handler->command, cmdlen)
+		if (!strncmp((const char *)state->pos.look, (const char *)handler->command, cmdlen)
 		    && isspace(state->pos.look[cmdlen])) {
 			enum parse_error err;
 
@@ -770,7 +770,7 @@ read_config_file(unsigned char *name)
 	int fd;
 	ssize_t r;
 
-	fd = open(name, O_RDONLY | O_NOCTTY);
+	fd = open((const char *)name, O_RDONLY | O_NOCTTY);
 	if (fd < 0) return NULL;
 	set_bin(fd);
 
@@ -832,7 +832,7 @@ load_config_file(unsigned char *prefix, unsigned char *name,
 static void
 load_config_from(unsigned char *file, struct option *tree)
 {
-	load_config_file(CONFDIR, file, tree, NULL, 1);
+	load_config_file((unsigned char *)CONFDIR, file, tree, NULL, 1);
 	load_config_file(empty_string_or_(elinks_home), file, tree, NULL, 0);
 }
 
@@ -851,7 +851,7 @@ static int comments = 3;
 static inline unsigned char *
 conf_i18n(unsigned char *s, int i18n)
 {
-	if (i18n) return gettext(s);
+	if (i18n) return (unsigned char *)gettext((const char *)s);
 	return s;
 }
 
@@ -915,7 +915,7 @@ output_option_desc_as_comment(struct string *out, const struct option *option,
 	if (!init_string(&indent)) return;
 
 	add_indent_to_string(&indent, depth);
-	if (!add_to_string(&indent, "#  ")) goto out_of_memory;
+	if (!add_to_string(&indent, (const unsigned char *)"#  ")) goto out_of_memory;
 	if (!wrap_option_desc(out, desc_i18n, &indent, 80 - indent.length))
 		goto out_of_memory;
 
@@ -939,7 +939,7 @@ smart_config_output_fn(struct string *string, struct option *option,
 
 			add_indent_to_string(string, depth);
 
-			add_to_string(string, "## ");
+			add_to_string(string, (const unsigned char *)"## ");
 			if (path) {
 				add_to_string(string, path);
 				add_char_to_string(string, '.');
@@ -964,14 +964,14 @@ smart_config_output_fn(struct string *string, struct option *option,
 
 			add_indent_to_string(string, depth);
 			if (option->flags & OPT_DELETED) {
-				add_to_string(string, "un");
+				add_to_string(string, (const unsigned char *)"un");
 			}
 			if (smart_config_output_fn_domain) {
-				add_to_string(string, "set_domain ");
+				add_to_string(string, (const unsigned char *)"set_domain ");
 				add_to_string(string, smart_config_output_fn_domain);
 				add_char_to_string(string, ' ');
 			} else {
-				add_to_string(string, "set ");
+				add_to_string(string, (const unsigned char *)"set ");
 			}
 			if (path) {
 				add_to_string(string, path);
@@ -979,7 +979,7 @@ smart_config_output_fn(struct string *string, struct option *option,
 			}
 			add_to_string(string, option->name);
 			if (!(option->flags & OPT_DELETED)) {
-				add_to_string(string, " = ");
+				add_to_string(string, (const unsigned char *)" = ");
 				/* OPT_ALIAS won't ever. OPT_TREE won't reach action 2.
 				 * OPT_SPECIAL makes no sense in the configuration
 				 * context. */
@@ -1005,11 +1005,11 @@ add_cfg_header_to_string(struct string *string, unsigned char *text)
 
 	int_bounds(&n, 10, 80);
 
-	add_to_string(string, "\n\n\n");
+	add_to_string(string, (const unsigned char *)"\n\n\n");
 	add_xchar_to_string(string, '#', n);
-	add_to_string(string, "\n# ");
+	add_to_string(string, (const unsigned char *)"\n# ");
 	add_to_string(string, text);
-	add_to_string(string, "#\n\n");
+	add_to_string(string, (const unsigned char *)"#\n\n");
 }
 
 unsigned char *
@@ -1043,7 +1043,7 @@ create_config_string(unsigned char *prefix, unsigned char *name)
 		/* At first line, and in English, write ELinks version, may be
 		 * of some help in future. Please keep that format for it.
 		 * --Zas */
-		add_to_string(&config, "## ELinks " VERSION " configuration file\n\n");
+		add_to_string(&config, (const unsigned char *)"## ELinks " VERSION " configuration file\n\n");
 		assert(savestyle >= 0  && savestyle <= 3);
 		switch (savestyle) {
 		case 0:
@@ -1074,7 +1074,7 @@ create_config_string(unsigned char *prefix, unsigned char *name)
 			break;
 		}
 
-		add_to_string(&config, "##\n");
+		add_to_string(&config, (const unsigned char *)"##\n");
 
 		add_to_string(&config, conf_i18n(N_(
 			"## Obviously, if you don't like what ELinks is going to do with\n"
@@ -1140,7 +1140,7 @@ write_config_file(unsigned char *prefix, unsigned char *name,
 	int prefixlen = strlen((const char *)prefix);
 	int prefix_has_slash = (prefixlen && dir_sep(prefix[prefixlen - 1]));
 	int name_has_slash = dir_sep(name[0]);
-	unsigned char *slash = name_has_slash || prefix_has_slash ? "" : STRING_DIR_SEP;
+	unsigned char *slash = (unsigned char *)(name_has_slash || prefix_has_slash ? "" : STRING_DIR_SEP);
 
 	if (!cfg_str) return -1;
 
@@ -1151,7 +1151,7 @@ write_config_file(unsigned char *prefix, unsigned char *name,
 
 	ssi = secure_open(config_file);
 	if (ssi) {
-		secure_fputs(ssi, cfg_str);
+		secure_fputs(ssi, (const char *)cfg_str);
 		ret = secure_close(ssi);
 		if (!ret) {
 			struct domain_tree *domain;
