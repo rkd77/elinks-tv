@@ -50,14 +50,14 @@ get_progress_msg_2(struct progress *progress, struct terminal *term,
 				term));
 		add_char_to_string(&msg, ' ');
 		add_xnum_to_string(&msg, progress->average_speed);
-		add_to_string(&msg, "/s");
+		add_to_string(&msg, (const unsigned char *)"/s");
 
-		add_to_string(&msg, ", ");
+		add_to_string(&msg, (const unsigned char *)", ");
 		add_to_string(&msg,
 			      _(full ? N_("current speed") : N_("cur"), term));
 		add_char_to_string(&msg, ' '),
 		add_xnum_to_string(&msg, progress->current_speed);
-		add_to_string(&msg, "/s");
+		add_to_string(&msg, (const unsigned char *)"/s");
 
 		add_to_string(&msg, separator);
 
@@ -74,11 +74,11 @@ get_progress_msg_2(struct progress *progress, struct terminal *term,
 
 		add_char_to_string(&msg, ' ');
 		add_xnum_to_string(&msg, progress->average_speed);
-		add_to_string(&msg, "/s");
+		add_to_string(&msg, (const unsigned char *)"/s");
 	}
 
 	if (progress->size >= 0 && progress->loaded > 0) {
-		add_to_string(&msg, ", ");
+		add_to_string(&msg, (const unsigned char *)", ");
 		add_to_string(&msg, _(full ? N_("estimated time")
 					   : N_("ETA"),
 				      term));
@@ -118,8 +118,8 @@ draw_progress_bar(struct progress *progress, struct terminal *term,
 	/* Draw the progress meter part "[###    ]" */
 	if (!text && width > 2) {
 		width -= 2;
-		draw_text(term, x++, y, "[", 1, 0, NULL);
-		draw_text(term, x + width, y, "]", 1, 0, NULL);
+		draw_text(term, x++, y, (const unsigned char *)"[", 1, 0, NULL);
+		draw_text(term, x + width, y, (const unsigned char *)"]", 1, 0, NULL);
 	}
 
 	if (!meter_color) meter_color = get_bfu_color(term, (const unsigned char *)"dialog.meter");

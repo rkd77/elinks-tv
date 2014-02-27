@@ -127,7 +127,7 @@ download_abort_function(struct dialog_data *dlg_data)
 static void
 download_dialog_layouter(struct dialog_data *dlg_data)
 {
-	struct file_download *file_download = dlg_data->dlg->udata;
+	struct file_download *file_download = (struct file_download *)dlg_data->dlg->udata;
 	struct terminal *term = dlg_data->win->term;
 	int w = dialog_max_width(term);
 	int rw = w;
@@ -136,7 +136,7 @@ download_dialog_layouter(struct dialog_data *dlg_data)
 	unsigned char *url;
 	struct download *download = &file_download->download;
 	struct color_pair *dialog_text_color = get_bfu_color(term, (const unsigned char *)"dialog.text");
-	unsigned char *msg = get_download_msg(download, term, 1, 1, "\n");
+	unsigned char *msg = get_download_msg(download, term, 1, 1, (unsigned char *)"\n");
 	int show_meter = (download_is_progressing(download)
 			  && download->progress->size >= 0);
 #if CONFIG_BITTORRENT
@@ -384,9 +384,9 @@ draw_file_download(struct listbox_item *item, struct listbox_context *context,
 	/* We have nothing to work with */
 	if (width < 4) return;
 
-	stylename = (item == context->box->sel) ? "menu.selected"
-		  : ((item->marked)	        ? "menu.marked"
-					        : "menu.normal");
+	stylename = (item == context->box->sel) ? (unsigned char *)"menu.selected"
+		  : ((item->marked)	        ? (unsigned char *)"menu.marked"
+					        : (unsigned char *)"menu.normal");
 
 	color = get_bfu_color(context->term, stylename);
 
@@ -403,7 +403,7 @@ draw_file_download(struct listbox_item *item, struct listbox_context *context,
 
 	draw_text(context->term, x, y, text, trimmedlen, 0, color);
 	if (trimmedlen < length) {
-		draw_text(context->term, x + trimmedlen, y, "...", 3, 0, color);
+		draw_text(context->term, x + trimmedlen, y, (const unsigned char *)"...", 3, 0, color);
 		trimmedlen += 3;
 	}
 

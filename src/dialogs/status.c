@@ -238,7 +238,7 @@ display_status_bar(struct session *ses, struct terminal *term, int tabs_count)
 			int full = term->width > 130;
 			int wide = term->width > 80;
 
-			msg = get_download_msg(download, term, wide, full, ", ");
+			msg = get_download_msg(download, term, wide, full, (unsigned char *)", ");
 		}
 	}
 
@@ -432,7 +432,7 @@ display_title_bar(struct session *ses, struct terminal *term)
 			page = int_min((pos - height / 2) / height + 1, pages);
 		}
 
-		buflen = snprintf(buf, sizeof(buf), " (%d/%d)", page, pages);
+		buflen = snprintf((char *)buf, sizeof(buf), " (%d/%d)", page, pages);
 		if (buflen < 0) buflen = 0;
 	}
 
@@ -457,7 +457,7 @@ display_title_bar(struct session *ses, struct terminal *term)
 		add_bytes_to_string(&title, document->title, titlelen);
 
 		if (titlewidth == maxlen)
-			add_bytes_to_string(&title, "...", 3);
+			add_bytes_to_string(&title, (const unsigned char *)"...", 3);
 	}
 
 	if (buflen > 0)
@@ -499,7 +499,7 @@ display_window_title(struct session *ses, struct terminal *term)
 
 	title = doc_title ? straconcat(doc_title, " - ELinks",
 				       (unsigned char *) NULL)
-			  : stracpy("ELinks");
+			  : stracpy((const unsigned char *)"ELinks");
 	if (!title) return;
 
 	titlelen = strlen((const char *)title);

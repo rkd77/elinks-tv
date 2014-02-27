@@ -96,7 +96,7 @@ save_url_as(struct session *ses)
 	input_dialog(ses->tab->term, NULL,
 		     N_("Save URL"), N_("Enter URL"),
 		     ses, &goto_url_history,
-		     MAX_STR_LEN, "", 0, 0, NULL,
+		     MAX_STR_LEN, (const unsigned char *)"", 0, 0, NULL,
 		     (void (*)(void *, unsigned char *)) save_url,
 		     NULL);
 }
@@ -623,10 +623,10 @@ free_history_lists(void)
 
 
 static void
-add_cmdline_bool_option(struct string *string, unsigned char *name)
+add_cmdline_bool_option(struct string *string, const unsigned char *name)
 {
 	if (!get_cmd_opt_bool(name)) return;
-	add_to_string(string, " -");
+	add_to_string(string, (const unsigned char *)" -");
 	add_to_string(string, name);
 }
 
@@ -655,9 +655,9 @@ open_uri_in_new_window(struct session *ses, struct uri *uri, struct uri *referre
 	 * current master */
 	if (!uri) {
 		/* Adding -touch-files will only lead to problems */
-		add_cmdline_bool_option(&parameters, "localhost");
-		add_cmdline_bool_option(&parameters, "no-home");
-		add_cmdline_bool_option(&parameters, "no-connect");
+		add_cmdline_bool_option(&parameters, (const unsigned char *)"localhost");
+		add_cmdline_bool_option(&parameters, (const unsigned char *)"no-home");
+		add_cmdline_bool_option(&parameters, (const unsigned char *)"no-connect");
 	}
 
 	open_new_window(ses->tab->term, program.path, env, parameters.source);
@@ -756,7 +756,7 @@ add_new_win_to_menu(struct menu_item **mi, unsigned char *text,
 
 	add_to_menu(mi, text, NULL, ACT_MAIN_OPEN_LINK_IN_NEW_WINDOW,
 		    open_in_new_window,
-		    send_open_in_new_window, c - 1 ? SUBMENU : 0);
+		    (void *)send_open_in_new_window, c - 1 ? SUBMENU : 0);
 }
 
 
@@ -765,7 +765,7 @@ do_pass_uri_to_command(struct terminal *term, void *command_, void *xxx)
 {
 	unsigned char *command = (unsigned char *)command_;
 
-	exec_on_terminal(term, command, "", TERM_EXEC_BG);
+	exec_on_terminal(term, command, (unsigned char *)"", TERM_EXEC_BG);
 	mem_free(command);
 }
 
@@ -820,7 +820,7 @@ pass_uri_to_command(struct session *ses, struct document_view *doc_view,
 {
 	LIST_OF(struct option) *tree = get_opt_tree((const unsigned char *)"document.uri_passing",
 	                                            NULL);
-	enum pass_uri_type type = which_type;
+	int type = which_type;
 	struct menu_item *items;
 	struct option *option;
 	struct uri *uri;
@@ -855,7 +855,7 @@ pass_uri_to_command(struct session *ses, struct document_view *doc_view,
 	foreach (option, *tree) {
 		unsigned char *text, *data;
 
-		if (!strcmp(option->name, "_template_"))
+		if (!strcmp((const char *)option->name, "_template_"))
 			continue;
 
 		text = stracpy(option->name);
@@ -916,7 +916,7 @@ add_uri_command_to_menu(struct menu_item **mi, enum pass_uri_type type,
 	};
 
 	foreach (option, *tree) {
-		if (!strcmp(option->name, "_template_"))
+		if (!strcmp((const char *)option->name, "_template_"))
 			continue;
 
 		commands++;
@@ -973,8 +973,8 @@ complete_file_menu(struct terminal *term, int no_elevator, void *data,
 		}
 
 		text = get_filename_position(entry->name);
-		if (strncmp(filename, text, filenamelen)
-		    || (no_elevator && !strcmp("..", text))) {
+		if (strncmp((const char *)filename, (const char *)text, filenamelen)
+		    || (no_elevator && !strcmp("..", (const char *)text))) {
 			mem_free(entry->name);
 			continue;
 		}
@@ -1027,7 +1027,7 @@ complete_file_menu(struct terminal *term, int no_elevator, void *data,
 
 		/* For single directory entries open the lonely subdir if it is
 		 * not the parent elevator. */
-		if (strcmp(&text[strlen((const char *)dirname)], "..")) {
+		if (strcmp((const char *)&text[strlen((const char *)dirname)], "..")) {
 			dir_func(term, text, data);
 		} else {
 			do_menu(term, empty_directory_menu, NULL, 0); 			\
@@ -1056,7 +1056,7 @@ auto_complete_file(struct terminal *term, int no_elevator, unsigned char *path,
 	if (get_cmd_opt_bool((const unsigned char *)"anonymous"))
 		return;
 
-	if (!*path) path = "./";
+	if (!*path) path = (unsigned char *)"./";
 
 	/* Use the URI translation to handle ./ and ../ and ~/ expansion */
 	uri = get_translated_uri(path, term->cwd);

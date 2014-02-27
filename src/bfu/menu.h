@@ -168,7 +168,7 @@ add_to_menu(struct menu_item **mi, unsigned char *text, unsigned char *rtext,
 	    menu_item_flags_T flags);
 
 #define add_menu_separator(menu) \
-	add_to_menu(menu, "", NULL, ACT_MAIN_NONE, NULL, NULL, NO_SELECT)
+	add_to_menu(menu, (unsigned char *)"", NULL, ACT_MAIN_NONE, NULL, NULL, NO_SELECT)
 
 /* Implies that the action will be handled by do_action() */
 #define add_menu_action(menu, text, action_id) \

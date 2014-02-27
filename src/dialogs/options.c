@@ -67,7 +67,7 @@ charset_list(struct terminal *term, void *xxx, void *ses_)
 		/* Map the "System" codepage to the underlying one.
 		 * A pointer comparison might suffice here but this
 		 * code is not time-critical.  */
-		if (strcmp(sel_mime, get_cp_mime_name(i)) == 0)
+		if (strcmp((const char *)sel_mime, (const char *)get_cp_mime_name(i)) == 0)
 			sel = items;
 		items++;
 		add_to_menu(&mi, name, NULL, ACT_MAIN_NONE,
@@ -100,17 +100,17 @@ enum termopt {
 };
 
 static struct option_resolver resolvers[] = {
-	{ TERM_OPT_TYPE,	 "type"		},
-	{ TERM_OPT_M11_HACK,	 "m11_hack"	},
-	{ TERM_OPT_RESTRICT_852, "restrict_852"	},
-	{ TERM_OPT_BLOCK_CURSOR, "block_cursor"	},
-	{ TERM_OPT_COLORS,	 "colors"	},
-	{ TERM_OPT_TRANSPARENCY, "transparency"	},
-	{ TERM_OPT_UTF_8_IO,	 "utf_8_io"	},
-	{ TERM_OPT_UNDERLINE,	 "underline"	},
-	{ TERM_OPT_ITALIC,	 "italic"	},
+	{ TERM_OPT_TYPE,	 (unsigned char *)"type"		},
+	{ TERM_OPT_M11_HACK,	 (unsigned char *)"m11_hack"	},
+	{ TERM_OPT_RESTRICT_852, (unsigned char *)"restrict_852"	},
+	{ TERM_OPT_BLOCK_CURSOR, (unsigned char *)"block_cursor"	},
+	{ TERM_OPT_COLORS,	 (unsigned char *)"colors"	},
+	{ TERM_OPT_TRANSPARENCY, (unsigned char *)"transparency"	},
+	{ TERM_OPT_UTF_8_IO,	 (unsigned char *)"utf_8_io"	},
+	{ TERM_OPT_UNDERLINE,	 (unsigned char *)"underline"	},
+	{ TERM_OPT_ITALIC,	 (unsigned char *)"italic"	},
 #ifdef CONFIG_COMBINE
-	{ TERM_OPT_COMBINE,	 "combine"	},
+	{ TERM_OPT_COMBINE,	 (unsigned char *)"combine"	},
 #endif
 };
 
@@ -167,13 +167,13 @@ terminal_options(struct terminal *term, void *xxx, struct session *ses)
 	/* [gettext_accelerator_context(terminal_options)] */
 	struct dialog *dlg;
 	union option_value *values;
-	int anonymous = get_cmd_opt_bool("anonymous");
+	int anonymous = get_cmd_opt_bool((const unsigned char *)"anonymous");
 	unsigned char help_text[MAX_STR_LEN], *text;
 	size_t help_textlen = 0;
 	size_t add_size = TERM_OPTION_VALUE_SIZE;
 
-	snprintf(help_text, sizeof(help_text) - 3 /* 2 '\n' + 1 '\0' */,
-		 _("The environmental variable TERM is set to '%s'.\n"
+	snprintf((char *)help_text, sizeof(help_text) - 3 /* 2 '\n' + 1 '\0' */,
+		 (const char *)_("The environmental variable TERM is set to '%s'.\n"
 		"\n"
 		"ELinks maintains separate sets of values for these options\n"
 		"and chooses the appropriate set based on the value of TERM.\n"
@@ -288,7 +288,7 @@ push_resize_button(void *data)
 	struct terminal *term = (struct terminal *)data;
 	unsigned char str[MAX_STR_LEN];
 
-	snprintf(str, sizeof(str), "%s,%s,%d,%d",
+	snprintf((char *)str, sizeof(str), "%s,%s,%d,%d",
 		 width_str, height_str, term->width, term->height);
 
 	do_terminal_function(term, TERM_FN_RESIZE, str);

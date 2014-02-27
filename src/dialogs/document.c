@@ -94,7 +94,7 @@ add_link_info_to_string(struct string *msg, struct session *ses)
 		if (historyitem) {
 			unsigned char *last_visit;
 
-			last_visit = ctime(&historyitem->last_visit);
+			last_visit = (unsigned char *)ctime(&historyitem->last_visit);
 
 			if (last_visit)
 				add_format_to_string(msg,
@@ -154,7 +154,7 @@ document_info_dialog(struct session *ses)
 	if (!init_string(&msg)) return;
 
 	add_to_string(&msg, _("URL", term));
-	add_to_string(&msg, ": ");
+	add_to_string(&msg, (const unsigned char *)": ");
 
 	/* Add the uri with password and post info stripped */
 	add_uri_to_string(&msg, location->vs.uri, URI_PUBLIC);
@@ -192,7 +192,7 @@ document_info_dialog(struct session *ses)
 			}
 		}
 
-		a = parse_header(cached->head, "Server", NULL);
+		a = parse_header(cached->head, (const unsigned char *)"Server", NULL);
 		if (a) {
 			add_format_to_string(&msg, "\n%s: %s",
 					     _("Server", term), a);
@@ -210,7 +210,7 @@ document_info_dialog(struct session *ses)
 					     cached->encoding_info);
 		}
 
-		a = parse_header(cached->head, "Date", NULL);
+		a = parse_header(cached->head, (const unsigned char *)"Date", NULL);
 		if (a) {
 			add_format_to_string(&msg, "\n%s: %s",
 					     _("Date", term), a);
@@ -242,7 +242,7 @@ document_info_dialog(struct session *ses)
 
 		historyitem = get_global_history_item(struri(location->vs.uri));
 
-		if (historyitem) last_visit = ctime(&historyitem->last_visit);
+		if (historyitem) last_visit = (unsigned char *)ctime(&historyitem->last_visit);
 
 		/* GNU's documentation says that ctime() can return NULL.
 		 * The Open Group Base Specifications Issue 6 implies
