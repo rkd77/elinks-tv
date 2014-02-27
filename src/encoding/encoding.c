@@ -72,7 +72,7 @@ dummy_close(struct stream_encoded *stream)
 static const unsigned char *const dummy_extensions[] = { NULL };
 
 static const struct decoding_backend dummy_decoding_backend = {
-	"none",
+	(const unsigned char *)"none",
 	dummy_extensions,
 	dummy_open,
 	dummy_read,
@@ -103,7 +103,7 @@ static const struct decoding_backend *const decoding_backends[] = {
 
 /* Associates encoded stream with a fd. */
 struct stream_encoded *
-open_encoded(int fd, enum stream_encoding encoding)
+open_encoded(int fd, int encoding)
 {
 	struct stream_encoded *stream;
 
@@ -131,7 +131,7 @@ read_encoded(struct stream_encoded *stream, unsigned char *data, int len)
  * for parts of files. @data contains the original data, @len bytes
  * long. The resulting decoded data chunk is *@new_len bytes long. */
 unsigned char *
-decode_encoded_buffer(struct stream_encoded *stream, enum stream_encoding encoding, unsigned char *data, int len,
+decode_encoded_buffer(struct stream_encoded *stream, int encoding, unsigned char *data, int len,
 		      int *new_len)
 {
 	return decoding_backends[encoding]->decode_buffer(stream, data, len, new_len);
@@ -148,12 +148,12 @@ close_encoded(struct stream_encoded *stream)
 
 
 /* Return a list of extensions associated with that encoding. */
-const unsigned char *const *listext_encoded(enum stream_encoding encoding)
+const unsigned char *const *listext_encoded(int encoding)
 {
 	return decoding_backends[encoding]->extensions;
 }
 
-enum stream_encoding
+int
 guess_encoding(unsigned char *filename)
 {
 	int fname_len = strlen((const char *)filename);
@@ -166,7 +166,7 @@ guess_encoding(unsigned char *filename)
 		while (ext && *ext) {
 			int len = strlen((const char *)*ext);
 
-			if (fname_len >= len && !strcmp(fname_end - len, *ext))
+			if (fname_len >= len && !strcmp((const char *)(fname_end - len), (const char *)*ext))
 				return enc;
 
 			ext++;
@@ -177,7 +177,7 @@ guess_encoding(unsigned char *filename)
 }
 
 const unsigned char *
-get_encoding_name(enum stream_encoding encoding)
+get_encoding_name(int encoding)
 {
 	return decoding_backends[encoding]->name;
 }
@@ -187,7 +187,7 @@ get_encoding_name(enum stream_encoding encoding)
 
 /* Tries to open @prefixname with each of the supported encoding extensions
  * appended. */
-static inline enum stream_encoding
+static inline int
 try_encoding_extensions(struct string *filename, int *fd)
 {
 	int length = filename->length;
@@ -201,7 +201,7 @@ try_encoding_extensions(struct string *filename, int *fd)
 			add_to_string(filename, *ext);
 
 			/* We try with some extensions. */
-			*fd = open(filename->source, O_RDONLY | O_NOCTTY);
+			*fd = open((const char *)filename->source, O_RDONLY | O_NOCTTY);
 
 			if (*fd >= 0)
 				/* Ok, found one, use it. */
@@ -283,7 +283,7 @@ static inline int
 is_stdin_pipe(struct stat *stt, struct string *filename)
 {
 	/* On Mac OS X, /dev/stdin has type S_IFSOCK. (bug 616) */
-	return !strlcmp(filename->source, filename->length, "/dev/stdin", 10)
+	return !strlcmp(filename->source, filename->length, (const unsigned char *)"/dev/stdin", 10)
 		&& (
 #ifdef S_ISSOCK
 			S_ISSOCK(stt->st_mode) ||
@@ -296,8 +296,8 @@ read_encoded_file(struct string *filename, struct string *page)
 {
 	struct stream_encoded *stream;
 	struct stat stt;
-	enum stream_encoding encoding = ENCODING_NONE;
-	int fd = open(filename->source, O_RDONLY | O_NOCTTY);
+	int encoding = ENCODING_NONE;
+	int fd = open((const char *)filename->source, O_RDONLY | O_NOCTTY);
 	struct connection_state state = connection_state_for_errno(errno);
 
 	if (fd == -1 && get_opt_bool((const unsigned char *)"protocol.file.try_encoding_extensions", NULL)) {

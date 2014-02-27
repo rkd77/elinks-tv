@@ -254,7 +254,7 @@ deflate_close(struct stream_encoded *stream)
 static const unsigned char *const deflate_extensions[] = { NULL };
 
 const struct decoding_backend deflate_decoding_backend = {
-	"deflate",
+	(const unsigned char *)"deflate",
 	deflate_extensions,
 	deflate_gzip_open,
 	deflate_read,
@@ -262,10 +262,10 @@ const struct decoding_backend deflate_decoding_backend = {
 	deflate_close,
 };
 
-static const unsigned char *const gzip_extensions[] = { ".gz", ".tgz", NULL };
+static const unsigned char *const gzip_extensions[] = { (const unsigned char *)".gz", (const unsigned char *)".tgz", NULL };
 
 const struct decoding_backend gzip_decoding_backend = {
-	"gzip",
+	(const unsigned char *)"gzip",
 	gzip_extensions,
 	deflate_gzip_open,
 	deflate_read,

@@ -211,10 +211,10 @@ bzip2_close(struct stream_encoded *stream)
 	}
 }
 
-static const unsigned char *const bzip2_extensions[] = { ".bz2", ".tbz", NULL };
+static const unsigned char *const bzip2_extensions[] = { (const unsigned char *)".bz2", (const unsigned char *)".tbz", NULL };
 
 const struct decoding_backend bzip2_decoding_backend = {
-	"bzip2",
+	(const unsigned char *)"bzip2",
 	bzip2_extensions,
 	bzip2_open,
 	bzip2_read,

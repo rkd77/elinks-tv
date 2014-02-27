@@ -16,7 +16,7 @@ enum stream_encoding {
 };
 
 struct stream_encoded {
-	enum stream_encoding encoding;
+	int encoding;
 	void *data;
 };
 
@@ -29,14 +29,14 @@ struct decoding_backend {
 	void (*close)(struct stream_encoded *stream);
 };
 
-struct stream_encoded *open_encoded(int, enum stream_encoding);
+struct stream_encoded *open_encoded(int, int stream_encoding);
 int read_encoded(struct stream_encoded *, unsigned char *, int);
-unsigned char *decode_encoded_buffer(struct stream_encoded *stream, enum stream_encoding encoding, unsigned char *data, int len, int *new_len);
+unsigned char *decode_encoded_buffer(struct stream_encoded *stream, int encoding, unsigned char *data, int len, int *new_len);
 void close_encoded(struct stream_encoded *);
 
-const unsigned char *const *listext_encoded(enum stream_encoding);
-enum stream_encoding guess_encoding(unsigned char *filename);
-const unsigned char *get_encoding_name(enum stream_encoding encoding);
+const unsigned char *const *listext_encoded(int);
+int guess_encoding(unsigned char *filename);
+const unsigned char *get_encoding_name(int encoding);
 
 /* Read from open @stream into the @page string */
 struct connection_state
