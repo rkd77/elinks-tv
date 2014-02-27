@@ -25,7 +25,7 @@ static inline int
 find_hotkey_pos(unsigned char *text)
 {
 	if (text && *text) {
-		unsigned char *p = strchr((char *)text, '~');
+		unsigned char *p = (unsigned char *)strchr((char *)text, '~');
 
 		if (p) return (int) (p - text) + 1;
 	}
