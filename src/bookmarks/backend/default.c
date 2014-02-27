@@ -34,10 +34,10 @@ read_bookmarks_default(FILE *f)
 	unsigned char in_buffer[INBUF_SIZE]; /* read buffer */
 	struct bookmark *last_bm = NULL;
 	int last_depth = 0;
-	const int file_cp = get_cp_index("System");
+	const int file_cp = get_cp_index((const unsigned char *)"System");
 
 	/* TODO: Ignore lines with bad chars in title or url (?). -- Zas */
-	while (fgets(in_buffer, INBUF_SIZE, f)) {
+	while (fgets((char *)in_buffer, INBUF_SIZE, f)) {
 		unsigned char *title = in_buffer;
 		unsigned char *url;
 		unsigned char *depth_str;
@@ -47,7 +47,7 @@ read_bookmarks_default(FILE *f)
 
 		/* Load URL. */
 
-		url = strchr((char *)in_buffer, '\t');
+		url = (unsigned char *)strchr((char *)in_buffer, '\t');
 
 		/* If separator is not found, or title is empty or too long,
 		 * skip that line. */
@@ -59,19 +59,19 @@ read_bookmarks_default(FILE *f)
 
 		/* Load depth. */
 
-		depth_str = strchr((char *)url, '\t');
+		depth_str = (unsigned char *)strchr((char *)url, '\t');
 		if (depth_str && depth_str - url > MAX_STR_LEN - 1)
 			continue;
 
 		if (depth_str) {
 			*depth_str = '\0';
 			depth_str++;
-			depth = atoi(depth_str);
+			depth = atoi((const char *)depth_str);
 			int_bounds(&depth, 0, last_bm ? last_depth + 1 : 0);
 
 			/* Load flags. */
 
-			flags = strchr((char *)depth_str, '\t');
+			flags = (unsigned char *)strchr((char *)depth_str, '\t');
 			if (flags) {
 				*flags = '\0';
 				flags++;
@@ -82,7 +82,7 @@ read_bookmarks_default(FILE *f)
 
 		/* Load EOLN. */
 
-		line_end = strchr((char *)(flags ? flags : depth_str), '\n');
+		line_end = (unsigned char *)strchr((char *)(flags ? flags : depth_str), '\n');
 		if (!line_end)
 			continue;
 		*line_end = '\0';
@@ -183,8 +183,8 @@ write_bookmarks_default(struct secure_save_info *ssi,
 
 	out.ssi = ssi;
 	out.save_folder_state = get_opt_bool((const unsigned char *)"bookmarks.folder_state", NULL);
-	out.codepage = get_cp_index("System");
-	out.conv_table = get_translation_table(get_cp_index("UTF-8"),
+	out.codepage = get_cp_index((const unsigned char *)"System");
+	out.conv_table = get_translation_table(get_cp_index((const unsigned char *)"UTF-8"),
 					       out.codepage);
 	write_bookmarks_default_inner(&out, bookmarks_list);
 }
@@ -192,7 +192,7 @@ write_bookmarks_default(struct secure_save_info *ssi,
 static unsigned char *
 filename_bookmarks_default(int writing)
 {
-	return BOOKMARKS_FILENAME;
+	return (unsigned char *)BOOKMARKS_FILENAME;
 }
 
 

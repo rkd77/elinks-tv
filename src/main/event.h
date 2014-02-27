@@ -72,7 +72,7 @@ void unregister_event_hook(int id, event_hook_T callback);
 /*** Interface for table driven event hooks maintainance */
 
 struct event_hook_info {
-	unsigned char *name;
+	const unsigned char *name;
 	int priority;
 	event_hook_T callback;
 	void *data;

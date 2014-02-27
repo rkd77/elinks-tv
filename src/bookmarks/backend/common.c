@@ -62,7 +62,7 @@ bookmarks_read(void)
 		if (!file_name) return;
 	}
 
-	f = fopen(file_name, "rb");
+	f = fopen((const char *)file_name, "rb");
 	if (elinks_home) mem_free(file_name);
 	if (!f) return;
 

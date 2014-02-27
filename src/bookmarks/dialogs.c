@@ -56,7 +56,7 @@ static unsigned char *
 get_bookmark_text(struct listbox_item *item, struct terminal *term)
 {
 	struct bookmark *bookmark = (struct bookmark *)item->udata;
-	int utf8_cp = get_cp_index("UTF-8");
+	int utf8_cp = get_cp_index((const unsigned char *)"UTF-8");
 	int term_cp = get_terminal_codepage(term);
 	struct conv_table *convert_table;
 
@@ -84,7 +84,7 @@ static unsigned char *
 get_bookmark_info(struct listbox_item *item, struct terminal *term)
 {
 	struct bookmark *bookmark = (struct bookmark *)item->udata;
-	int utf8_cp = get_cp_index("UTF-8");
+	int utf8_cp = get_cp_index((const unsigned char *)"UTF-8");
 	int term_cp = get_terminal_codepage(term);
 	struct conv_table *convert_table;
 	struct string info;
@@ -346,7 +346,7 @@ push_add_folder_button(struct dialog_data *dlg_data, struct widget_data *widget_
 static widget_handler_status_T
 push_add_separator_button(struct dialog_data *dlg_data, struct widget_data *widget_data)
 {
-	do_add_bookmark(dlg_data->win->term, dlg_data, "-", "");
+	do_add_bookmark(dlg_data->win->term, dlg_data, (unsigned char *)"-", (unsigned char *)"");
 	redraw_dialog(dlg_data, 1);
 	return EVENT_PROCESSED;
 }
@@ -387,7 +387,7 @@ push_edit_button(struct dialog_data *dlg_data, struct widget_data *edit_btn)
 	/* Follow the bookmark */
 	if (box->sel) {
 		struct bookmark *bm = (struct bookmark *) box->sel->udata;
-		int utf8_cp = get_cp_index("UTF-8");
+		int utf8_cp = get_cp_index((const unsigned char *)"UTF-8");
 		int term_cp = get_terminal_codepage(dlg_data->win->term);
 		struct conv_table *convert_table;
 
@@ -446,17 +446,19 @@ enum move_bookmark_flags {
 	MOVE_BOOKMARK_CYCLE = 0x02
 };
 
+typedef int move_bookmark_flags_T;
+
 /* Traverse all bookmarks and move all marked items
  * _into_ dest or, if insert_as_child is 0, _after_ dest. */
-static enum move_bookmark_flags
+static move_bookmark_flags_T
 do_move_bookmark(struct bookmark *dest, int insert_as_child,
 		 LIST_OF(struct bookmark) *src, struct listbox_data *box)
 {
 	static int move_bookmark_event_id = EVENT_NONE;
 	struct bookmark *bm, *next;
-	enum move_bookmark_flags result = MOVE_BOOKMARK_NONE;
+	move_bookmark_flags_T result = MOVE_BOOKMARK_NONE;
 
-	set_event_id(move_bookmark_event_id, "bookmark-move");
+	set_event_id(move_bookmark_event_id, (unsigned char *)"bookmark-move");
 
 	foreachsafe (bm, next, *src) {
 		if (!bm->box_item->marked) {
@@ -529,7 +531,7 @@ push_move_button(struct dialog_data *dlg_data,
 	struct listbox_data *box = get_dlg_listbox_data(dlg_data);
 	struct bookmark *dest = NULL;
 	int insert_as_child = 0;
-	enum move_bookmark_flags result;
+	move_bookmark_flags_T result;
 
 	if (!box->sel) return EVENT_PROCESSED; /* nowhere to move to */
 
@@ -752,8 +754,8 @@ bookmark_search_do(void *data)
 
 	dlg_data = (struct dialog_data *) dlg->udata;
 	term_cp = get_terminal_codepage(dlg_data->win->term);
-	ctx.system_cp = get_cp_index("System");
-	ctx.utf8_cp = get_cp_index("UTF-8");
+	ctx.system_cp = get_cp_index((const unsigned char *)"System");
+	ctx.utf8_cp = get_cp_index((const unsigned char *)"UTF-8");
 
 	title_term = (unsigned char *)dlg->widgets[0].data; /* need not be freed */
 	url_term   = (unsigned char *)dlg->widgets[1].data; /* likewise */
@@ -804,7 +806,7 @@ launch_bm_search_doc_dialog(struct terminal *term,
 		int utf8_cp, term_cp;
 		struct conv_table *convert_table;
 
-		utf8_cp = get_cp_index("UTF-8");
+		utf8_cp = get_cp_index((const unsigned char *)"UTF-8");
 		term_cp = get_terminal_codepage(term);
 
 		convert_table = get_translation_table(utf8_cp, term_cp);
@@ -923,7 +925,7 @@ bookmark_terminal_tabs_ok(void *term_void, unsigned char *foldername)
 {
 	struct terminal *const term = (struct terminal *)term_void;
 	int from_cp = get_terminal_codepage(term);
-	int to_cp = get_cp_index("UTF-8");
+	int to_cp = get_cp_index((const unsigned char *)"UTF-8");
 	struct conv_table *convert_table;
 	unsigned char *converted;
 
@@ -950,7 +952,7 @@ bookmark_terminal_tabs_dialog(struct terminal *term)
 	add_to_string(&string, _("Saved session", term));
 
 #ifdef HAVE_STRFTIME
-	add_to_string(&string, " - ");
+	add_to_string(&string, (const unsigned char *)" - ");
 	add_date_to_string(&string, get_opt_str((const unsigned char *)"ui.date_format", NULL), NULL);
 #endif
 

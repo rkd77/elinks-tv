@@ -222,7 +222,7 @@ extern void done_options(void);
 
 
 struct change_hook_info {
-	unsigned char *name;
+	const unsigned char *name;
 	change_hook_T change_hook;
 };
 
