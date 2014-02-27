@@ -243,7 +243,7 @@ void draw_char_data(struct terminal *term, int x, int y, unsigned char data);
 
 /** Sets the data to @a border and of a screen position. */
 void draw_border_char(struct terminal *term, int x, int y,
-		      enum border_char border, struct color_pair *color);
+		      unsigned char border, struct color_pair *color);
 
 /** Sets the cross position of two borders. */
 void draw_border_cross(struct terminal *, int x, int y,

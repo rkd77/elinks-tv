@@ -71,7 +71,7 @@ do_tab_compl(struct dialog_data *dlg_data,
 	if (!items) return;
 
 	foreach (entry, *history) {
-		if (strncmp(widget_data->cdata, entry->data, cpos))
+		if (strncmp((char *)widget_data->cdata, (char *)entry->data, cpos))
 			continue;
 
 		add_to_menu(&items, entry->data, NULL, ACT_MAIN_NONE,
@@ -182,7 +182,7 @@ static void
 tab_complete_file_menu(struct terminal *term, void *path_, void *dlg_data_)
 {
 	struct dialog_data *dlg_data = (struct dialog_data *)dlg_data_;
-	unsigned char *path = path_;
+	unsigned char *path = (unsigned char *)path_;
 
 	auto_complete_file(term, 0 /* no_elevator */, path,
 			   set_complete_file_menu, tab_complete_file_menu,
@@ -214,7 +214,7 @@ check_duplicate_entries(struct input_history *history, unsigned char *data)
 	foreach (entry, history->entries) {
 		struct input_history_entry *duplicate;
 
-		if (strcmp(entry->data, data)) continue;
+		if (strcmp((const char *)entry->data, (const char *)data)) continue;
 
 		/* Found a duplicate -> remove it from history list */
 
@@ -297,13 +297,13 @@ load_input_history(struct input_history *history, unsigned char *filename)
 		if (!history_file) return 0;
 	}
 
-	file = fopen(history_file, "rb");
+	file = fopen((const char *)history_file, "rb");
 	if (elinks_home) mem_free(history_file);
 	if (!file) return 0;
 
 	history->nosave = 1;
 
-	while (fgets(line, MAX_STR_LEN, file)) {
+	while (fgets((char *)line, MAX_STR_LEN, file)) {
 		/* Drop '\n'. */
 		if (*line) line[strlen((const char *)line) - 1] = 0;
 		add_to_input_history(history, line, 0);
@@ -341,7 +341,7 @@ save_input_history(struct input_history *history, unsigned char *filename)
 
 	foreachback (entry, history->entries) {
 		if (i++ > MAX_INPUT_HISTORY_ENTRIES) break;
-		secure_fputs(ssi, entry->data);
+		secure_fputs(ssi, (const char *)entry->data);
 		secure_fputc(ssi, '\n');
 		if (ssi->err) break;
 	}

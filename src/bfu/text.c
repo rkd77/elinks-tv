@@ -23,7 +23,7 @@
 #define is_unsplitable(pos) (*(pos) && *(pos) != '\n' && !isspace(*(pos)))
 
 void
-add_dlg_text(struct dialog *dlg, unsigned char *text,
+add_dlg_text(struct dialog *dlg, const unsigned char *text,
 	     enum format_align align, int bottom_pad)
 {
 	struct widget *widget = &dlg->widgets[dlg->number_of_widgets++];
@@ -38,13 +38,13 @@ add_dlg_text(struct dialog *dlg, unsigned char *text,
 /* Returns length of substring (from start of @text) before a split. */
 #ifdef CONFIG_UTF8
 static inline int
-split_line(unsigned char *text, int max_width, int *cells, int utf8)
+split_line(const unsigned char *text, int max_width, int *cells, int utf8)
 #else
 static inline int
-split_line(unsigned char *text, int max_width, int *cells)
+split_line(const unsigned char *text, int max_width, int *cells)
 #endif /* CONFIG_UTF8 */
 {
-	unsigned char *split = text;
+	const unsigned char *split = text;
 #ifdef CONFIG_UTF8
 	unsigned char *text_end = split + strlen((const char *)split);
 #endif /* CONFIG_UTF8 */
@@ -79,7 +79,7 @@ split_line(unsigned char *text, int max_width, int *cells)
 		} else
 #endif /* CONFIG_UTF8 */
 		{
-			next_split = split + 1;
+			next_split = (unsigned char *)(split + 1);
 
 			while (is_unsplitable(next_split))
 				next_split++;
@@ -160,7 +160,7 @@ static unsigned char **
 split_lines(struct widget_data *widget_data, int max_width)
 #endif /* CONFIG_UTF8 */
 {
-	unsigned char *text = widget_data->widget->text;
+	const unsigned char *text = widget_data->widget->text;
 	unsigned char **lines = (unsigned char **) widget_data->cdata;
 	int line = 0;
 
@@ -196,7 +196,7 @@ split_lines(struct widget_data *widget_data, int max_width)
 		if (!realloc_lines(&lines, line, line + 1))
 			break;
 
-		lines[line++] = text;
+		lines[line++] = (unsigned char *)text;
 		text += width;
 	}
 
@@ -212,7 +212,7 @@ split_lines(struct widget_data *widget_data, int max_width)
 /* Format text according to dialog box and alignment. */
 void
 dlg_format_text_do(struct dialog_data *dlg_data,
-		unsigned char *text,
+		const unsigned char *text,
 		int x, int *y, int width, int *real_width,
 		struct color_pair *color, enum format_align align,
 		int format_only)
@@ -270,7 +270,7 @@ dlg_format_text(struct dialog_data *dlg_data,
 		int format_only)
 {
 	struct terminal *term = dlg_data->win->term;
-	unsigned char *text = widget_data->widget->text;
+	const unsigned char *text = widget_data->widget->text;
 	unsigned char saved = 0;
 	unsigned char *saved_pos = NULL;
 	int height;

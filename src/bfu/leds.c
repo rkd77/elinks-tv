@@ -168,7 +168,7 @@ draw_timer(struct terminal *term, int xpos, int ypos, struct color_pair *color)
 	unsigned char s[64];
 	int i, length;
 
-	snprintf(s, sizeof(s), "[%d]", get_timer_duration());
+	snprintf((char *)s, sizeof(s), "[%d]", get_timer_duration());
 	length = strlen((const char *)s);
 
 	for (i = length - 1; i >= 0; i--)
@@ -205,7 +205,7 @@ draw_clock(struct terminal *term, int xpos, int ypos, struct color_pair *color)
 	struct tm *loctime = localtime(&curtime);
 	int i, length;
 
-	length = strftime(s, sizeof(s), get_leds_clock_format(), loctime);
+	length = strftime((char *)s, sizeof(s), (const char *)get_leds_clock_format(), loctime);
 	s[length] = '\0';
 	for (i = length - 1; i >= 0; i--)
 		draw_char(term, xpos - (length - i), ypos, s[i], 0, color);

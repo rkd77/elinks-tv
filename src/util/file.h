@@ -142,7 +142,7 @@ stat_links(struct string *string, struct stat *stp)
 {
 #ifdef FS_UNIX_HARDLINKS
 	if (!stp) {
-		add_to_string(string, "    ");
+		add_to_string(string, (const unsigned char *)"    ");
 	} else {
 		unsigned char lnk[64];
 
@@ -161,7 +161,7 @@ stat_user(struct string *string, struct stat *stp)
 	static int last_uid = -1;
 
 	if (!stp) {
-		add_to_string(string, "         ");
+		add_to_string(string, (const unsigned char *)"         ");
 		return;
 	}
 
@@ -170,9 +170,9 @@ stat_user(struct string *string, struct stat *stp)
 
 		if (!pwd || !pwd->pw_name)
 			/* ulongcat() can't pad from right. */
-			snprintf(last_user, 64, "%-8d", (int) stp->st_uid);
+			snprintf((char *)last_user, 64, "%-8d", (int) stp->st_uid);
 		else
-			snprintf(last_user, 64, "%-8.8s", pwd->pw_name);
+			snprintf((char *)last_user, 64, "%-8.8s", pwd->pw_name);
 
 		last_uid = stp->st_uid;
 	}
@@ -190,7 +190,7 @@ stat_group(struct string *string, struct stat *stp)
 	static int last_gid = -1;
 
 	if (!stp) {
-		add_to_string(string, "         ");
+		add_to_string(string, (const unsigned char *)"         ");
 		return;
 	}
 
@@ -199,9 +199,9 @@ stat_group(struct string *string, struct stat *stp)
 
 		if (!grp || !grp->gr_name)
 			/* ulongcat() can't pad from right. */
-			snprintf(last_group, 64, "%-8d", (int) stp->st_gid);
+			snprintf((char *)last_group, 64, "%-8d", (int) stp->st_gid);
 		else
-			snprintf(last_group, 64, "%-8.8s", grp->gr_name);
+			snprintf((char *)last_group, 64, "%-8.8s", grp->gr_name);
 
 		last_gid = stp->st_gid;
 	}
@@ -217,7 +217,7 @@ stat_size(struct string *string, struct stat *stp)
 	/* Check if st_size will cause overflow. */
 	/* FIXME: See bug 497 for info about support for big files. */
 	if (!stp || stp->st_size != (unsigned long) stp->st_size) {
-		add_to_string(string, "         ");
+		add_to_string(string, (const unsigned char *)"         ");
 
 	} else {
 		unsigned char size[64];
@@ -248,16 +248,16 @@ stat_date(struct string *string, struct stat *stp)
 
 		if (current_time > when + 6L * 30L * 24L * 60L * 60L
 		    || current_time < when - 60L * 60L)
-			fmt = "%b %e  %Y";
+			fmt = (unsigned char *)"%b %e  %Y";
 		else
-			fmt = "%b %e %H:%M";
+			fmt = (unsigned char *)"%b %e %H:%M";
 
 		add_date_to_string(string, fmt, &when);
 		add_char_to_string(string, ' ');
 		return;
 	}
 #endif
-	add_to_string(string, "             ");
+	add_to_string(string, (const unsigned char *)"             ");
 }
 
 

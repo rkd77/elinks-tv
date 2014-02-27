@@ -81,7 +81,7 @@ draw_border_cross(struct terminal *term, int x, int y,
 
 void
 draw_border_char(struct terminal *term, int x, int y,
-		 enum border_char border, struct color_pair *color)
+		 unsigned char border, struct color_pair *color)
 {
 	struct screen_char *screen_char = get_char(term, x, y);
 

@@ -42,7 +42,7 @@ dlg_format_checkbox(struct dialog_data *dlg_data,
 		    enum format_align align, int format_only)
 {
 	struct terminal *term = dlg_data->win->term;
-	unsigned char *text = widget_data->widget->text;
+	const unsigned char *text = widget_data->widget->text;
 
 	set_box(&widget_data->box, x, *y, CHECKBOX_LEN, CHECKBOX_HEIGHT);
 

@@ -65,7 +65,7 @@ check_number(struct dialog_data *dlg_data, struct widget_data *widget_data)
 	long l;
 
 	errno = 0;
-	l = strtol(widget_data->cdata, &end, 10);
+	l = strtol((const char *)widget_data->cdata, &end, 10);
 
 	if (errno || !*widget_data->cdata || *end) {
 		info_box(dlg_data->win->term, 0,
@@ -110,7 +110,7 @@ dlg_format_field(struct dialog_data *dlg_data,
 	struct terminal *term = dlg_data->win->term;
 	static int max_label_width;
 	static int *prev_y; /* Assert the uniqueness of y */	/* TODO: get rid of this !! --Zas */
-	unsigned char *label = widget_data->widget->text;
+	const unsigned char *label = widget_data->widget->text;
 	struct color_pair *text_color = NULL;
 	int label_width = 0;
 	int float_label = widget_data->widget->info.field.flags & (INPFIELD_FLOAT|INPFIELD_FLOAT2);
@@ -141,7 +141,7 @@ dlg_format_field(struct dialog_data *dlg_data,
 	if (label && *label && float_label) {
 		if (widget_data->widget->info.field.flags & INPFIELD_FLOAT) {
 			(*y) -= INPUTFIELD_HEIGHT;
-			dlg_format_text_do(dlg_data, INPUTFIELD_FLOAT_SEPARATOR,
+			dlg_format_text_do(dlg_data, (const unsigned char *)INPUTFIELD_FLOAT_SEPARATOR,
 					   x + label_width, y, w, rw,
 					   text_color, ALIGN_LEFT, format_only);
 			w -= INPUTFIELD_FLOAT_SEPARATOR_LEN + INPUTFIELD_FLOATLABEL_PADDING;
@@ -199,7 +199,7 @@ input_field(struct terminal *term, struct memory_list *ml, int intl,
 	    unsigned char *okbutton,
 	    unsigned char *cancelbutton,
 	    void *data, struct input_history *history, int l,
-	    unsigned char *def, int min, int max,
+	    const unsigned char *def, int min, int max,
 	    widget_handler_T *check,
 	    void (*fn)(void *, unsigned char *),
 	    void (*cancelfn)(void *))
@@ -234,8 +234,8 @@ input_field(struct terminal *term, struct memory_list *ml, int intl,
 
 	add_dlg_field(dlg, text, min, max, check, l, field, history);
 
-	add_dlg_button(dlg, okbutton, B_ENTER, input_field_ok, fn);
-	add_dlg_button(dlg, cancelbutton, B_ESC, input_field_cancel, cancelfn);
+	add_dlg_button(dlg, okbutton, B_ENTER, input_field_ok, (void *)fn);
+	add_dlg_button(dlg, cancelbutton, B_ESC, input_field_cancel, (void *)cancelfn);
 
 	add_dlg_end(dlg, INPUT_WIDGETS_COUNT);
 

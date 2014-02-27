@@ -218,7 +218,7 @@ display_button(struct dialog_data *dlg_data, struct widget_data *widget_data)
 
 	draw_dlg_text(dlg_data, pos->x, pos->y, (const unsigned char *)BUTTON_LEFT, BUTTON_LEFT_LEN, 0, color);
 	if (len > 0) {
-		unsigned char *text = widget_data->widget->text;
+		const unsigned char *text = widget_data->widget->text;
 		int hk_pos = widget_data->widget->info.button.hotkey_pos;
 		int attr;
 

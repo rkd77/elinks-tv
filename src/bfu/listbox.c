@@ -383,7 +383,7 @@ display_listbox_item(struct listbox_item *item, void *data_, int *offset)
 
 		/* XXX */
 		x = data->widget_data->box.x + d * 5;
-		draw_text(data->term, x, y, "     ", 5, 0, tree_color);
+		draw_text(data->term, x, y, (const unsigned char *)"     ", 5, 0, tree_color);
 
 		if (root ? root->child.prev == child
 			 : data->box->items->prev == child)
@@ -393,7 +393,7 @@ display_listbox_item(struct listbox_item *item, void *data_, int *offset)
 	}
 
 	if (depth) {
-		enum border_char str[5] =
+		unsigned char str[5] =
 			{ 32, BORDER_SRTEE, BORDER_SHLINE, BORDER_SHLINE, 32 };
 		int i;
 

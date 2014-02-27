@@ -102,11 +102,11 @@ msg_text_do(unsigned char *format, va_list ap)
 
 	VA_COPY(ap2, ap);
 
-	infolen = vsnprintf(NULL, 0, format, ap2);
+	infolen = vsnprintf(NULL, 0, (const char *)format, ap2);
 	info = (unsigned char *)mem_alloc(infolen + 1);
 	if (!info) return NULL;
 
-	len = vsnprintf((char *) info, infolen + 1, format, ap);
+	len = vsnprintf((char *) info, infolen + 1, (const char *)format, ap);
 	if (len != infolen) {
 		mem_free(info);
 		return NULL;
@@ -133,7 +133,7 @@ msg_text(struct terminal *term, unsigned char *format, ...)
 static void
 abort_refreshed_msg_box_handler(struct dialog_data *dlg_data)
 {
-	void *data = dlg_data->dlg->widgets->text;
+	void *data = (void *)dlg_data->dlg->widgets->text;
 
 	if (dlg_data->dlg->udata != data)
 		mem_free(data);

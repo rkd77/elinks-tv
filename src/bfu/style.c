@@ -30,11 +30,11 @@ static struct hash *bfu_colors = NULL;
 struct color_pair *
 get_bfu_color(struct terminal *term, const unsigned char *stylename)
 {
-	static enum color_mode last_color_mode;
+	static int last_color_mode;
 	struct bfu_color_entry *entry;
 	int stylenamelen;
 	struct hash_item *item;
-	enum color_mode color_mode;
+	int color_mode;
 
 	if (!term) return NULL;
 

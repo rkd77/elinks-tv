@@ -330,7 +330,7 @@ select_button_by_key(struct dialog_data *dlg_data)
 
 	foreach_widget(dlg_data, widget_data) {
 		int hk_pos;
-		unsigned char *hk_ptr;
+		const unsigned char *hk_ptr;
 		term_event_char_T hk_char;
 
 		if (widget_data->widget->type != WIDGET_BUTTON)

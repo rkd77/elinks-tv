@@ -452,7 +452,7 @@ struct option_init {
 	 * ::OPT_CODEPAGE, ::OPT_COLOR, or ::OPT_ALIAS.  NULL otherwise.
 	 * This goes to option_value.string, or after some parsing to
 	 * option_value.color or option_value.number.  */
-	void *value_dataptr;
+	const void *value_dataptr;
 
 	/** The constant value of the option, if the #type is ::OPT_COMMAND.
 	 * NULL otherwise.  This goes to option_value.command.  */
@@ -482,7 +482,7 @@ extern void unregister_options(union option_info info[], struct option *tree);
 /*! @relates option_info */
 #define NULL_OPTION_INFO \
 	{{ NULL, NULL, NULL, NULL, 0, \
-	   0, 0, 0,  0, NULL, NULL }}
+	   OPT_BOOL, 0, 0,  0, NULL, NULL }}
 
 /*! @relates option_info */
 #define INIT_OPT_BOOL(path, capt, name, flags, def, desc) \

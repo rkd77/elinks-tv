@@ -404,7 +404,7 @@ draw_menu_left_text_hk(struct terminal *term, unsigned char *text,
 {
 	struct color_pair *hk_color = get_bfu_color(term, (const unsigned char *)"menu.hotkey.normal");
 	struct color_pair *hk_color_sel = get_bfu_color(term, (const unsigned char *)"menu.hotkey.selected");
-	enum screen_char_attr hk_attr = get_opt_bool((const unsigned char *)"ui.dialogs.underline_hotkeys", NULL)
+	int hk_attr = get_opt_bool((const unsigned char *)"ui.dialogs.underline_hotkeys", NULL)
 				      ? SCREEN_ATTR_UNDERLINE : 0;
 	unsigned char c;
 	int xbase = x + L_TEXT_SPACE;
@@ -795,11 +795,11 @@ search_menu_item(struct menu_item *item, unsigned char *buffer,
 	text = stracpy(text);
 	if (!text) return 0;
 
-	match = strchr((char *)text, '~');
+	match = (unsigned char *)strchr((char *)text, '~');
 	if (match)
 		memmove(match, match + 1, strlen((const char *)match));
 
-	match = strcasestr((char *)text, (char *)buffer);
+	match = (unsigned char *)strcasestr((char *)text, (char *)buffer);
 	mem_free(text);
 
 	return !!match;

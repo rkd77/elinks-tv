@@ -76,7 +76,7 @@ new_menu_item(struct list_menu *menu, unsigned char *name, int data, int fullnam
 	clr_spaces(name);
 	if (!name[0]) {
 		mem_free(name);
-		name = stracpy(" ");
+		name = stracpy((const unsigned char *)" ");
 		if (!name) return;
 	}
 
@@ -129,7 +129,7 @@ init_menu(struct list_menu *menu)
 {
 	menu->stack_size = 0;
 	menu->stack = NULL;
-	new_menu_item(menu, stracpy(""), -1, 0);
+	new_menu_item(menu, stracpy((const unsigned char *)""), -1, 0);
 }
 
 /* TODO: merge with free_menu_items() in bfu/menu.h --Zas */
@@ -181,7 +181,7 @@ menu_labels(struct menu_item *items, unsigned char *base, unsigned char **lbls)
 		if (!bs) continue;
 
 		if (item->func == do_select_submenu) {
-			add_to_strn(&bs, " ");
+			add_to_strn(&bs, (const unsigned char *)" ");
 			menu_labels((struct menu_item *)item->data, bs, lbls);
 			mem_free(bs);
 		} else {
