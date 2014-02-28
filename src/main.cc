@@ -375,13 +375,6 @@ short tv_frames(short c)
 	return remap_frame[c];
 }
 
-short tv_capital(short c)
-{
-	unsigned char ch = (unsigned char)c;
-
-	return remap_letter[ch];
-}
-
 static void ourRemapString(unsigned char *out, unsigned char *in, unsigned short *map)
 {
 	for (int i = 0; in[i]; ++i)
@@ -909,7 +902,7 @@ static unsigned short decode_frame(struct screen_char *c)
 {
 	if (!(c->attr & SCREEN_ATTR_FRAME))
 	{
-		return c->data;
+		return remap_letter[c->data];
 	}
 
 	if (c->data >= 176 && c->data < 224)
