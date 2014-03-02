@@ -74,7 +74,7 @@ struct files_offset {
 /** @relates submitted_value */
 
 struct submitted_value *
-init_submitted_value(unsigned char *name, unsigned char *value, enum form_type type,
+init_submitted_value(unsigned char *name, unsigned char *value, int type,
 		     struct form_control *fc, int position)
 {
 	struct submitted_value *sv;
@@ -689,7 +689,7 @@ add_submitted_value_to_list(struct form_control *fc,
 {
 	struct submitted_value *sub;
 	unsigned char *name;
-	enum form_type type;
+	int type;
 	int position;
 
 	assert(fc && fs && list);

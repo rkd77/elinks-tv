@@ -37,7 +37,8 @@ struct form_state {
 	struct form_view *form_view;
 	int g_ctrl_num;
 	int position;
-	enum form_type type;
+	int type;
+	//enum form_type type;
 
 	/* Editable string.
 	 * - For ::FC_TEXT, ::FC_PASSWORD, ::FC_FILE, and
@@ -92,11 +93,12 @@ struct submitted_value {
 
 	struct form_control *form_control;
 
-	enum form_type type;
+	int type;
+	// enum form_type type;
 	int position;
 };
 
-struct submitted_value *init_submitted_value(unsigned char *name, unsigned char *value, enum form_type type, struct form_control *fc, int position);
+struct submitted_value *init_submitted_value(unsigned char *name, unsigned char *value, int type, struct form_control *fc, int position);
 void done_submitted_value(struct submitted_value *sv);
 void done_submitted_value_list(LIST_OF(struct submitted_value) *list);
 unsigned char *encode_crlf(struct submitted_value *sv);

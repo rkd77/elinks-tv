@@ -22,7 +22,8 @@
 
 
 struct form_type_name {
-	enum form_type num;
+	int num;
+	//enum form_type num;
 	unsigned char *name;
 };
 
@@ -54,7 +55,7 @@ str2form_type(unsigned char *s)
 }
 
 unsigned char *
-form_type2str(enum form_type num)
+form_type2str(int num)
 {
 	int n;
 

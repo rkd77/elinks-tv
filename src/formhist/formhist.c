@@ -103,26 +103,26 @@ load_formhist_from_file(void)
 			  (unsigned char *) NULL);
 	if (!file) return 0;
 
-	f = fopen(file, "rb");
+	f = fopen((const char *)file, "rb");
 	mem_free(file);
 	if (!f) return 0;
 
-	while (fgets(tmp, MAX_STR_LEN, f)) {
+	while (fgets((char *)tmp, MAX_STR_LEN, f)) {
 		unsigned char *p;
 		int dontsave = 0;
 
 		if (tmp[0] == '\n' && !tmp[1]) continue;
 
-		p = strchr((char *)tmp, '\t');
+		p = (unsigned char *)strchr((char *)tmp, '\t');
 		if (p) {
 			*p = '\0';
 			++p;
-			if (!strcmp(tmp, "dontsave"))
+			if (!strcmp((const char *)tmp, "dontsave"))
 				dontsave = 1;
 		} else {
 			/* Compat. with older file formats. Remove it at some
 			 * time. --Zas */
-			if (!strncmp(tmp, "dontsave,", 9)) {
+			if (!strncmp((const char *)tmp, "dontsave,", 9)) {
 				dontsave = 1;
 				p = tmp + 9;
 			} else {
@@ -138,24 +138,24 @@ load_formhist_from_file(void)
 		if (dontsave) form->dontsave = 1;
 
 		/* Fields type, name, value */
-		while (fgets(tmp, MAX_STR_LEN, f)) {
+		while (fgets((char *)tmp, MAX_STR_LEN, f)) {
 			struct submitted_value *sv;
 			unsigned char *type, *name, *value;
 			unsigned char *enc_value;
-			enum form_type ftype;
+			int ftype;
 			int ret;
 
 			if (tmp[0] == '\n' && !tmp[1]) break;
 
 			/* Type */
 			type = tmp;
-			p = strchr((char *)type, '\t');
+			p = (unsigned char *)strchr((char *)type, '\t');
 			if (!p) goto fail;
 			*p = '\0';
 
 			/* Name */
 			name = ++p;
-			p = strchr((char *)name, '\t');
+			p = (unsigned char *)strchr((char *)name, '\t');
 			if (!p) {
 				/* Compatibility with previous file formats.
 				 * REMOVE AT SOME TIME --Zas */
@@ -164,9 +164,9 @@ load_formhist_from_file(void)
 
 				if (*name == '*') {
 					name++;
-					type = "password";
+					type = (unsigned char *)"password";
 				} else {
-					type = "text";
+					type = (unsigned char *)"text";
 				}
 
 				goto cont;
@@ -176,7 +176,7 @@ load_formhist_from_file(void)
 			/* Value */
 			value = ++p;
 cont:
-			p = strchr((char *)value, '\n');
+			p = (unsigned char *)strchr((char *)value, '\n');
 			if (!p) goto fail;
 			*p = '\0';
 
@@ -253,7 +253,7 @@ save_formhist_to_file(void)
 				 * password (androids don't count). */
 				encvalue = base64_encode(sv->value);
 			} else {
-				encvalue = stracpy("");
+				encvalue = stracpy((const unsigned char *)"");
 			}
 
 			if (!encvalue) return 0;
@@ -287,7 +287,7 @@ form_exists(struct formhist_data *form1)
 		int exact = 0;
 		struct submitted_value *sv;
 
-		if (strcmp(form->url, form1->url)) continue;
+		if (strcmp((const char *)form->url, (const char *)form1->url)) continue;
 		if (form->dontsave) return 1;
 
 		/* Iterate through submitted entries. */
@@ -298,7 +298,7 @@ form_exists(struct formhist_data *form1)
 			count++;
 			foreach (sv2, *form->submit) {
 				if (sv->type != sv2->type) continue;
-				if (!strcmp(sv->name, sv2->name)) {
+				if (!strcmp((const char *)sv->name, (const char *)sv2->name)) {
 					exact++;
 					value = sv2->value;
 					break;
@@ -306,7 +306,7 @@ form_exists(struct formhist_data *form1)
 			}
 			/* If we found a value for that name, check if value
 			 * has changed or not. */
-			if (value && strcmp(sv->value, value)) return 0;
+			if (value && strcmp((const char *)sv->value, (const char *)value)) return 0;
 		}
 
 		/* Check if submitted values have changed or not. */
@@ -323,7 +323,7 @@ forget_forms_with_url(unsigned char *url)
 	int count = 0;
 
 	foreachsafe (form, next, saved_forms) {
-		if (strcmp(form->url, url)) continue;
+		if (strcmp((const char *)form->url, (const char *)url)) continue;
 
 		delete_formhist_item(form);
 		count++;
@@ -373,11 +373,11 @@ get_form_history_value(unsigned char *url, unsigned char *name)
 	foreach (form, saved_forms) {
 		if (form->dontsave) continue;
 
-		if (!strcmp(form->url, url)) {
+		if (!strcmp((const char *)form->url, (const char *)url)) {
 			struct submitted_value *sv;
 
 			foreach (sv, *form->submit)
-				if (!strcmp(sv->name, name))
+				if (!strcmp((const char *)sv->name, (const char *)name))
 					return sv->value;
 		}
 	}

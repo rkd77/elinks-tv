@@ -81,7 +81,8 @@ struct form_control {
 	 * form item in the source. */
 	int position;
 
-	enum form_type type;
+	int type;
+	//enum form_type type;
 	enum form_mode mode;
 
 	unsigned char *id; /**< used by scripts */
@@ -110,7 +111,7 @@ struct form_control {
 
 /* Numerical form type <-> form type name */
 int str2form_type(unsigned char *s);
-unsigned char *form_type2str(enum form_type num);
+unsigned char *form_type2str(int num);
 
 struct form *init_form(void);
 void done_form(struct form *form);

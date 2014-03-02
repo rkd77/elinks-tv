@@ -73,12 +73,12 @@ get_formhist_data_info(struct listbox_item *item, struct terminal *term)
 		add_format_to_string(&info, "\n[%8s] ", form_type2str(sv->type));
 
 		add_to_string(&info, sv->name);
-		add_to_string(&info, " = ");
+		add_to_string(&info, (const unsigned char *)" = ");
 		if (sv->value && *sv->value) {
 			if (sv->type != FC_PASSWORD)
 				add_to_string(&info, sv->value);
 			else
-				add_to_string(&info, "********");
+				add_to_string(&info, (const unsigned char *)"********");
 		}
 	}
 
