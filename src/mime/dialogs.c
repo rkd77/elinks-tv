@@ -41,7 +41,7 @@ get_real_opt(unsigned char *base, unsigned char *id)
 static void
 really_del_ext(void *fcp)
 {
-	struct option *opt = get_real_opt("mime.extension",
+	struct option *opt = get_real_opt((unsigned char *)"mime.extension",
 					  (unsigned char *) fcp);
 
 	if (opt) delete_option(opt);
@@ -56,7 +56,7 @@ menu_del_ext(struct terminal *term, void *fcp, void *xxx2)
 
 	if (!extension) return;
 
-	opt = get_real_opt("mime.extension", extension);
+	opt = get_real_opt((unsigned char *)"mime.extension", extension);
 	if (!opt) {
 		mem_free(extension);
 		return;
@@ -86,7 +86,7 @@ add_mime_extension(void *data)
 
 	if (!ext || !init_string(&name)) return;
 
-	add_to_string(&name, "mime.extension.");
+	add_to_string(&name, (const unsigned char *)"mime.extension.");
 	add_optname_to_string(&name, ext->ext, strlen((const char *)ext->ext));
 
 	really_del_ext(ext->ext_orig); /* ..or rename ;) */
@@ -112,7 +112,7 @@ menu_add_ext(struct terminal *term, void *fcp, void *xxx2)
 	new_ = (struct extension *) get_dialog_offset(dlg, MIME_WIDGETS_COUNT);
 
 	if (fcp) {
-		struct option *opt = get_real_opt("mime.extension", (unsigned char *)fcp);
+		struct option *opt = get_real_opt((unsigned char *)"mime.extension", (unsigned char *)fcp);
 
 		if (opt) {
 			safe_strncpy(new_->ext, (const unsigned char *)fcp, MAX_STR_LEN);
@@ -156,10 +156,10 @@ menu_list_ext(struct terminal *term, void *fn_, void *xxx)
 		unsigned char *translated2;
 		unsigned char *optptr2;
 
-		if (!strcmp(opt->name, "_template_")) continue;
+		if (!strcmp((const char *)opt->name, "_template_")) continue;
 
 		if (!init_string(&translated)
-		    || !add_real_optname_to_string(&translated, opt->name,
+		    || !add_real_optname_to_string(&translated, (unsigned char *)opt->name,
 						   strlen((const char *)opt->name))) {
 			done_string(&translated);
 			continue;

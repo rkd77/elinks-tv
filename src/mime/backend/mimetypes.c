@@ -131,17 +131,17 @@ parse_mimetypes_extensions(unsigned char *token, unsigned char *ctype)
 static void
 parse_mimetypes_file(unsigned char *filename)
 {
-	FILE *file = fopen(filename, "rb");
+	FILE *file = fopen((const char *)filename, "rb");
 	unsigned char line[MAX_STR_LEN];
 
 	if (!file) return;
 
-	while (fgets(line, MAX_STR_LEN - 1, file)) {
+	while (fgets((char *)line, MAX_STR_LEN - 1, file)) {
 		unsigned char *ctype = line;
 		unsigned char *token;
 
 		/* Weed out any comments */
-		token = strchr((char *)line, '#');
+		token = (unsigned char *)strchr((char *)line, '#');
 		if (token)
 			*token = '\0';
 
@@ -174,7 +174,7 @@ init_mimetypes_map(void)
 
 	/* Determine the path  */
 	path = get_mimetypes_path();
-	if (!path || !*path) path = DEFAULT_MIMETYPES_PATH;
+	if (!path || !*path) path = (unsigned char *)DEFAULT_MIMETYPES_PATH;
 
 	while (*path) {
 		unsigned char *filename = get_next_path_filename(&path, ':');
@@ -198,7 +198,7 @@ done_mimetypes(struct module *module)
 
 	foreach_hash_item (item, *mimetypes_map, i) {
 		if (item->value) {
-			struct mimetypes_entry *entry = item->value;
+			struct mimetypes_entry *entry = (struct mimetypes_entry *)item->value;
 
 			done_mimetypes_entry(entry);
 		}
@@ -223,7 +223,7 @@ static void
 init_mimetypes(struct module *module)
 {
 	static const struct change_hook_info mimetypes_change_hooks[] = {
-		{ "mime.mimetypes",		change_hook_mimetypes },
+		{ (const unsigned char *)"mime.mimetypes",		change_hook_mimetypes },
 		{ NULL,				NULL },
 	};
 
@@ -254,13 +254,13 @@ get_content_type_mimetypes(unsigned char *extension)
 
 		/* Check list of entries */
 		if (item && item->value) {
-			struct mimetypes_entry *entry = item->value;
+			struct mimetypes_entry *entry = (struct mimetypes_entry *)item->value;
 
 			return stracpy(entry->content_type);
 		}
 
 		/* Try to trim the extension from the left. */
-		trimmed = strchr((char *)extension, '.');
+		trimmed = (unsigned char *)strchr((char *)extension, '.');
 		if (!trimmed)
 			break;
 

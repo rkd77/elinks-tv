@@ -62,10 +62,10 @@ get_content_filename(struct uri *uri, struct cache_entry *cached)
 	if (!cached || !cached->head)
 		return NULL;
 
-	pos = parse_header(cached->head, "Content-Disposition", NULL);
+	pos = parse_header(cached->head, (const unsigned char *)"Content-Disposition", NULL);
 	if (!pos) return NULL;
 
-	parse_header_param(pos, "filename", &filename);
+	parse_header_param(pos, (unsigned char *)"filename", &filename);
 	mem_free(pos);
 	if (!filename) return NULL;
 
@@ -104,14 +104,14 @@ static inline unsigned char *
 check_extension_type(unsigned char *extension)
 {
 	/* Trim the extension so only last .<extension> is used. */
-	unsigned char *trimmed = strrchr((char *)extension, '.');
+	unsigned char *trimmed = (unsigned char *)strrchr((char *)extension, '.');
 	struct mime_handler *handler;
 	unsigned char *content_type;
 
 	if (!trimmed)
 		return NULL;
 
-	content_type = straconcat("application/x-", trimmed + 1,
+	content_type = straconcat((const unsigned char *)"application/x-", trimmed + 1,
 				  (unsigned char *) NULL);
 	if (!content_type)
 		return NULL;
@@ -131,9 +131,9 @@ check_extension_type(unsigned char *extension)
 static inline unsigned char *
 check_encoding_type(unsigned char *extension)
 {
-	enum stream_encoding encoding = guess_encoding(extension);
+	int encoding = guess_encoding(extension);
 	const unsigned char *const *extension_list;
-	unsigned char *last_extension = strrchr((char *)extension, '.');
+	unsigned char *last_extension = (unsigned char *)strrchr((char *)extension, '.');
 
 	if (encoding == ENCODING_NONE || !last_extension)
 		return NULL;
@@ -143,7 +143,7 @@ check_encoding_type(unsigned char *extension)
 	     extension_list++) {
 		unsigned char *content_type;
 
-		if (strcmp(*extension_list, last_extension))
+		if (strcmp((const char *)*extension_list, (const char *)last_extension))
 			continue;
 
 		*last_extension = '\0';
@@ -196,9 +196,9 @@ get_cache_header_content_type(struct cache_entry *cached)
 {
 	unsigned char *extension, *ctype;
 
-	ctype = parse_header(cached->head, "Content-Type", NULL);
+	ctype = parse_header(cached->head, (const unsigned char *)"Content-Type", NULL);
 	if (ctype) {
-		unsigned char *end = strchr((char *)ctype, ';');
+		unsigned char *end = (unsigned char *)strchr((char *)ctype, ';');
 		int ctypelen;
 
 		if (end) *end = '\0';
@@ -250,8 +250,8 @@ get_fragment_content_type(struct cache_entry *cached)
 	if (!sample)
 		return NULL;
 
-	if (c_strcasestr(sample, "<html>"))
-		ctype = stracpy("text/html");
+	if (c_strcasestr((const char *)sample, "<html>"))
+		ctype = stracpy((const unsigned char *)"text/html");
 
 	mem_free(sample);
 
@@ -313,8 +313,8 @@ get_content_type(struct cache_entry *cached)
 
 	/* text/plain for pager mode */
 	if (cached->uri && cached->uri->string
-	    && !strcmp(cached->uri->string, "file:///dev/stdin")) {
-		cached->content_type = stracpy("text/plain");
+	    && !strcmp((const char *)cached->uri->string, "file:///dev/stdin")) {
+		cached->content_type = stracpy((const unsigned char *)"text/plain");
 	} else
 		/* Fallback.. use some hardwired default */
 		cached->content_type = stracpy(get_default_mime_type());

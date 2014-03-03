@@ -232,7 +232,7 @@ get_mailcap_field(unsigned char **next)
 		if (*fieldend == ';')
 			fieldend++;
 
-		fieldend = strchr((char *)fieldend, ';');
+		fieldend = (unsigned char *)strchr((char *)fieldend, ';');
 	} while (fieldend && *(fieldend-1) == '\\');
 
 	if (fieldend) {
@@ -282,13 +282,13 @@ parse_optional_fields(struct mailcap_entry *entry, unsigned char *line)
 
 		if (!field) break;
 
-		if (!c_strncasecmp(field, "needsterminal", 13)) {
+		if (!c_strncasecmp((const char *)field, "needsterminal", 13)) {
 			entry->needsterminal = 1;
 
-		} else if (!c_strncasecmp(field, "copiousoutput", 13)) {
+		} else if (!c_strncasecmp((const char *)field, "copiousoutput", 13)) {
 			entry->copiousoutput = 1;
 
-		} else if (!c_strncasecmp(field, "test", 4)) {
+		} else if (!c_strncasecmp((const char *)field, "test", 4)) {
 			/* Don't leak memory if a corrupted mailcap
 			 * file has multiple test commands in the same
 			 * line.  */
@@ -304,7 +304,7 @@ parse_optional_fields(struct mailcap_entry *entry, unsigned char *line)
 					return 0;
 				}
 
-		} else if (!c_strncasecmp(field, "description", 11)) {
+		} else if (!c_strncasecmp((const char *)field, "description", 11)) {
 			mem_free_set(&entry->description,
 				     get_mailcap_field_text(field + 11));
 			if (!entry->description)
@@ -320,7 +320,7 @@ parse_optional_fields(struct mailcap_entry *entry, unsigned char *line)
 static void
 parse_mailcap_file(unsigned char *filename, unsigned int priority)
 {
-	FILE *file = fopen(filename, "rb");
+	FILE *file = fopen((const char *)filename, "rb");
 	unsigned char *line = NULL;
 	size_t linelen = MAX_STR_LEN;
 	int lineno = 1;
@@ -359,7 +359,7 @@ parse_mailcap_file(unsigned char *filename, unsigned int priority)
 			continue;
 		}
 
-		basetypeend = strchr((char *)type, '/');
+		basetypeend = (unsigned char *)strchr((char *)type, '/');
 		typelen = strlen((const char *)type);
 
 		if (!basetypeend) {
@@ -406,8 +406,8 @@ init_mailcap_map(void)
 
 	/* Try to setup mailcap_path */
 	path = get_mailcap_path();
-	if (!path || !*path) path = getenv("MAILCAP");
-	if (!path) path = DEFAULT_MAILCAP_PATH;
+	if (!path || !*path) path = (unsigned char *)getenv("MAILCAP");
+	if (!path) path = (unsigned char *)DEFAULT_MAILCAP_PATH;
 
 	while (*path) {
 		unsigned char *filename = get_next_path_filename(&path, ':');
@@ -464,7 +464,7 @@ static void
 init_mailcap(struct module *module)
 {
 	static const struct change_hook_info mimetypes_change_hooks[] = {
-		{ "mime.mailcap",		change_hook_mailcap },
+		{ (const unsigned char *)"mime.mailcap",		change_hook_mailcap },
 		{ NULL,				NULL },
 	};
 
@@ -514,7 +514,7 @@ format_command(unsigned char *command, unsigned char *type, int copiousoutput)
 		switch (*command) {
 		case '\'': /* Debian's '%s' */
 			command++;
-			if (!strncmp(command, "%s'", 3)) {
+			if (!strncmp((const char *)command, "%s'", 3)) {
 				command += 3;
 				add_char_to_string(&cmd, '%');
 			} else {
@@ -603,13 +603,13 @@ get_mailcap_entry(unsigned char *type)
 	item = get_hash_item(mailcap_map, type, strlen((const char *)type));
 
 	/* Check list of entries */
-	entry = (struct mailcap_entry *)((item && item->value) ? check_entries(item->value) : NULL);
+	entry = (struct mailcap_entry *)((item && item->value) ? check_entries((struct mailcap_hash_item *)item->value) : NULL);
 
 	if (!entry || get_mailcap_prioritize()) {
 		/* The type lookup has either failed or we need to check
 		 * the priorities so get the wild card handler */
 		struct mailcap_entry *wildcard = NULL;
-		unsigned char *wildpos = strchr((char *)type, '/');
+		unsigned char *wildpos = (unsigned char *)strchr((char *)type, '/');
 
 		if (wildpos) {
 			int wildlen = wildpos - type + 1; /* include '/' */
@@ -686,7 +686,7 @@ set_display(int xwin, int restore)
 		assert(display == NULL);
 		if_assert_failed mem_free(display);
 
-		display = getenv("DISPLAY");
+		display = (unsigned char *)getenv("DISPLAY");
 		if (display) display = stracpy(display);
 		if (xwin) {
 #ifdef HAVE_SETENV
@@ -704,7 +704,7 @@ set_display(int xwin, int restore)
 	} else { /* restore DISPLAY */
 		if (display) {
 #ifdef HAVE_SETENV
-			setenv("DISPLAY", display, 1);
+			setenv("DISPLAY", (const char *)display, 1);
 #else
 			{
 				static unsigned char DISPLAY[1024] = "DISPLAY=";
@@ -755,7 +755,7 @@ get_mime_handler_mailcap(unsigned char *type, int xwin)
 
 	block = (entry->needsterminal || entry->copiousoutput);
 	handler = init_mime_handler(program, entry->description,
-				    mailcap_mime_module.name,
+				    (unsigned char *)mailcap_mime_module.name,
 				    get_mailcap_ask(), block);
 	mem_free(program);
 

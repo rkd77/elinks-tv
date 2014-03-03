@@ -122,7 +122,7 @@ get_content_type_default(unsigned char *extension)
 	assert(opt_tree);
 
 	foreach (opt, *opt_tree->value.tree) {
-		unsigned char *namepos = opt->name + strlen((const char *)opt->name) - 1;
+		unsigned char *namepos = (unsigned char *)opt->name + strlen((const char *)opt->name) - 1;
 		unsigned char *extpos = extend;
 
 		/* Match the longest possible part of URL.. */
@@ -160,7 +160,7 @@ get_mime_type_option(unsigned char *type)
 
 	if (add_optname_to_string(&name, type, strlen((const char *)type))) {
 		/* Search for end of the base type. */
-		unsigned char *pos = strchr((char *)name.source, '/');
+		unsigned char *pos = (unsigned char *)strchr((char *)name.source, '/');
 
 		if (pos) {
 			*pos = '.';
@@ -204,7 +204,7 @@ get_mime_handler_default(unsigned char *type, int have_x)
 
 	return init_mime_handler(get_opt_str_tree(handler_opt, (const unsigned char *)"program", NULL),
 				 type_opt->value.string,
-				 default_mime_module.name,
+				 (unsigned char *)default_mime_module.name,
 				 get_opt_bool_tree(handler_opt, (const unsigned char *)"ask", NULL),
 				 get_opt_bool_tree(handler_opt, (const unsigned char *)"block", NULL));
 }
