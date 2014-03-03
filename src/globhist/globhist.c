@@ -330,7 +330,7 @@ static void
 read_global_history(void)
 {
 	unsigned char in_buffer[MAX_STR_LEN * 3];
-	unsigned char *file_name = GLOBAL_HISTORY_FILENAME;
+	unsigned char *file_name = (unsigned char *)GLOBAL_HISTORY_FILENAME;
 	unsigned char *title;
 	FILE *f;
 
@@ -343,29 +343,29 @@ read_global_history(void)
 				       (unsigned char *) NULL);
 		if (!file_name) return;
 	}
-	f = fopen(file_name, "rb");
+	f = fopen((const char *)file_name, "rb");
 	if (elinks_home) mem_free(file_name);
 	if (!f) return;
 
 	title = in_buffer;
 	global_history.nosave = 1;
 
-	while (fgets(in_buffer, sizeof(in_buffer), f)) {
+	while (fgets((char *)in_buffer, sizeof(in_buffer), f)) {
 		unsigned char *url, *last_visit, *eol;
 
-		url = strchr((char *)title, '\t');
+		url = (unsigned char *)strchr((char *)title, '\t');
 		if (!url) continue;
 		*url++ = '\0'; /* Now url points to the character after \t. */
 
-		last_visit = strchr((char *)url, '\t');
+		last_visit = (unsigned char *)strchr((char *)url, '\t');
 		if (!last_visit) continue;
 		*last_visit++ = '\0';
 
-		eol = strchr((char *)last_visit, '\n');
+		eol = (unsigned char *)strchr((char *)last_visit, '\n');
 		if (!eol) continue;
 		*eol = '\0'; /* Drop ending '\n'. */
 
-		add_global_history_item(url, title, str_to_time_t(last_visit));
+		add_global_history_item(url, title, str_to_time_t((const char *)last_visit));
 	}
 
 	global_history.nosave = 0;
@@ -425,7 +425,7 @@ global_history_write_hook(va_list ap, void *data)
 }
 
 struct event_hook_info global_history_hooks[] = {
-	{ "periodic-saving", 0, global_history_write_hook, NULL },
+	{ (const unsigned char *)"periodic-saving", 0, global_history_write_hook, NULL },
 
 	NULL_EVENT_HOOK_INFO,
 };
