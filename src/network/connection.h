@@ -100,7 +100,7 @@ void retry_connection(struct connection *, struct connection_state);
 
 void cancel_download(struct download *download, int interrupt);
 void move_download(struct download *old, struct download *new_,
-		     enum connection_priority newpri);
+		     int newpri);
 
 void detach_connection(struct download *, off_t);
 void abort_all_connections(void);
@@ -115,7 +115,7 @@ void shutdown_connection_stream(struct connection *conn);
  * that should be probably something else than data, but... ;-) */
 /* Returns 0 on success and -1 on failure. */
 int load_uri(struct uri *uri, struct uri *referrer, struct download *download,
-	     enum connection_priority pri, enum cache_mode cache_mode, off_t start);
+	     int pri, enum cache_mode cache_mode, off_t start);
 
 int is_entry_used(struct cache_entry *cached);
 

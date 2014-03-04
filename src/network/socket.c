@@ -973,7 +973,7 @@ read_from_socket(struct socket *socket, struct read_buffer *buffer,
 
 	buffer->done = done;
 
-	socket->ops->set_timeout(socket, connection_state(0));
+	socket->ops->set_timeout(socket, connection_state(S_WAIT));
 	socket->ops->set_state(socket, state);
 
 	del_from_list(&ref);

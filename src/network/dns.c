@@ -90,7 +90,7 @@ find_in_dns_cache(unsigned char *name)
 	struct dnsentry *dnsentry;
 
 	foreach (dnsentry, dns_cache)
-		if (!c_strcasecmp(dnsentry->name, name)) {
+		if (!c_strcasecmp((const char *)dnsentry->name, (const char *)name)) {
 			move_to_top_of_list(dns_cache, dnsentry);
 			return dnsentry;
 		}
@@ -160,7 +160,7 @@ do_real_lookup(unsigned char *name, struct sockaddr_storage **addrs, int *addrno
 	memset(&hint, 0, sizeof(hint));
 	hint.ai_family = AF_UNSPEC;
 	hint.ai_socktype = SOCK_STREAM;
-	if (getaddrinfo(name, NULL, &hint, &ai) != 0) return DNS_ERROR;
+	if (getaddrinfo((const char *)name, NULL, &hint, &ai) != 0) return DNS_ERROR;
 
 #else
 	/* Seems there are problems on Mac, so we first need to try
@@ -248,7 +248,7 @@ write_dns_data(int h, void *data, size_t datalen)
 	size_t done = 0;
 
 	do {
-		int w = safe_write(h, data + done, datalen - done);
+		int w = safe_write(h, (void *)((char *)data + done), datalen - done);
 
 		if (w < 0) return DNS_ERROR;
 		done += w;
@@ -296,7 +296,7 @@ read_dns_data(int h, void *data, size_t datalen)
 	size_t done = 0;
 
 	do {
-		ssize_t r = safe_read(h, data + done, datalen - done);
+		ssize_t r = safe_read(h, (void *)((char *)data + done), datalen - done);
 
 		if (r <= 0) return DNS_ERROR;
 		done += r;

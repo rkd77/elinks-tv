@@ -93,14 +93,14 @@ static const struct protocol_backend protocol_backends[] = {
  * binary search used currently reduces it to 4400 (meaning fm only has HTTP
  * links). */
 
-enum protocol
+int
 get_protocol(unsigned char *name, int namelen)
 {
 	/* These are really enum protocol values but can take on negative
 	 * values and since 0 <= -1 for enum values it's better to use clean
 	 * integer type. */
 	int start, end;
-	enum protocol protocol;
+	int protocol;
 
 	/* Almost dichotomic search is used here */
 	/* Starting at the HTTP entry which is the most common that will make
@@ -151,7 +151,7 @@ get_protocol(unsigned char *name, int namelen)
 #define VALID_PROTOCOL(p) (0 <= (p) && (p) < PROTOCOL_BACKENDS)
 
 int
-get_protocol_port(enum protocol protocol)
+get_protocol_port(int protocol)
 {
 	assert(VALID_PROTOCOL(protocol));
 	if_assert_failed return 0;
@@ -163,7 +163,7 @@ get_protocol_port(enum protocol protocol)
 }
 
 int
-get_protocol_need_slashes(enum protocol protocol)
+get_protocol_need_slashes(int protocol)
 {
 	assert(VALID_PROTOCOL(protocol));
 	if_assert_failed return 0;
@@ -171,7 +171,7 @@ get_protocol_need_slashes(enum protocol protocol)
 }
 
 int
-get_protocol_need_slash_after_host(enum protocol protocol)
+get_protocol_need_slash_after_host(int protocol)
 {
 	assert(VALID_PROTOCOL(protocol));
 	if_assert_failed return 0;
@@ -179,7 +179,7 @@ get_protocol_need_slash_after_host(enum protocol protocol)
 }
 
 int
-get_protocol_keep_double_slashes(enum protocol protocol)
+get_protocol_keep_double_slashes(int protocol)
 {
 	assert(VALID_PROTOCOL(protocol));
 	if_assert_failed return 0;
@@ -187,7 +187,7 @@ get_protocol_keep_double_slashes(enum protocol protocol)
 }
 
 int
-get_protocol_free_syntax(enum protocol protocol)
+get_protocol_free_syntax(int protocol)
 {
 	assert(VALID_PROTOCOL(protocol));
 	if_assert_failed return 0;
@@ -195,7 +195,7 @@ get_protocol_free_syntax(enum protocol protocol)
 }
 
 int
-get_protocol_need_ssl(enum protocol protocol)
+get_protocol_need_ssl(int protocol)
 {
 	assert(VALID_PROTOCOL(protocol));
 	if_assert_failed return 0;
@@ -203,7 +203,7 @@ get_protocol_need_ssl(enum protocol protocol)
 }
 
 protocol_handler_T *
-get_protocol_handler(enum protocol protocol)
+get_protocol_handler(int protocol)
 {
 	assert(VALID_PROTOCOL(protocol));
 	if_assert_failed return NULL;

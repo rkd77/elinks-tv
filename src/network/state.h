@@ -115,7 +115,7 @@ enum connection_basic_state {
 struct connection_state {
 	/** An ELinks internal status code, or ::S_ERRNO if this
 	 * structure holds a system error instead.  */
-	enum connection_basic_state basic;
+	int basic;
 
 	/** When #basic is ::S_ERRNO, syserr is the saved value of
 	 * errno.  Otherwise, syserr should be 0.  */
@@ -126,7 +126,7 @@ unsigned char *get_state_message(struct connection_state state, struct terminal 
 void done_state_message(void);
 
 static inline struct connection_state
-connection_state(enum connection_basic_state basic)
+connection_state(int basic)
 {
 	struct connection_state state = {S_WAIT, 0};
 

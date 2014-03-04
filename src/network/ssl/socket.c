@@ -273,12 +273,12 @@ match_uri_host_ip(const unsigned char *uri_host,
 	 * network byte order.  */
 	switch (ASN1_STRING_length(cert_host_asn1)) {
 	case 4:
-		return inet_aton(uri_host, &uri_host_in) != 0
+		return inet_aton((const char *)uri_host, &uri_host_in) != 0
 		    && memcmp(cert_host_addr, &uri_host_in.s_addr, 4) == 0;
 
 #ifdef CONFIG_IPV6
 	case 16:
-		return inet_pton(AF_INET6, uri_host, &uri_host_in6) == 1
+		return inet_pton(AF_INET6, (const char *)uri_host, &uri_host_in6) == 1
 		    && memcmp(cert_host_addr, &uri_host_in6.s6_addr, 16) == 0;
 #endif
 
@@ -442,7 +442,7 @@ ssl_connect(struct socket *socket)
 				(const unsigned char *)"connection.ssl.client_cert.file", NULL);
 #endif
 		if (!*client_cert) {
-			client_cert = getenv("X509_CLIENT_CERT");
+			client_cert = (unsigned char *)getenv("X509_CLIENT_CERT");
 			if (client_cert && !*client_cert)
 				client_cert = NULL;
 		}
@@ -451,12 +451,12 @@ ssl_connect(struct socket *socket)
 #ifdef CONFIG_NSS_COMPAT_OSSL
 			SSL_CTX_use_certificate_chain_file(
 					(SSL *) socket->ssl,
-					client_cert);
+					(const char *)client_cert);
 #else
 			SSL_CTX *ctx = ((SSL *) socket->ssl)->ctx;
 
-			SSL_CTX_use_certificate_chain_file(ctx, client_cert);
-			SSL_CTX_use_PrivateKey_file(ctx, client_cert,
+			SSL_CTX_use_certificate_chain_file(ctx, (const char *)client_cert);
+			SSL_CTX_use_PrivateKey_file(ctx, (const char *)client_cert,
 						    SSL_FILETYPE_PEM);
 #endif
 		}

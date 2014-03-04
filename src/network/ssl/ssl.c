@@ -84,10 +84,10 @@ init_openssl(struct module *module)
 	 * cannot initialize the PRNG and so every attempt to use SSL fails.
 	 * It's actually an OpenSSL FAQ, and according to them, it's up to the
 	 * application coders to seed the RNG. -- William Yodlowsky */
-	if (RAND_egd(RAND_file_name(f_randfile, sizeof(f_randfile))) < 0) {
+	if (RAND_egd(RAND_file_name((char *)f_randfile, sizeof(f_randfile))) < 0) {
 		/* Not an EGD, so read and write to it */
-		if (RAND_load_file(f_randfile, -1))
-			RAND_write_file(f_randfile);
+		if (RAND_load_file((const char *)f_randfile, -1))
+			RAND_write_file((const char *)f_randfile);
 	}
 
 	SSLeay_add_ssl_algorithms();
