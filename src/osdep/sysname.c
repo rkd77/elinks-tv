@@ -57,7 +57,7 @@ get_system_name(void)
 	struct utsname name;
 
 	if (!uname(&name)) {
-		snprintf(system_name, sizeof(system_name),
+		snprintf((char *)system_name, sizeof(system_name),
 			 "%s %s %s", name.sysname, name.release, name.machine);
 		return;
 	}
@@ -65,5 +65,5 @@ get_system_name(void)
 
 	if (got_it_from_uname_command()) return;
 
-	safe_strncpy(system_name, SYSTEM_NAME, sizeof(system_name));
+	safe_strncpy(system_name, (const unsigned char *)SYSTEM_NAME, sizeof(system_name));
 }

@@ -61,28 +61,28 @@ can_open_in_new(struct terminal *term)
 
 void
 open_new_window(struct terminal *term, unsigned char *exe_name,
-		enum term_env_type environment, unsigned char *param)
+		int environment, unsigned char *param)
 {
 	unsigned char *command = NULL;
 	int i;
 
 	foreach_open_in_new (i, environment) {
-		command = open_in_new[i].command;
+		command = (unsigned char *)open_in_new[i].command;
 		break;
 	}
 
 	assert(command);
 
 	if (environment & ENV_XWIN) {
-		unsigned char *xterm = getenv("ELINKS_XTERM");
+		unsigned char *xterm = (unsigned char *)getenv("ELINKS_XTERM");
 
-		if (!xterm) xterm = getenv("LINKS_XTERM");
+		if (!xterm) xterm = (unsigned char *)getenv("LINKS_XTERM");
 		if (xterm) command = xterm;
 
 	} else if (environment & ENV_TWIN) {
-		unsigned char *twterm = getenv("ELINKS_TWTERM");
+		unsigned char *twterm = (unsigned char *)getenv("ELINKS_TWTERM");
 
-		if (!twterm) twterm = getenv("LINKS_TWTERM");
+		if (!twterm) twterm = (unsigned char *)getenv("LINKS_TWTERM");
 		if (twterm) command = twterm;
 	}
 
@@ -90,6 +90,6 @@ open_new_window(struct terminal *term, unsigned char *exe_name,
 			     (unsigned char *) NULL);
 	if (!command) return;
 
-	exec_on_terminal(term, command, "", TERM_EXEC_NEWWIN);
+	exec_on_terminal(term, command, (unsigned char *)"", TERM_EXEC_NEWWIN);
 	mem_free(command);
 }

@@ -141,7 +141,7 @@ set_ip_tos_throughput(int socket)
 }
 
 int
-get_e(unsigned char *env)
+get_e(const char *env)
 {
 	char *v = getenv(env);
 
@@ -157,7 +157,7 @@ get_cwd(void)
 	while (1) {
 		buf = (unsigned char *)mem_alloc(bufsize);
 		if (!buf) return NULL;
-		if (getcwd(buf, bufsize)) return buf;
+		if (getcwd((char *)buf, bufsize)) return buf;
 		mem_free(buf);
 
 		if (errno == EINTR) continue;
@@ -171,16 +171,16 @@ get_cwd(void)
 void
 set_cwd(unsigned char *path)
 {
-	if (path) while (chdir(path) && errno == EINTR);
+	if (path) while (chdir((const char *)path) && errno == EINTR);
 }
 
 unsigned char *
 get_shell(void)
 {
-	unsigned char *shell = GETSHELL;
+	unsigned char *shell = (unsigned char *)GETSHELL;
 
 	if (!shell || !*shell)
-		shell = DEFAULT_SHELL;
+		shell = (unsigned char *)DEFAULT_SHELL;
 
 	return shell;
 }
@@ -200,7 +200,7 @@ void
 handle_terminal_resize(int fd, void (*fn)(void))
 {
 	fprintf(stderr, "handle_terminal_resize\n");
-	install_signal_handler(SIGWINCH, sigwinch, fn, 0);
+	install_signal_handler(SIGWINCH, sigwinch, (void *)fn, 0);
 }
 
 void
@@ -326,11 +326,11 @@ is_xterm(void)
 		 * In general, proper xterm detection is a nightmarish task...
 		 *
 		 * -- Adam Borowski <kilobyte@mimuw.edu.pl> */
-		unsigned char *display = getenv("DISPLAY");
-		unsigned char *windowid = getenv("WINDOWID");
+		unsigned char *display = (unsigned char *)getenv("DISPLAY");
+		unsigned char *windowid = (unsigned char *)getenv("WINDOWID");
 
 		if (!windowid || !*windowid)
-			windowid = getenv("KONSOLE_DCOP_SESSION");
+			windowid = (unsigned char *)getenv("KONSOLE_DCOP_SESSION");
 		xt = (display && *display && windowid && *windowid);
 	}
 
@@ -348,7 +348,7 @@ unsigned int resize_count = 0;
 int
 exe(unsigned char *path)
 {
-	return system(path);
+	return system((const char *)path);
 }
 
 #endif
@@ -384,7 +384,7 @@ get_clipboard_text(void)
 
 		if (!init_string(&str)) return NULL;
 
-		add_to_string(&str, "screen -X paste .");
+		add_to_string(&str, (const unsigned char *)"screen -X paste .");
 		if (str.length) exe(str.source);
 		if (str.source) done_string(&str);
 	}
@@ -402,7 +402,7 @@ set_clipboard_text(unsigned char *data)
 
 		if (!init_string(&str)) return;
 
-		add_to_string(&str, "screen -X register . ");
+		add_to_string(&str, (const unsigned char *)"screen -X register . ");
 		add_shell_quoted_to_string(&str, data, strlen((const char *)data));
 
 		if (str.length) exe(str.source);
@@ -411,7 +411,7 @@ set_clipboard_text(unsigned char *data)
 
 	/* Shouldn't complain about leaks. */
 	if (clipboard) free(clipboard);
-	clipboard = strdup(data);
+	clipboard = (unsigned char *)strdup((const char *)data);
 }
 
 /* Set xterm-like term window's title. */
@@ -466,7 +466,7 @@ set_window_title(unsigned char *title, int codepage)
 			 * title and other stuff together exceed 766
 			 * bytes.  So set the limit quite a bit lower.  */
 			if (filtered.length + charlen >= 600 - 3) {
-				add_to_string(&filtered, "...");
+				add_to_string(&filtered, (const unsigned char *)"...");
 				break;
 			}
 
@@ -527,14 +527,14 @@ xprop_to_string(Display *display, const XTextProperty *text_prop, int to_cp)
 	 * entirely different.  */
 #if defined(CONFIG_UTF8) && defined(X_HAVE_UTF8_STRING)
 
-	from_cp = get_cp_index("UTF-8");
+	from_cp = get_cp_index((const unsigned char *)"UTF-8");
 	if (Xutf8TextPropertyToTextList(display, text_prop, &list,
 					&count) < 0)
 		return NULL;
 
 #else  /* !defined(X_HAVE_UTF8_STRING) || !defined(CONFIG_UTF8) */
 
-	from_cp = get_cp_index("System");
+	from_cp = get_cp_index((const unsigned char *)"System");
 	if (XmbTextPropertyToTextList(display, text_prop, &list,
 				      &count) < 0)
 		return NULL;
@@ -543,7 +543,7 @@ xprop_to_string(Display *display, const XTextProperty *text_prop, int to_cp)
 
 	convert_table = get_translation_table(from_cp, to_cp);
 	if (count >= 1 && convert_table)
-		ret = convert_string(convert_table, list[0], strlen((const char *)list[0]),
+		ret = convert_string(convert_table, (unsigned char *)list[0], strlen((const char *)list[0]),
 				     to_cp, CSM_NONE, NULL, NULL, NULL);
 
 	XFreeStringList(list);
@@ -567,10 +567,10 @@ get_window_title(int codepage)
 	if (!is_xterm())
 		return NULL;
 
-	winid = getenv("WINDOWID");
+	winid = (unsigned char *)getenv("WINDOWID");
 	if (!winid)
 		return NULL;
-	window = (Window) atol(winid);
+	window = (Window)atol((const char *)winid);
 	if (!window)
 		return NULL;
 
@@ -623,10 +623,10 @@ resize_window(int width, int height, int old_width, int old_height)
 	if (!is_xterm())
 		return -1;
 
-	winid = getenv("WINDOWID");
+	winid = (unsigned char *)getenv("WINDOWID");
 	if (!winid)
 		return -1;
-	window = (Window) atol(winid);
+	window = (Window) atol((const char *)winid);
 	if (!window)
 		return -1;
 
@@ -973,5 +973,5 @@ set_highpri(void)
 unsigned char *
 get_system_str(int xwin)
 {
-	return xwin ? SYSTEM_STR "-xwin" : SYSTEM_STR;
+	return (unsigned char *)(xwin ? SYSTEM_STR "-xwin" : SYSTEM_STR);
 }

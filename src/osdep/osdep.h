@@ -16,7 +16,7 @@
 #endif
 
 int get_system_env(void);
-int get_e(unsigned char *env);
+int get_e(const char *env);
 int is_xterm(void);
 int is_twterm(void);
 void get_terminal_size(int, int *, int *);
