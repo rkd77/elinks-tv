@@ -99,7 +99,7 @@ add_dir_entry(struct directory_entry *entry, struct string *page,
 
 	/* add_to_string(&fragment, &fragmentlen, "   "); */
 	add_html_to_string(page, entry->attrib, strlen((const char *)entry->attrib));
-	add_to_string(page, "<a href=\"");
+	add_to_string(page, (const unsigned char *)"<a href=\"");
 	add_string_to_string(page, &uri_encoded_name);
 
 	if (entry->attrib[0] == 'd') {
@@ -109,19 +109,19 @@ add_dir_entry(struct directory_entry *entry, struct string *page,
 	} else if (entry->attrib[0] == 'l') {
 		struct stat st;
 		unsigned char buf[MAX_STR_LEN];
-		int readlen = readlink(entry->name, buf, MAX_STR_LEN);
+		int readlen = readlink((const char *)entry->name, (char *)buf, MAX_STR_LEN);
 
 		if (readlen > 0 && readlen != MAX_STR_LEN) {
 			buf[readlen] = '\0';
-			lnk = straconcat(" -> ", buf, (unsigned char *) NULL);
+			lnk = straconcat((const unsigned char *)" -> ", buf, (unsigned char *) NULL);
 		}
 
-		if (!stat(entry->name, &st) && S_ISDIR(st.st_mode))
+		if (!stat((const char *)entry->name, &st) && S_ISDIR(st.st_mode))
 			add_char_to_string(page, '/');
 #endif
 	}
 
-	add_to_string(page, "\">");
+	add_to_string(page, (const unsigned char *)"\">");
 
 	if (entry->attrib[0] == 'd' && *dircolor) {
 		/* The <b> is for the case when use_document_colors is off. */
@@ -134,10 +134,10 @@ add_dir_entry(struct directory_entry *entry, struct string *page,
 	done_string(&html_encoded_name);
 
 	if (entry->attrib[0] == 'd' && *dircolor) {
-		add_to_string(page, "</b></font>");
+		add_to_string(page, (const unsigned char *)"</b></font>");
 	}
 
-	add_to_string(page, "</a>");
+	add_to_string(page, (const unsigned char *)"</a>");
 	if (lnk) {
 		add_html_to_string(page, lnk, strlen((const char *)lnk));
 		mem_free(lnk);
@@ -199,7 +199,7 @@ list_directory(struct connection *conn, unsigned char *dirpath,
 
 	add_dir_entries(entries, dirpath, page);
 
-	if (!add_to_string(page, "</pre>\n<hr/>\n</body>\n</html>\n")) {
+	if (!add_to_string(page, (const unsigned char *)"</pre>\n<hr/>\n</body>\n</html>\n")) {
 		done_string(page);
 		return connection_state(S_OUT_OF_MEM);
 	}
@@ -250,7 +250,7 @@ file_protocol_handler(struct connection *connection)
 	int set_dir_content_type = 0;
 
 	if (get_cmd_opt_bool((const unsigned char *)"anonymous")) {
-		if (strcmp(connection->uri->string, "file:///dev/stdin")
+		if (strcmp((const char *)connection->uri->string, "file:///dev/stdin")
 		    || isatty(STDIN_FILENO)) {
 			abort_connection(connection,
 					 connection_state(S_FILE_ANONYMOUS));
@@ -263,7 +263,7 @@ file_protocol_handler(struct connection *connection)
 #endif /* CONFIG_CGI */
 
 	/* Treat /dev/stdin in special way */
-	if (!strcmp(connection->uri->string, "file:///dev/stdin")) {
+	if (!strcmp((const char *)connection->uri->string, "file:///dev/stdin")) {
 		int fd = open("/dev/stdin", O_RDONLY);
 
 		if (fd == -1) {
@@ -306,7 +306,7 @@ file_protocol_handler(struct connection *connection)
 		 * function properly the directory url must end with a
 		 * directory separator. */
 		if (name.source[0] && !dir_sep(name.source[name.length - 1])) {
-			redirect_location = STRING_DIR_SEP;
+			redirect_location = (unsigned char *)STRING_DIR_SEP;
 			state = connection_state(S_OK);
 		} else {
 			state = list_directory(connection, name.source, &page);
@@ -346,8 +346,8 @@ file_protocol_handler(struct connection *connection)
 				 * changes after the directory listing
 				 * has been generated, it should be
 				 * parsed with the original charset.  */
-				head = straconcat("\r\nContent-Type: text/html; charset=",
-						  get_cp_mime_name(get_cp_index("System")),
+				head = straconcat((const unsigned char *)"\r\nContent-Type: text/html; charset=",
+						  get_cp_mime_name(get_cp_index((const unsigned char *)"System")),
 						  "\r\n", (unsigned char *) NULL);
 
 				/* Not so gracefully handle failed memory

@@ -65,7 +65,7 @@ struct module cgi_protocol_module = struct_module(
 static void
 close_pipe_and_read(struct socket *data_socket)
 {
-	struct connection *conn = data_socket->conn;
+	struct connection *conn = (struct connection *)data_socket->conn;
 	struct read_buffer *rb = alloc_read_buffer(conn->socket);
 
 	if (!rb) return;
@@ -89,8 +89,8 @@ close_pipe_and_read(struct socket *data_socket)
 static void
 send_more_post_data(struct socket *socket)
 {
-	struct connection *conn = socket->conn;
-	struct http_connection_info *http = conn->info;
+	struct connection *conn = (struct connection *)socket->conn;
+	struct http_connection_info *http = (struct http_connection_info *)conn->info;
 	unsigned char buffer[POST_BUFFER_SIZE];
 	int got;
 	struct connection_state error;
@@ -111,12 +111,12 @@ send_more_post_data(struct socket *socket)
 static void
 send_post_data(struct connection *conn)
 {
-	struct http_connection_info *http = conn->info;
+	struct http_connection_info *http = (struct http_connection_info *)conn->info;
 	unsigned char *post = conn->uri->post;
 	unsigned char *postend;
 	struct connection_state error;
 
-	postend = strchr(post, '\n');
+	postend = (unsigned char *)strchr((const char *)post, '\n');
 	if (postend) post = postend + 1;
 
 	if (!open_http_post(&http->post, post, &error)) 
@@ -142,38 +142,38 @@ set_vars(struct connection *conn, unsigned char *script)
 	unsigned char *post = conn->uri->post;
 	unsigned char *query = get_uri_string(conn->uri, URI_QUERY);
 	unsigned char *str;
-	int res = env_set("QUERY_STRING", empty_string_or_(query), -1);
+	int res = env_set((unsigned char *)"QUERY_STRING", empty_string_or_(query), -1);
 
 	mem_free_if(query);
 	if (res) return -1;
 
 	if (post) {
-		unsigned char *postend = strchr(post, '\n');
+		unsigned char *postend = (unsigned char *)strchr((const char *)post, '\n');
 		unsigned char buf[16];
 
 		if (postend) {
-			res = env_set("CONTENT_TYPE", post, postend - post);
+			res = env_set((unsigned char *)"CONTENT_TYPE", post, postend - post);
 			if (res) return -1;
 			post = postend + 1;
 		}
-		snprintf(buf, 16, "%d", (int) strlen((const char *)post) / 2);
-		if (env_set("CONTENT_LENGTH", buf, -1)) return -1;
+		snprintf((char *)buf, 16, "%d", (int) strlen((const char *)post) / 2);
+		if (env_set((unsigned char *)"CONTENT_LENGTH", buf, -1)) return -1;
 	}
 
-	if (env_set("REQUEST_METHOD", post ? "POST" : "GET", -1)) return -1;
-	if (env_set("SERVER_SOFTWARE", "ELinks/" VERSION, -1)) return -1;
-	if (env_set("SERVER_PROTOCOL", "HTTP/1.0", -1)) return -1;
+	if (env_set((unsigned char *)"REQUEST_METHOD", post ? (unsigned char *)"POST" : (unsigned char *)"GET", -1)) return -1;
+	if (env_set((unsigned char *)"SERVER_SOFTWARE", (unsigned char *)"ELinks/" VERSION, -1)) return -1;
+	if (env_set((unsigned char *)"SERVER_PROTOCOL", (unsigned char *)"HTTP/1.0", -1)) return -1;
 	/* XXX: Maybe it is better to set this to an empty string? --pasky */
-	if (env_set("SERVER_NAME", "localhost", -1)) return -1;
+	if (env_set((unsigned char *)"SERVER_NAME", (unsigned char *)"localhost", -1)) return -1;
 	/* XXX: Maybe it is better to set this to an empty string? --pasky */
-	if (env_set("REMOTE_ADDR", "127.0.0.1", -1)) return -1;
-	if (env_set("GATEWAY_INTERFACE", "CGI/1.1", -1)) return -1;
+	if (env_set((unsigned char *)"REMOTE_ADDR", (unsigned char *)"127.0.0.1", -1)) return -1;
+	if (env_set((unsigned char *)"GATEWAY_INTERFACE", (unsigned char *)"CGI/1.1", -1)) return -1;
 	/* This is the path name extracted from the URI and decoded, per
 	 * http://cgi-spec.golux.com/draft-coar-cgi-v11-03-clean.html#8.1 */
-	if (env_set("SCRIPT_NAME", script, -1)) return -1;
-	if (env_set("SCRIPT_FILENAME", script, -1)) return -1;
-	if (env_set("PATH_TRANSLATED", script, -1)) return -1;
-	if (env_set("REDIRECT_STATUS", "1", -1)) return -1;
+	if (env_set((unsigned char *)"SCRIPT_NAME", script, -1)) return -1;
+	if (env_set((unsigned char *)"SCRIPT_FILENAME", script, -1)) return -1;
+	if (env_set((unsigned char *)"PATH_TRANSLATED", script, -1)) return -1;
+	if (env_set((unsigned char *)"REDIRECT_STATUS", (unsigned char *)"1", -1)) return -1;
 
 	/* From now on, just HTTP-like headers are being set. Missing variables
 	 * due to full environment are not a problem according to the CGI/1.1
@@ -181,7 +181,7 @@ set_vars(struct connection *conn, unsigned char *script)
 	 * there and we won't fail anymore if it won't work out. */
 
 	str = get_opt_str((const unsigned char *)"protocol.http.user_agent", NULL);
-	if (*str && strcmp(str, " ")) {
+	if (*str && strcmp((const char *)str, " ")) {
 		unsigned char *ustr, ts[64] = "";
 		/* TODO: Somehow get the terminal in which the
 		 * document will actually be displayed.  */
@@ -194,10 +194,10 @@ set_vars(struct connection *conn, unsigned char *script)
 			ts[tslen++] = 'x';
 			ulongcat(ts, &tslen, term->height, 3, 0);
 		}
-		ustr = subst_user_agent(str, VERSION_STRING, system_name, ts);
+		ustr = subst_user_agent(str, (unsigned char *)VERSION_STRING, system_name, ts);
 
 		if (ustr) {
-			env_set("HTTP_USER_AGENT", ustr, -1);
+			env_set((unsigned char *)"HTTP_USER_AGENT", ustr, -1);
 			mem_free(ustr);
 		}
 	}
@@ -209,37 +209,37 @@ set_vars(struct connection *conn, unsigned char *script)
 
 	case REFERER_FAKE:
 		str = get_opt_str((const unsigned char *)"protocol.http.referer.fake", NULL);
-		env_set("HTTP_REFERER", str, -1);
+		env_set((unsigned char *)"HTTP_REFERER", str, -1);
 		break;
 
 	case REFERER_TRUE:
 		/* XXX: Encode as in add_url_to_http_string() ? --pasky */
 		if (conn->referrer)
-			env_set("HTTP_REFERER", struri(conn->referrer), -1);
+			env_set((unsigned char *)"HTTP_REFERER", struri(conn->referrer), -1);
 		break;
 
 	case REFERER_SAME_URL:
 		str = get_uri_string(conn->uri, URI_HTTP_REFERRER);
 		if (str) {
-			env_set("HTTP_REFERER", str, -1);
+			env_set((unsigned char *)"HTTP_REFERER", str, -1);
 			mem_free(str);
 		}
 		break;
 	}
 
 	/* Protection against vim cindent bugs ;-). */
-	env_set("HTTP_ACCEPT", "*/" "*", -1);
+	env_set((unsigned char *)"HTTP_ACCEPT", (unsigned char *)"*/" "*", -1);
 
 	/* We do not set HTTP_ACCEPT_ENCODING. Yeah, let's let the CGI script
 	 * gzip the stuff so that the CPU doesn't at least sit idle. */
 
 	str = get_opt_str((const unsigned char *)"protocol.http.accept_language", NULL);
 	if (*str) {
-		env_set("HTTP_ACCEPT_LANGUAGE", str, -1);
+		env_set((unsigned char *)"HTTP_ACCEPT_LANGUAGE", str, -1);
 	}
 #ifdef CONFIG_NLS
 	else if (get_opt_bool((const unsigned char *)"protocol.http.accept_ui_language", NULL)) {
-		env_set("HTTP_ACCEPT_LANGUAGE",
+		env_set((unsigned char *)"HTTP_ACCEPT_LANGUAGE",
 			language_to_iso639(current_language), -1);
 	}
 #endif
@@ -247,12 +247,12 @@ set_vars(struct connection *conn, unsigned char *script)
 	if (conn->cached && !conn->cached->incomplete && conn->cached->head
 	    && conn->cached->last_modified
 	    && conn->cache_mode <= CACHE_MODE_CHECK_IF_MODIFIED) {
-		env_set("HTTP_IF_MODIFIED_SINCE", conn->cached->last_modified, -1);
+		env_set((unsigned char *)"HTTP_IF_MODIFIED_SINCE", conn->cached->last_modified, -1);
 	}
 
 	if (conn->cache_mode >= CACHE_MODE_FORCE_RELOAD) {
-		env_set("HTTP_PRAGMA", "no-cache", -1);
-		env_set("HTTP_CACHE_CONTROL", "no-cache", -1);
+		env_set((unsigned char *)"HTTP_PRAGMA", (unsigned char *)"no-cache", -1);
+		env_set((unsigned char *)"HTTP_CACHE_CONTROL", (unsigned char *)"no-cache", -1);
 	}
 
 	/* TODO: HTTP auth support. On the other side, it was weird over CGI
@@ -263,7 +263,7 @@ set_vars(struct connection *conn, unsigned char *script)
 		struct string *cookies = send_cookies(conn->uri);
 
 		if (cookies) {
-			env_set("HTTP_COOKIE", cookies->source, -1);
+			env_set((unsigned char *)"HTTP_COOKIE", cookies->source, -1);
 
 			done_string(cookies);
 		}
@@ -287,11 +287,11 @@ test_path(unsigned char *path)
 		int res;
 
 		if (filename[filelen - 1] != '/') {
-			add_to_strn(&filename, "/");
+			add_to_strn(&filename, (const unsigned char *)"/");
 			filelen++;
 		}
 
-		res = strncmp(path, filename, filelen);
+		res = strncmp((const char *)path, (const char *)filename, filelen);
 		mem_free(filename);
 		if (!res) return 0;
 	}
@@ -322,13 +322,13 @@ execute_cgi(struct connection *conn)
 	}
 	decode_uri(script);
 
-	if (stat(script, &buf) || !(S_ISREG(buf.st_mode))
+	if (stat((const char *)script, &buf) || !(S_ISREG(buf.st_mode))
 		|| !(buf.st_mode & S_IXUSR)) {
 		mem_free(script);
 		return 1;
 	}
 
-	last_slash = strrchr(script, '/');
+	last_slash = (unsigned char *)strrchr((const char *)script, '/');
 	if (last_slash++) {
 		unsigned char storage;
 		int res;
@@ -369,7 +369,7 @@ execute_cgi(struct connection *conn)
 		close_all_non_term_fd();
 
 		last_slash[-1] = 0; set_cwd(script); last_slash[-1] = '/';
-		if (execl(script, script, (char *) NULL)) {
+		if (execl((const char *)script, (const char *)script, (char *) NULL)) {
 			_exit(3);
 		}
 

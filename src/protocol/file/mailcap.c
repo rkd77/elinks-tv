@@ -83,7 +83,7 @@ mailcap_protocol_handler(struct connection *conn)
 	if (!ref) {
 		goto bad;
 	}
-	check = strcmp(ref, "elmailcap");
+	check = strcmp((const char *)ref, "elmailcap");
 	mem_free(ref);
 	if (check) goto bad;
 	
