@@ -309,8 +309,8 @@ goto_url_hook(va_list ap, void *data)
 	unsigned char **url = va_arg(ap, unsigned char **);
 	struct session *ses = va_arg(ap, struct session *);
 	unsigned char *uu = NULL;
-	unsigned char *arg = "";
-	unsigned char *argstart = *url + strcspn(*url, " :");
+	unsigned char *arg = (unsigned char *)"";
+	unsigned char *argstart = *url + strcspn((const char *)*url, " :");
 
 	if (get_smart_enable() && *argstart) {
 		unsigned char bucket = *argstart;
@@ -351,7 +351,7 @@ goto_url_hook(va_list ap, void *data)
 }
 
 struct event_hook_info uri_rewrite_hooks[] = {
-	{ "goto-url", -1, goto_url_hook },
+	{ (const unsigned char *)"goto-url", -1, goto_url_hook },
 
 	NULL_EVENT_HOOK_INFO
 };
