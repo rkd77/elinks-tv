@@ -58,7 +58,7 @@ find_auth_entry(struct uri *uri, unsigned char *realm)
 		 * canonical root URL (the absolute URI for the server whose
 		 * abs_path is empty; see section 5.1.2 of [2]) of the server
 		 * being accessed, defines the protection space. */
-		if (entry->realm && !strcmp(entry->realm, realm)) {
+		if (entry->realm && !strcmp((const char *)entry->realm, (const char *)realm)) {
 			/* Exact match. */
 			break; /* Stop here. */
 		}
@@ -153,7 +153,7 @@ add_auth_entry(struct uri *uri, unsigned char *realm, unsigned char *nonce,
 
 		/* If only one realm is defined or they don't compare. */
 		if ((!!realm ^ !!entry->realm)
-		    || (realm && entry->realm && strcmp(realm, entry->realm))) {
+		    || (realm && entry->realm && strcmp((const char *)realm, (const char *)entry->realm))) {
 			entry->valid = 0;
 			mem_free_set(&entry->realm, NULL);
 			if (realm) {

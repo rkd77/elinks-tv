@@ -49,11 +49,11 @@ auth_ok(void *data)
 			INIT_LIST_OF(struct submitted_value, submit);
 			struct submitted_value *user, *password;
 
-			user = init_submitted_value("user", entry->user, FC_TEXT, NULL, 0);
+			user = init_submitted_value((unsigned char *)"user", entry->user, FC_TEXT, NULL, 0);
 			if (user) {
 				add_to_list(submit, user);
 			}
-			password = init_submitted_value("password", entry->password, FC_PASSWORD, NULL, 0);
+			password = init_submitted_value((unsigned char *)"password", entry->password, FC_PASSWORD, NULL, 0);
 			if (password) {
 				add_to_list(submit, password);
 			}
@@ -115,20 +115,20 @@ do_auth_dialog(struct session *ses, void *data)
 
 #ifdef CONFIG_FORMHIST
 	{
-		unsigned char *user = get_form_history_value(text, "user");
-		unsigned char *password = get_form_history_value(text, "password");
+		unsigned char *user = get_form_history_value(text, (unsigned char *)"user");
+		unsigned char *password = get_form_history_value(text, (unsigned char *)"password");
 
 		if (user) {
-			strncpy(a->user, user, AUTH_USER_MAXLEN - 1);
+			strncpy((char *)a->user, (const char *)user, AUTH_USER_MAXLEN - 1);
 		}
 		if (password) {
-			strncpy(a->password, password, AUTH_PASSWORD_MAXLEN - 1);
+			strncpy((char *)a->password, (const char *)password, AUTH_PASSWORD_MAXLEN - 1);
 		}
 	}
 #endif
 
-	sticker_len = snprintf(sticker, sizeof(sticker),
-			       _("Authentication required for %s at %s", term),
+	sticker_len = snprintf((char *)sticker, sizeof(sticker),
+			       (const char *)_("Authentication required for %s at %s", term),
 			       a->realm, text);
 	mem_free(text);
 	if (sticker_len < 0 || sticker_len > MAX_STR_LEN) return;
@@ -216,7 +216,7 @@ get_auth_entry_info(struct listbox_item *item, struct terminal *term)
 			add_bytes_to_string(&info, auth_entry->realm, len);
 		else {
 			add_bytes_to_string(&info, auth_entry->realm, maxlen);
-			add_to_string(&info, "...");
+			add_to_string(&info, (const unsigned char *)"...");
 		}
 	} else {
 		add_to_string(&info, _("none", term));

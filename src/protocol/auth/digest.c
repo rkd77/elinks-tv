@@ -98,7 +98,7 @@ hexl(unsigned int nc)
 {
 	static unsigned char buf[9];
 
-	snprintf(buf, 9, "%08x", nc);
+	snprintf((char *)buf, 9, "%08x", nc);
 	return buf;
 }
 
@@ -147,36 +147,36 @@ get_http_auth_digest_response(struct auth_entry *entry, struct uri *uri)
 	init_cnonce_digest(cnonce);
 	init_response_digest(response, entry, uri, cnonce);
 
-	add_to_string(&string, "username=\"");
+	add_to_string(&string, (const unsigned char *)"username=\"");
 	add_to_string(&string, entry->user);
-	add_to_string(&string, "\", ");
-	add_to_string(&string, "realm=\"");
+	add_to_string(&string, (const unsigned char *)"\", ");
+	add_to_string(&string, (const unsigned char *)"realm=\"");
 	if (entry->realm)
 		add_to_string(&string, entry->realm);
-	add_to_string(&string, "\", ");
-	add_to_string(&string, "nonce=\"");
+	add_to_string(&string, (const unsigned char *)"\", ");
+	add_to_string(&string, (const unsigned char *)"nonce=\"");
 	if (entry->nonce)
 		add_to_string(&string, entry->nonce);
-	add_to_string(&string, "\", ");
-	add_to_string(&string, "uri=\"/");
+	add_to_string(&string, (const unsigned char *)"\", ");
+	add_to_string(&string, (const unsigned char *)"uri=\"/");
 	add_bytes_to_string(&string, uri->data, uri->datalen);
-	add_to_string(&string, "\", ");
-	add_to_string(&string, "qop=auth, ");
+	add_to_string(&string, (const unsigned char *)"\", ");
+	add_to_string(&string, (const unsigned char *)"qop=auth, ");
 
-	add_to_string(&string, "nc=");
+	add_to_string(&string, (const unsigned char *)"nc=");
 	add_to_string(&string, hexl(entry->nc));
 
-	add_to_string(&string, ", cnonce=\"");
+	add_to_string(&string, (const unsigned char *)", cnonce=\"");
 	add_bytes_to_string(&string, cnonce, sizeof(md5_digest_hex_T));
-	add_to_string(&string, "\", ");
-	add_to_string(&string, "response=\"");
+	add_to_string(&string, (const unsigned char *)"\", ");
+	add_to_string(&string, (const unsigned char *)"response=\"");
 	add_bytes_to_string(&string, response, sizeof(md5_digest_hex_T));
-	add_to_string(&string, "\"");
+	add_to_string(&string, (const unsigned char *)"\"");
 
 	if (entry->opaque) {
-		add_to_string(&string, ", opaque=\"");
+		add_to_string(&string, (const unsigned char *)", opaque=\"");
 		add_to_string(&string, entry->opaque);
-		add_to_string(&string, "\"");
+		add_to_string(&string, (const unsigned char *)"\"");
 	}
 
 	return string.source;
