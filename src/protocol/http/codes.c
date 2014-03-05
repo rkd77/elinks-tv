@@ -25,7 +25,7 @@
 
 struct http_code {
 	int num;
-	const unsigned char *str;
+	const char *str;
 };
 
 /* Source: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html */
@@ -91,7 +91,7 @@ http_code_to_string(int code)
 			  sizeof(*element),
 			  compare_http_codes);
 
-	if (element) return element->str;
+	if (element) return (const unsigned char *)element->str;
 
 	return NULL;
 }
@@ -102,10 +102,10 @@ static unsigned char *
 get_http_error_document(struct terminal *term, struct uri *uri, int code)
 {
 	const unsigned char *codestr = http_code_to_string(code);
-	unsigned char *title = asprintfa(_("HTTP error %03d", term), code);
+	unsigned char *title = asprintfa((const char *)_("HTTP error %03d", term), code);
 	struct string string;
 
-	if (!codestr) codestr = "Unknown error";
+	if (!codestr) codestr = (const unsigned char *)"Unknown error";
 
 	if (!init_string(&string)) {
 		mem_free_if(title);
@@ -124,7 +124,7 @@ get_http_error_document(struct terminal *term, struct uri *uri, int code)
 		, title, title, codestr);
 
 #ifndef CONFIG_SMALL
-	add_format_to_string(&string, _(
+	add_format_to_string(&string, (const char *)_(
 		"  An error occurred on the server while fetching the document you\n"
 		"  requested. However, the server did not send back any explanation of what\n"
 		"  happened, so it is unknown what went wrong. Please contact the web\n"
@@ -178,9 +178,9 @@ show_http_error_document(struct session *ses, void *data)
 		/* If we run out of memory here, it's perhaps better
 		 * to display a malformatted error message than none
 		 * at all.  */
-		mem_free_set(&cache->content_type, stracpy("text/html"));
+		mem_free_set(&cache->content_type, stracpy((const unsigned char *)"text/html"));
 		mem_free_set(&cache->head,
-			     straconcat("\r\nContent-Type: text/html; charset=",
+			     straconcat((const unsigned char *)"\r\nContent-Type: text/html; charset=",
 					get_cp_mime_name(gettext_codepage),
 					"\r\n", (unsigned char *) NULL));
 		add_fragment(cache, 0, str, strlen((const char *)str));

@@ -58,7 +58,7 @@ http_negotiate_get(struct uri *uri, int *isnew, int alloc)
 	if (!alloc)
 		return NULL;
 
-	neg = mem_calloc(1, sizeof(*neg));
+	neg = (struct negotiate *)mem_calloc(1, sizeof(*neg));
 	if (!neg)
 		return NULL;
 
@@ -273,17 +273,17 @@ http_negotiate_output(struct uri *uri, struct string *header)
 		}
 	}
 
-	encoded = base64_encode_bin((unsigned char *) neg->output_token.value,
+	encoded = (char *)base64_encode_bin((unsigned char *) neg->output_token.value,
 				    neg->output_token.length, &len);
 
 	if (encoded == NULL || len == 0)
 		return -1;
 
-	add_to_string(header, "Authorization: ");
+	add_to_string(header, (const unsigned char *)"Authorization: ");
 	add_to_string(header, neg->type == HTTPNEG_GSS ?
-		      HTTPNEG_GSS_STR : HTTPNEG_NEG_STR);
+		      (const unsigned char *)HTTPNEG_GSS_STR : (const unsigned char *)HTTPNEG_NEG_STR);
 	add_char_to_string(header, ' ');
-	add_to_string(header, encoded);
+	add_to_string(header, (const unsigned char *)encoded);
 	add_crlf_to_string(header);
 
 	http_negotiate_cleanup(neg, 0);

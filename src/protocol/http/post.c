@@ -104,9 +104,9 @@ open_http_post(struct http_post *http_post, const unsigned char *post_data,
 		struct http_post_file *new_files;
 		unsigned char *filename;
 
-		begin = strchr((char *)end, FILE_CHAR);
+		begin = (const unsigned char *)strchr((char *)end, FILE_CHAR);
 		if (!begin) break;
-		end = strchr((char *)(begin + 1), FILE_CHAR);
+		end = (const unsigned char *)strchr((char *)(begin + 1), FILE_CHAR);
 		if (!end) break;
 		filename = memacpy(begin + 1, end - begin - 1); /* adds '\0' */
 		if (!filename) {
@@ -115,7 +115,7 @@ open_http_post(struct http_post *http_post, const unsigned char *post_data,
 			return 0;
 		}
 		decode_uri(filename);
-		res = stat(filename, &sb);
+		res = stat((const char *)filename, &sb);
 		if (res) {
 			*error = connection_state_for_errno(errno);
 			done_http_post(http_post);
@@ -160,14 +160,14 @@ read_http_post_inline(struct http_post *http_post,
 		      struct connection_state *error)
 {
 	const unsigned char *post = http_post->post_data;
-	const unsigned char *end = strchr((char *)post, FILE_CHAR);
+	const unsigned char *end = (const unsigned char *)strchr((char *)post, FILE_CHAR);
 	int total = 0;
 
 	assert(http_post->post_fd < 0);
 	if_assert_failed { *error = connection_state(S_INTERNAL); return -1; }
 
 	if (!end)
-		end = strchr((char *)post, '\0');
+		end = (const unsigned char *)strchr((char *)post, '\0');
 
 	while (post < end && total < max) {
 		int h1, h2;
@@ -189,9 +189,9 @@ read_http_post_inline(struct http_post *http_post,
 	}
 
 	http_post->file_read = 0;
-	end = strchr((char *)(post + 1), FILE_CHAR);
+	end = (const unsigned char *)strchr((char *)(post + 1), FILE_CHAR);
 	assert(end);
-	http_post->post_fd = open(http_post->files[http_post->file_index].name,
+	http_post->post_fd = open((const char *)http_post->files[http_post->file_index].name,
 				  O_RDONLY);
 	/* Be careful not to change errno here.  */
 	if (http_post->post_fd < 0) {

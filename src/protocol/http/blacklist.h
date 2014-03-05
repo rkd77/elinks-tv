@@ -15,7 +15,7 @@ typedef int blacklist_flags_T;
 
 void add_blacklist_entry(struct uri *, blacklist_flags_T);
 void del_blacklist_entry(struct uri *, blacklist_flags_T);
-enum blacklist_flags get_blacklist_flags(struct uri *);
+blacklist_flags_T get_blacklist_flags(struct uri *);
 void free_blacklist(void);
 
 #endif

@@ -19,7 +19,7 @@
 struct blacklist_entry {
 	LIST_HEAD(struct blacklist_entry);
 
-	enum blacklist_flags flags;
+	blacklist_flags_T flags;
 	unsigned char host[1]; /* Must be last. */
 };
 
@@ -75,7 +75,7 @@ del_blacklist_entry(struct uri *uri, blacklist_flags_T flags)
 	mem_free(entry);
 }
 
-enum blacklist_flags
+blacklist_flags_T
 get_blacklist_flags(struct uri *uri)
 {
 	struct blacklist_entry *entry = get_blacklist_entry(uri);
