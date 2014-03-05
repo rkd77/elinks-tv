@@ -19,7 +19,7 @@ int
 main(int argc, char *argv[])
 {
 	struct ftp_file_info ftp_info = INIT_FTP_FILE_INFO;
-	unsigned char *response = "";
+	unsigned char *response = (unsigned char *)"";
 	int i;
 
 	for (i = 1; i < argc; i++) {
@@ -31,7 +31,7 @@ main(int argc, char *argv[])
 		arg += 2;
 
 		if (get_test_opt(&arg, "response", &i, argc, argv, "a string")) {
-			response = arg;
+			response = (unsigned char *)arg;
 
 		} else {
 			die("Unknown argument '%s'", arg - 2);
@@ -44,7 +44,7 @@ main(int argc, char *argv[])
 	while (*response) {
 		unsigned char *start = response;
 
-		response = strchr(response, '\n');
+		response = (unsigned char *)strchr((const char *)response, '\n');
 		if (!response) {
 			response = start + strlen((const char *)start);
 		} else {

@@ -16,7 +16,7 @@ enum ftp_file_type {
 
 /* Information about one file in a directory listing. */
 struct ftp_file_info {
-	enum ftp_file_type type;	/* File type */
+	int type;	/* File type */
 	struct string name;		/* File name */
 	struct string symlink;		/* Link to which file points */
 	off_t size;			/* File size. -1 if unknown. */
