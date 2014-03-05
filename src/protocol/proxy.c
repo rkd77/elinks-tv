@@ -27,17 +27,17 @@
 static int
 proxy_probe_no_proxy(unsigned char *url, unsigned char *no_proxy)
 {
-	unsigned char *slash = strchr((char *)url, '/');
+	unsigned char *slash = (unsigned char *)strchr((char *)url, '/');
 
 	if (slash) *slash = '\0';
 
 	while (no_proxy && *no_proxy) {
-		unsigned char *jumper = strchr((char *)no_proxy, ',');
+		unsigned char *jumper = (unsigned char *)strchr((char *)no_proxy, ',');
 
 		skip_space(no_proxy);
 		if (jumper) *jumper = '\0';
 
-		if (c_strcasestr(url, no_proxy)) {
+		if (c_strcasestr((const char *)url, (const char *)no_proxy)) {
 			if (jumper) *jumper = ',';
 			if (slash) *slash = '/';
 			return 1;
@@ -86,9 +86,9 @@ strip_proxy_protocol(unsigned char *proxy,
 {
 	assert(proxy && *proxy);
 
-	if (!c_strncasecmp(proxy, strip1, strlen((const char *)strip1)))
+	if (!c_strncasecmp((const char *)proxy, (const char *)strip1, strlen((const char *)strip1)))
 		proxy += strlen((const char *)strip1);
-	else if (strip2 && !c_strncasecmp(proxy, strip2, strlen((const char *)strip2)))
+	else if (strip2 && !c_strncasecmp((const char *)proxy, (const char *)strip2, strlen((const char *)strip2)))
 		proxy += strlen((const char *)strip2);
 
 	return proxy;
@@ -106,8 +106,8 @@ get_protocol_proxy(unsigned char *opt,
 	unsigned char *proxy;
 
 	proxy = get_opt_str(opt, NULL);
-	if (!*proxy) proxy = getenv(env1);
-	if (!proxy || !*proxy) proxy = getenv(env2);
+	if (!*proxy) proxy = (unsigned char *)getenv((const char *)env1);
+	if (!proxy || !*proxy) proxy = (unsigned char *)getenv((const char *)env2);
 
 	if (proxy && *proxy) {
 		proxy = strip_proxy_protocol(proxy, strip1, strip2);
@@ -124,7 +124,7 @@ get_proxy_worker(struct uri *uri, unsigned char *proxy,
 
 	if (proxy) {
 		if (*proxy) {
-			proxy = strip_proxy_protocol(proxy, "http://", "ftp://");
+			proxy = strip_proxy_protocol(proxy, (unsigned char *)"http://", (unsigned char *)"ftp://");
 
 			return proxy_uri(uri, proxy, error_state);
 		}
@@ -135,9 +135,9 @@ get_proxy_worker(struct uri *uri, unsigned char *proxy,
 
 	switch (uri->protocol) {
 	case PROTOCOL_HTTP:
-		protocol_proxy = get_protocol_proxy("protocol.http.proxy.host",
-						    "HTTP_PROXY", "http_proxy",
-						    "http://", NULL);
+		protocol_proxy = get_protocol_proxy((unsigned char *)"protocol.http.proxy.host",
+						    (unsigned char *)"HTTP_PROXY", (unsigned char *)"http_proxy",
+						    (unsigned char *)"http://", NULL);
 		break;
 
 	case PROTOCOL_HTTPS:
@@ -154,27 +154,27 @@ get_proxy_worker(struct uri *uri, unsigned char *proxy,
 		 * check for "ftp://" below; and what about 'be liberal in what
 		 * you accept' (altho that is usually applied to data received
 		 * from remote systems, not to user input)?  -- Miciah */
-		protocol_proxy = get_protocol_proxy("protocol.https.proxy.host",
-						    "HTTPS_PROXY", "https_proxy",
-						    "http://", NULL);
+		protocol_proxy = get_protocol_proxy((unsigned char *)"protocol.https.proxy.host",
+						    (unsigned char *)"HTTPS_PROXY", (unsigned char *)"https_proxy",
+						    (unsigned char *)"http://", NULL);
 		break;
 
 	case PROTOCOL_FTP:
-		protocol_proxy = get_protocol_proxy("protocol.ftp.proxy.host",
-						    "FTP_PROXY", "ftp_proxy",
-						    "ftp://", "http://");
+		protocol_proxy = get_protocol_proxy((unsigned char *)"protocol.ftp.proxy.host",
+						    (unsigned char *)"FTP_PROXY", (unsigned char *)"ftp_proxy",
+						    (unsigned char *)"ftp://", (unsigned char *)"http://");
 		break;
 	}
 
 	if (protocol_proxy && *protocol_proxy) {
 		unsigned char *no_proxy;
-		unsigned char *slash = strchr((char *)protocol_proxy, '/');
+		unsigned char *slash = (unsigned char *)strchr((char *)protocol_proxy, '/');
 
 		if (slash) *slash = 0;
 
 		no_proxy = get_opt_str((const unsigned char *)"protocol.no_proxy", NULL);
-		if (!*no_proxy) no_proxy = getenv("NO_PROXY");
-		if (!no_proxy || !*no_proxy) no_proxy = getenv("no_proxy");
+		if (!*no_proxy) no_proxy = (unsigned char *)getenv("NO_PROXY");
+		if (!no_proxy || !*no_proxy) no_proxy = (unsigned char *)getenv("no_proxy");
 
 		if (!proxy_probe_no_proxy(uri->host, no_proxy))
 			return proxy_uri(uri, protocol_proxy, error_state);

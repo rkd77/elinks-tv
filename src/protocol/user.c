@@ -101,7 +101,7 @@ get_user_program(struct terminal *term, unsigned char *progid, int progidlen)
 
 	if (!init_string(&name)) return NULL;
 
-	add_to_string(&name, "protocol.user.");
+	add_to_string(&name, (const unsigned char *)"protocol.user.");
 
 	/* Now add lowercased progid part. Delicious. */
 	add_bytes_to_string(&name, progid, progidlen);
@@ -202,8 +202,8 @@ get_subject_from_query(unsigned char *query)
 {
 	unsigned char *subject;
 
-	if (strncmp(query, "subject=", 8)) {
-		subject = strstr((char *)query, "&subject=");
+	if (strncmp((const char *)query, "subject=", 8)) {
+		subject = (unsigned char *)strstr((char *)query, "&subject=");
 		if (!subject) return NULL;
 		subject += 9;
 	} else {
@@ -211,13 +211,13 @@ get_subject_from_query(unsigned char *query)
 	}
 
 	/* Return subject until next '&'-value or end of string */
-	return memacpy(subject, strcspn(subject, "&"));
+	return memacpy(subject, strcspn((const char *)subject, "&"));
 }
 
 static unsigned char *
 save_form_data_to_file(struct uri *uri)
 {
-	unsigned char *filename = get_tempdir_filename("elinks-XXXXXX");
+	unsigned char *filename = get_tempdir_filename((unsigned char *)"elinks-XXXXXX");
 	int fd;
 	FILE *fp;
 	size_t nmemb, len;
@@ -234,7 +234,7 @@ save_form_data_to_file(struct uri *uri)
 	if (!uri->post) return filename;
 
 	/* Jump the content type */
-	formdata = strchr((char *)uri->post, '\n');
+	formdata = (unsigned char *)strchr((char *)uri->post, '\n');
 	formdata = formdata ? formdata + 1 : uri->post;
 	len = strlen((const char *)formdata);
 	if (len == 0) return filename;
@@ -243,7 +243,7 @@ save_form_data_to_file(struct uri *uri)
 	if (!fp) {
 
 error:
-		unlink(filename);
+		unlink((const char *)filename);
 		mem_free(filename);
 		close(fd);
 		return NULL;
@@ -305,7 +305,7 @@ user_protocol_handler(struct session *ses, struct uri *uri)
 		mem_free(prog);
 
 	} else if (filename) {
-		unlink(filename);
+		unlink((const char *)filename);
 	}
 
 	mem_free_if(filename);

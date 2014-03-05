@@ -67,13 +67,13 @@ is_in_domain(unsigned char *domain, unsigned char *server, int server_len)
 		return 0;
 
 	if (domain_len == server_len)
-		return !c_strncasecmp(domain, server, server_len);
+		return !c_strncasecmp((const char *)domain, (const char *)server, server_len);
 
 	len = server_len - domain_len;
 	if (server[len - 1] != '.')
 		return 0;
 
-	return !c_strncasecmp(domain, server + len, domain_len);
+	return !c_strncasecmp((const char *)domain, (const char *)(server + len), domain_len);
 }
 
 int
@@ -93,14 +93,14 @@ is_ip_address(const unsigned char *address, int addresslen)
 	{
 		struct sockaddr_in6 addr6;
 
-		if (inet_pton(AF_INET6, buffer, &addr6.sin6_addr) > 0)
+		if (inet_pton(AF_INET6, (const char *)buffer, &addr6.sin6_addr) > 0)
 			return 1;
 	}
 #endif /* CONFIG_IPV6 */
 	{
 		struct in_addr addr4;
 
-		if (inet_pton(AF_INET, buffer, &addr4) > 0)
+		if (inet_pton(AF_INET, (const char *)buffer, &addr4) > 0)
 			return 1;
 	}
 
@@ -116,7 +116,7 @@ int
 end_with_known_tld(const unsigned char *s, int slen)
 {
 	int i;
-	static const unsigned char *const tld[] =
+	static const char *const tld[] =
 	{ "com", "edu", "net",
 	  "org", "gov", "mil",
 	  "int", "biz", "arpa",
@@ -131,7 +131,7 @@ end_with_known_tld(const unsigned char *s, int slen)
 		int tldlen = strlen((const char *)tld[i]);
 		int pos = slen - tldlen;
 
-		if (pos >= 0 && !c_strncasecmp(&s[pos], tld[i], tldlen))
+		if (pos >= 0 && !c_strncasecmp((const char *)&s[pos], tld[i], tldlen))
 			return pos;
 	}
 
@@ -201,7 +201,7 @@ get_protocol_length(const unsigned char *url)
 	return (*end == ':' || isdigit(*end)) ? end - url : 0;
 }
 
-enum uri_errno
+int
 parse_uri(struct uri *uri, unsigned char *uristring)
 {
 	unsigned char *prefix_end, *host_end;
@@ -255,14 +255,14 @@ parse_uri(struct uri *uri, unsigned char *uristring)
 		return URI_ERRNO_OK;
 
 	} else if (uri->protocol == PROTOCOL_FILE) {
-		int datalen = strcspn(prefix_end, "#" POST_CHAR_S);
+		int datalen = strcspn((const char *)prefix_end, "#" POST_CHAR_S);
 		unsigned char *frag_or_post = prefix_end + datalen;
 
 		/* Extract the fragment part. */
 		if (datalen >= 0) {
 			if (*frag_or_post == '#') {
 				uri->fragment = frag_or_post + 1;
-				uri->fragmentlen = strcspn(uri->fragment, POST_CHAR_S);
+				uri->fragmentlen = strcspn((const char *)uri->fragment, POST_CHAR_S);
 				frag_or_post = uri->fragment + uri->fragmentlen;
 			}
 			if (*frag_or_post == POST_CHAR) {
@@ -274,7 +274,7 @@ parse_uri(struct uri *uri, unsigned char *uristring)
 
 		/* A bit of a special case, but using the "normal" host
 		 * parsing seems a bit scary at this point. (see bug 107). */
-		if (datalen > 9 && !c_strncasecmp(prefix_end, "localhost/", 10)) {
+		if (datalen > 9 && !c_strncasecmp((const char *)prefix_end, "localhost/", 10)) {
 			prefix_end += 9;
 			datalen -= 9;
 		}
@@ -289,11 +289,11 @@ parse_uri(struct uri *uri, unsigned char *uristring)
 
 #ifdef CONFIG_IPV6
 	/* Get brackets enclosing IPv6 address */
-	lbracket = strchr((char *)prefix_end, '[');
+	lbracket = (unsigned char *)strchr((char *)prefix_end, '[');
 	if (lbracket) {
-		rbracket = strchr((char *)lbracket, ']');
+		rbracket = (unsigned char *)strchr((char *)lbracket, ']');
 		/* [address] is handled only inside of hostname part (surprisingly). */
-		if (rbracket && rbracket < prefix_end + strcspn(prefix_end, "/"))
+		if (rbracket && rbracket < prefix_end + strcspn((const char *)prefix_end, "/"))
 			uri->ipv6 = 1;
 		else
 			lbracket = rbracket = NULL;
@@ -303,17 +303,17 @@ parse_uri(struct uri *uri, unsigned char *uristring)
 #endif
 
 	/* Possibly skip auth part */
-	host_end = prefix_end + strcspn(prefix_end, "@");
+	host_end = prefix_end + strcspn((const char *)prefix_end, "@");
 
-	if (prefix_end + strcspn(prefix_end, "/") > host_end
+	if (prefix_end + strcspn((const char *)prefix_end, "/") > host_end
 	    && *host_end) { /* we have auth info here */
 		unsigned char *user_end;
 
 		/* Allow '@' in the password component */
-		while (strcspn(host_end + 1, "@") < strcspn(host_end + 1, "/?"))
-			host_end = host_end + 1 + strcspn(host_end + 1, "@");
+		while (strcspn((const char *)(host_end + 1), "@") < strcspn((const char *)(host_end + 1), "/?"))
+			host_end = host_end + 1 + strcspn((const char *)(host_end + 1), "@");
 
-		user_end = strchr((char *)prefix_end, ':');
+		user_end = (unsigned char *)strchr((char *)prefix_end, ':');
 
 		if (!user_end || user_end > host_end) {
 			uri->user = prefix_end;
@@ -329,10 +329,10 @@ parse_uri(struct uri *uri, unsigned char *uristring)
 
 #ifdef CONFIG_IPV6
 	if (uri->ipv6)
-		host_end = rbracket + strcspn(rbracket, ":/?");
+		host_end = rbracket + strcspn((const char *)rbracket, ":/?");
 	else
 #endif
-		host_end = prefix_end + strcspn(prefix_end, ":/?");
+		host_end = prefix_end + strcspn((const char *)prefix_end, ":/?");
 
 #ifdef CONFIG_IPV6
 	if (uri->ipv6) {
@@ -361,7 +361,7 @@ parse_uri(struct uri *uri, unsigned char *uristring)
 	}
 
 	if (*host_end == ':') { /* we have port here */
-		unsigned char *port_end = host_end + 1 + strcspn(host_end + 1, "/");
+		unsigned char *port_end = host_end + 1 + strcspn((const char *)(host_end + 1), "/");
 
 		host_end++;
 
@@ -387,7 +387,7 @@ parse_uri(struct uri *uri, unsigned char *uristring)
 			int n;
 
 			errno = 0;
-			n = strtol(uri->port, NULL, 10);
+			n = strtol((const char *)uri->port, NULL, 10);
 			if (errno || !uri_port_is_valid(n))
 				return URI_ERRNO_INVALID_PORT;
 		}
@@ -406,13 +406,13 @@ parse_uri(struct uri *uri, unsigned char *uristring)
 	}
 
 	/* Look for #fragment or POST_CHAR */
-	prefix_end = host_end + strcspn(host_end, "#" POST_CHAR_S);
+	prefix_end = host_end + strcspn((const char *)host_end, "#" POST_CHAR_S);
 	uri->data = host_end;
 	uri->datalen = prefix_end - host_end;
 
 	if (*prefix_end == '#') {
 		uri->fragment = prefix_end + 1;
-		uri->fragmentlen = strcspn(uri->fragment, POST_CHAR_S);
+		uri->fragmentlen = strcspn((const char *)uri->fragment, POST_CHAR_S);
 		prefix_end = uri->fragment + uri->fragmentlen;
 	}
 
@@ -428,7 +428,7 @@ get_uri_port(const struct uri *uri)
 {
 	if (uri->port && uri->portlen) {
 		const unsigned char *end = uri->port;
-		int port = strtol(uri->port, (char **) &end, 10);
+		int port = strtol((const char *)uri->port, (char **) &end, 10);
 
 		if (end != uri->port) {
 			assert(uri_port_is_valid(port));
@@ -501,7 +501,7 @@ add_uri_to_string(struct string *string, const struct uri *uri,
 			add_long_to_string(string, uri->ip_family);
 		add_char_to_string(string, ':');
  		if (get_protocol_need_slashes(uri->protocol))
-			add_to_string(string, "//");
+			add_to_string(string, (const unsigned char *)"//");
  	}
 
  	if (wants(URI_USER) && uri->userlen) {
@@ -545,11 +545,11 @@ add_uri_to_string(struct string *string, const struct uri *uri,
 
 			if (host) {
 				char *idname;
-				int code = idna_to_ascii_lz(host, &idname, 0);
+				int code = idna_to_ascii_lz((const char *)host, &idname, 0);
 
 				/* FIXME: Return NULL if it coughed? --jonas */
 				if (code == IDNA_SUCCESS) {
-					add_to_string(string, idname);
+					add_to_string(string, (const unsigned char *)idname);
 					free(idname);
 					add_host = 0;
 				}
@@ -628,7 +628,7 @@ add_uri_to_string(struct string *string, const struct uri *uri,
 
 		query++;
 		/* Check fragment and POST_CHAR */
-		return add_bytes_to_string(string, query, strcspn(query, "#" POST_CHAR_S));
+		return add_bytes_to_string(string, query, strcspn((const char *)query, "#" POST_CHAR_S));
 	}
 
 	if (wants(URI_FRAGMENT) && uri->fragmentlen) {
@@ -641,14 +641,14 @@ add_uri_to_string(struct string *string, const struct uri *uri,
 		add_to_string(string, uri->post);
 
 	} else if (wants(URI_POST_INFO) && uri->post) {
-		if (!strncmp(uri->post, "text/plain", 10)) {
-			add_to_string(string, " (PLAIN TEXT DATA)");
+		if (!strncmp((const char *)uri->post, "text/plain", 10)) {
+			add_to_string(string, (const unsigned char *)" (PLAIN TEXT DATA)");
 
-		} else if (!strncmp(uri->post, "multipart/form-data;", 20)) {
-			add_to_string(string, " (MULTIPART FORM DATA)");
+		} else if (!strncmp((const char *)uri->post, "multipart/form-data;", 20)) {
+			add_to_string(string, (const unsigned char *)" (MULTIPART FORM DATA)");
 
 		} else {
-			add_to_string(string, " (POST DATA)");
+			add_to_string(string, (const unsigned char *)" (POST DATA)");
 		}
 
 	}
@@ -993,7 +993,7 @@ join_urls(struct uri *base, unsigned char *rel)
 
 	memcpy(uristring, struri(base), length);
 	if (add_slash) uristring[length] = '/';
-	strcpy(uristring + length + add_slash, rel);
+	strcpy((char *)(uristring + length + add_slash), (const char *)rel);
 
 	return normalize_uri_reparse(uristring);
 }
@@ -1020,10 +1020,10 @@ find_uri_protocol(unsigned char *newurl)
 	 * - Resolve using port number. [ 119 -> nntp, 443 -> https, ... ]
 	 */
 
-	ch = newurl + strcspn(newurl, ".:/@");
+	ch = newurl + strcspn((const char *)newurl, ".:/@");
 	if (*ch == '@'
 	    || (*ch == ':' && *newurl != '[' && strchr((char *)newurl, '@'))
-	    || !c_strncasecmp(newurl, "ftp.", 4)) {
+	    || !c_strncasecmp((const char *)newurl, "ftp.", 4)) {
 		/* Contains user/password/ftp-hostname */
 		return PROTOCOL_FTP;
 
@@ -1033,8 +1033,8 @@ find_uri_protocol(unsigned char *newurl)
 		unsigned char *bracket2, *colon2;
 
 		ch++;
-		bracket2 = strchr((char *)ch, ']');
-		colon2 = strchr((char *)ch, ':');
+		bracket2 = (unsigned char *)strchr((char *)ch, ']');
+		colon2 = (unsigned char *)strchr((char *)ch, ':');
 		if (bracket2 && colon2 && bracket2 > colon2)
 			return PROTOCOL_HTTP;
 #endif
@@ -1046,7 +1046,7 @@ find_uri_protocol(unsigned char *newurl)
 
 		/* Process the hostname */
 		for (domain = ch + 1;
-			*(host_end = domain + strcspn(domain, ".:/?")) == '.';
+			*(host_end = domain + strcspn((const char *)domain, ".:/?")) == '.';
 			domain = host_end + 1);
 
 		/* It's IP? */
@@ -1075,7 +1075,7 @@ translate_url(unsigned char *url, unsigned char *cwd)
 {
 	unsigned char *newurl;
 	struct uri uri;
-	enum uri_errno uri_errno, prev_errno = URI_ERRNO_EMPTY;
+	int uri_errno, prev_errno = URI_ERRNO_EMPTY;
 	int retries = 0;
 
 	/* Strip starting spaces */
@@ -1119,12 +1119,12 @@ parse_uri:
 
 				switch (protocol) {
 				case PROTOCOL_FTP:
-					add_to_string(&str, "ftp://");
+					add_to_string(&str, (const unsigned char *)"ftp://");
 					encode_uri_string(&str, newurl, -1, 0);
 					break;
 
 				case PROTOCOL_HTTP:
-					add_to_string(&str, "http://");
+					add_to_string(&str, (const unsigned char *)"http://");
 					add_to_string(&str, newurl);
 					break;
 
@@ -1133,9 +1133,9 @@ parse_uri:
 
 				case PROTOCOL_FILE:
 				default:
-					add_to_string(&str, "file://");
+					add_to_string(&str, (const unsigned char *)"file://");
 					if (!dir_sep(*newurl))
-						add_to_string(&str, "./");
+						add_to_string(&str, (const unsigned char *)"./");
 
 					add_to_string(&str, newurl);
 				}
@@ -1192,7 +1192,7 @@ parse_uri:
 		if (uri.string[uri.protocollen + 1] == '/')
 			slashes--;
 
-		insert_in_string(&newurl, uri.protocollen + 1, "//", slashes);
+		insert_in_string(&newurl, uri.protocollen + 1, (const unsigned char *)"//", slashes);
 		goto parse_uri;
 	}
 	case URI_ERRNO_TRAILING_DOTS:
@@ -1224,7 +1224,7 @@ parse_uri:
 			   : uri.host + uri.hostlen - struri(&uri) + uri.ipv6 /* ']' */;
 
 		assertm(uri.host != NULL, "uri.host not set after no host slash error");
-		insert_in_string(&newurl, offset, "/", 1);
+		insert_in_string(&newurl, offset, (const unsigned char *)"/", 1);
 		goto parse_uri;
 	}
 	case URI_ERRNO_INVALID_PROTOCOL:
@@ -1237,12 +1237,12 @@ parse_uri:
 
 		switch (protocol) {
 			case PROTOCOL_FTP:
-				add_to_string(&str, "ftp://");
+				add_to_string(&str, (const unsigned char *)"ftp://");
 				encode_uri_string(&str, newurl, -1, 0);
 				break;
 
 			case PROTOCOL_HTTP:
-				add_to_string(&str, "http://");
+				add_to_string(&str, (const unsigned char *)"http://");
 				add_to_string(&str, newurl);
 				break;
 
@@ -1254,9 +1254,9 @@ parse_uri:
 				 * problem figuring out the URI. */
 			case PROTOCOL_FILE:
 			default:
-				add_to_string(&str, "file://");
+				add_to_string(&str, (const unsigned char *)"file://");
 				if (!dir_sep(*newurl))
-					add_to_string(&str, "./");
+					add_to_string(&str, (const unsigned char *)"./");
 
 				encode_file_uri_string(&str, newurl);
 		}

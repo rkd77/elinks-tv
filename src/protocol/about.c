@@ -16,8 +16,8 @@
 
 #ifndef CONFIG_SMALL
 struct about_page {
-	unsigned char *name;
-	unsigned char *string;
+	const char *name;
+	const char *string;
 };
 
 static const struct about_page about_pages[] = {
@@ -102,10 +102,10 @@ about_protocol_handler(struct connection *conn)
 				int len;
 				unsigned char *str;
 
-				if (strcmp(conn->uri->data, page->name))
+				if (strcmp((const char *)conn->uri->data, (const char *)page->name))
 					continue;
 
-				str = page->string;
+				str = (unsigned char *)page->string;
 				len = strlen((const char *)str);
 				add_fragment(cached, 0, str, len);
 				conn->from = len;
@@ -115,7 +115,7 @@ about_protocol_handler(struct connection *conn)
 #endif
 
 		/* Set content to known type */
-		mem_free_set(&cached->content_type, stracpy("text/html"));
+		mem_free_set(&cached->content_type, stracpy((const unsigned char *)"text/html"));
 	}
 
 	conn->cached = cached;

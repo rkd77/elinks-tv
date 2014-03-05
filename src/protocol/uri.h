@@ -106,7 +106,7 @@ enum uri_errno {
  * If an uri component is recognized both it's length and starting point is
  * set. */
 /* Returns what error was encountered or URI_ERRNO_OK if parsing went well. */
-enum uri_errno parse_uri(struct uri *uri, unsigned char *uristring);
+int parse_uri(struct uri *uri, unsigned char *uristring);
 
 
 /* Returns the raw zero-terminated URI string the (struct uri) is associated

@@ -46,7 +46,7 @@
 
 
 struct protocol_backend {
-	unsigned char *name;
+	const char *name;
 	int port;
 	protocol_handler_T *handler;
 	unsigned int need_slashes:1;
@@ -113,10 +113,10 @@ get_protocol(unsigned char *name, int namelen)
 	assert(start <= protocol && protocol <= end);
 
 	while (start <= end) {
-		unsigned char *pname = protocol_backends[protocol].name;
+		unsigned char *pname = (unsigned char *)protocol_backends[protocol].name;
 		int pnamelen = strlen((const char *)pname);
 		int minlen = int_min(pnamelen, namelen);
-		int compare = c_strncasecmp(pname, name, minlen);
+		int compare = c_strncasecmp((const char *)pname, (const char *)name, minlen);
 
 		if (compare == 0) {
 			if (pnamelen == namelen)

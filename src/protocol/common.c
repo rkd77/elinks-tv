@@ -73,44 +73,44 @@ init_directory_listing(struct string *page, struct uri *uri)
 	if (!local && !add_char_to_string(&location, '/'))
 		goto out_of_memory;
 
-	if (!add_to_string(page, "<html>\n<head><title>"))
+	if (!add_to_string(page, (const unsigned char *)"<html>\n<head><title>"))
 		goto out_of_memory;
 
 	if (!local && !add_html_to_string(page, location.source, location.length))
 		goto out_of_memory;
 
 	if (!add_html_to_string(page, decoded.source, decoded.length)
-	    || !add_to_string(page, "</title>\n<base href=\"")
+	    || !add_to_string(page, (const unsigned char *)"</title>\n<base href=\"")
 	    || !add_html_to_string(page, location.source, location.length)
 	    || !add_html_to_string(page, dirpath.source, dirpath.length))
 		goto out_of_memory;
 
-	if (!add_to_string(page, "\" />\n</head>\n<body>\n<h2>"))
+	if (!add_to_string(page, (const unsigned char *)"\" />\n</head>\n<body>\n<h2>"))
 		goto out_of_memory;
 
 	/* Use module names? */
 	switch (uri->protocol) {
 	case PROTOCOL_FILE:
-		info = "Local";
+		info = (unsigned char *)"Local";
 		break;
 	case PROTOCOL_FSP:
-		info = "FSP";
+		info = (unsigned char *)"FSP";
 		break;
 	case PROTOCOL_FTP:
-		info = "FTP";
+		info = (unsigned char *)"FTP";
 		break;
 	case PROTOCOL_GOPHER:
-		info = "Gopher";
+		info = (unsigned char *)"Gopher";
 		break;
 	case PROTOCOL_SMB:
-		info = "Samba";
+		info = (unsigned char *)"Samba";
 		break;
 	default:
-		info = "?";
+		info = (unsigned char *)"?";
 	}
 
 	if (!add_to_string(page, info)
-	    || !add_to_string(page, " directory "))
+	    || !add_to_string(page, (const unsigned char *)" directory "))
 		goto out_of_memory;
 
 	if (!local && !add_string_to_string(page, &location))
@@ -122,19 +122,19 @@ init_directory_listing(struct string *page, struct uri *uri)
 		const unsigned char *pslash = slash;
 		const unsigned char sep = local ? CHAR_DIR_SEP :  '/';
 
-		while ((slash = strchr((char *)slash, sep)) != NULL) {
+		while ((slash = (const unsigned char *)strchr((char *)slash, sep)) != NULL) {
 			done_string(&decoded);
 			if (!init_string(&decoded)
 			    || !add_bytes_to_string(&decoded, pslash, slash - pslash))
 				goto out_of_memory;
 			decode_uri_string(&decoded);
 
-			if (!add_to_string(page, "<a href=\"")
+			if (!add_to_string(page, (const unsigned char *)"<a href=\"")
 			    || !add_html_to_string(page, location.source, location.length)
 			    || !add_html_to_string(page, dirpath.source, slash + 1 - dirpath.source)
-			    || !add_to_string(page, "\">")
+			    || !add_to_string(page, (const unsigned char *)"\">")
 			    || !add_html_to_string(page, decoded.source, decoded.length)
-			    || !add_to_string(page, "</a>")
+			    || !add_to_string(page, (const unsigned char *)"</a>")
 			    || !add_html_to_string(page, &sep, 1))
 				goto out_of_memory;
 
@@ -142,7 +142,7 @@ init_directory_listing(struct string *page, struct uri *uri)
 		}
 	}
 
-	if (!add_to_string(page, "</h2>\n<pre>")) {
+	if (!add_to_string(page, (const unsigned char *)"</h2>\n<pre>")) {
 out_of_memory:
 		done_string(page);
 	}

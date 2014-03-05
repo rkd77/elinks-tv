@@ -247,19 +247,19 @@ parse_header_param(unsigned char *str, unsigned char *name, unsigned char **ret)
 
 	namelen = strlen((const char *)name);
 	do {
-		p = strchr((char *)p, ';');
+		p = (unsigned char *)strchr((char *)p, ';');
 		if (!p) return HEADER_PARAM_NOT_FOUND;
 
 		while (*p && (*p == ';' || *p <= ' ')) p++;
 		if (strlen((const char *)p) < namelen) return HEADER_PARAM_NOT_FOUND;
-	} while (c_strncasecmp(p, name, namelen));
+	} while (c_strncasecmp((const char *)p, (const char *)name, namelen));
 
 	p += namelen;
 
 	while (*p && (*p <= ' ' || *p == '=')) p++;
 	if (!*p) {
 		if (ret) {
-			*ret = stracpy("");
+			*ret = stracpy((const unsigned char *)"");
 			if (!*ret)
 				return HEADER_PARAM_OUT_OF_MEMORY;
 		}

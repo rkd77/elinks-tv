@@ -73,7 +73,7 @@ init_data_protocol_header(struct cache_entry *cached,
 	if (!type) return NULL;
 
 	/* Set fake content type */
-	head = straconcat("\r\nContent-Type: ", type, "\r\n",
+	head = straconcat((const unsigned char *)"\r\nContent-Type: ", type, "\r\n",
 			  (unsigned char *) NULL);
 	mem_free(type);
 	if (!head) return NULL;
@@ -87,7 +87,7 @@ parse_data_protocol_header(struct connection *conn, int *base64)
 {
 	struct uri *uri = conn->uri;
 	unsigned char *end = (unsigned char *)memchr(uri->data, ',', uri->datalen);
-	unsigned char *type = DEFAULT_DATA_MEDIATYPE;
+	unsigned char *type = (unsigned char *)DEFAULT_DATA_MEDIATYPE;
 	int typelen = sizeof(DEFAULT_DATA_MEDIATYPE) - 1;
 
 	if (end) {
