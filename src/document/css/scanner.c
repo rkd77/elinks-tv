@@ -32,53 +32,53 @@ enum css_char_group {
 };
 
 static const struct scan_table_info css_scan_table_info[] = {
-	SCAN_TABLE_RANGE("0", '9', CSS_CHAR_DIGIT | CSS_CHAR_HEX_DIGIT | CSS_CHAR_IDENT),
-	SCAN_TABLE_RANGE("A", 'F', CSS_CHAR_HEX_DIGIT),
-	SCAN_TABLE_RANGE("A", 'Z', CSS_CHAR_ALPHA | CSS_CHAR_IDENT | CSS_CHAR_IDENT_START),
-	SCAN_TABLE_RANGE("a", 'f', CSS_CHAR_HEX_DIGIT),
-	SCAN_TABLE_RANGE("a", 'z', CSS_CHAR_ALPHA | CSS_CHAR_IDENT | CSS_CHAR_IDENT_START),
+	SCAN_TABLE_RANGE((unsigned char *)"0", '9', CSS_CHAR_DIGIT | CSS_CHAR_HEX_DIGIT | CSS_CHAR_IDENT),
+	SCAN_TABLE_RANGE((unsigned char *)"A", 'F', CSS_CHAR_HEX_DIGIT),
+	SCAN_TABLE_RANGE((unsigned char *)"A", 'Z', CSS_CHAR_ALPHA | CSS_CHAR_IDENT | CSS_CHAR_IDENT_START),
+	SCAN_TABLE_RANGE((unsigned char *)"a", 'f', CSS_CHAR_HEX_DIGIT),
+	SCAN_TABLE_RANGE((unsigned char *)"a", 'z', CSS_CHAR_ALPHA | CSS_CHAR_IDENT | CSS_CHAR_IDENT_START),
 	/* For the octal number impared (me including) \241 is 161 --jonas */
-	SCAN_TABLE_RANGE("\241", 255, CSS_CHAR_NON_ASCII | CSS_CHAR_IDENT | CSS_CHAR_IDENT_START),
+	SCAN_TABLE_RANGE((unsigned char *)"\241", 255, CSS_CHAR_NON_ASCII | CSS_CHAR_IDENT | CSS_CHAR_IDENT_START),
 
-	SCAN_TABLE_STRING(" \f\n\r\t\v\000", CSS_CHAR_WHITESPACE),
-	SCAN_TABLE_STRING("\f\n\r",	 CSS_CHAR_NEWLINE),
-	SCAN_TABLE_STRING("-",		 CSS_CHAR_IDENT),
-	SCAN_TABLE_STRING(".#@!\"'<-/|^$*",	 CSS_CHAR_TOKEN_START),
+	SCAN_TABLE_STRING((unsigned char *)" \f\n\r\t\v\000", CSS_CHAR_WHITESPACE),
+	SCAN_TABLE_STRING((unsigned char *)"\f\n\r",	 CSS_CHAR_NEWLINE),
+	SCAN_TABLE_STRING((unsigned char *)"-",		 CSS_CHAR_IDENT),
+	SCAN_TABLE_STRING((unsigned char *)".#@!\"'<-/|^$*",	 CSS_CHAR_TOKEN_START),
 	/* Unicode escape (that we do not handle yet) + other special chars */
-	SCAN_TABLE_STRING("\\_",	 CSS_CHAR_IDENT | CSS_CHAR_IDENT_START),
+	SCAN_TABLE_STRING((unsigned char *)"\\_",	 CSS_CHAR_IDENT | CSS_CHAR_IDENT_START),
 	/* This should contain mostly used char tokens like ':' and maybe a few
 	 * garbage chars that people might put in their CSS code */
-	SCAN_TABLE_STRING("[({})];:,.>+~",	 CSS_CHAR_TOKEN),
-	SCAN_TABLE_STRING("<![CDATA]->", CSS_CHAR_SGML_MARKUP),
+	SCAN_TABLE_STRING((unsigned char *)"[({})];:,.>+~",	 CSS_CHAR_TOKEN),
+	SCAN_TABLE_STRING((unsigned char *)"<![CDATA]->", CSS_CHAR_SGML_MARKUP),
 
 	SCAN_TABLE_END,
 };
 
 static const struct scanner_string_mapping css_string_mappings[] = {
-	{ "Hz",		CSS_TOKEN_FREQUENCY,	CSS_TOKEN_DIMENSION },
-	{ "cm",		CSS_TOKEN_LENGTH,	CSS_TOKEN_DIMENSION },
-	{ "deg",	CSS_TOKEN_ANGLE,	CSS_TOKEN_DIMENSION },
-	{ "em",		CSS_TOKEN_EM,		CSS_TOKEN_DIMENSION },
-	{ "ex",		CSS_TOKEN_EX,		CSS_TOKEN_DIMENSION },
-	{ "grad",	CSS_TOKEN_ANGLE,	CSS_TOKEN_DIMENSION },
-	{ "in",		CSS_TOKEN_LENGTH,	CSS_TOKEN_DIMENSION },
-	{ "kHz",	CSS_TOKEN_FREQUENCY,	CSS_TOKEN_DIMENSION },
-	{ "mm",		CSS_TOKEN_LENGTH,	CSS_TOKEN_DIMENSION },
-	{ "ms",		CSS_TOKEN_TIME,		CSS_TOKEN_DIMENSION },
-	{ "pc",		CSS_TOKEN_LENGTH,	CSS_TOKEN_DIMENSION },
-	{ "pt",		CSS_TOKEN_LENGTH,	CSS_TOKEN_DIMENSION },
-	{ "px",		CSS_TOKEN_LENGTH,	CSS_TOKEN_DIMENSION },
-	{ "rad",	CSS_TOKEN_ANGLE,	CSS_TOKEN_DIMENSION },
-	{ "s",		CSS_TOKEN_TIME,		CSS_TOKEN_DIMENSION },
+	{ (unsigned char *)"Hz",		CSS_TOKEN_FREQUENCY,	CSS_TOKEN_DIMENSION },
+	{ (unsigned char *)"cm",		CSS_TOKEN_LENGTH,	CSS_TOKEN_DIMENSION },
+	{ (unsigned char *)"deg",	CSS_TOKEN_ANGLE,	CSS_TOKEN_DIMENSION },
+	{ (unsigned char *)"em",		CSS_TOKEN_EM,		CSS_TOKEN_DIMENSION },
+	{ (unsigned char *)"ex",		CSS_TOKEN_EX,		CSS_TOKEN_DIMENSION },
+	{ (unsigned char *)"grad",	CSS_TOKEN_ANGLE,	CSS_TOKEN_DIMENSION },
+	{ (unsigned char *)"in",		CSS_TOKEN_LENGTH,	CSS_TOKEN_DIMENSION },
+	{ (unsigned char *)"kHz",	CSS_TOKEN_FREQUENCY,	CSS_TOKEN_DIMENSION },
+	{ (unsigned char *)"mm",		CSS_TOKEN_LENGTH,	CSS_TOKEN_DIMENSION },
+	{ (unsigned char *)"ms",		CSS_TOKEN_TIME,		CSS_TOKEN_DIMENSION },
+	{ (unsigned char *)"pc",		CSS_TOKEN_LENGTH,	CSS_TOKEN_DIMENSION },
+	{ (unsigned char *)"pt",		CSS_TOKEN_LENGTH,	CSS_TOKEN_DIMENSION },
+	{ (unsigned char *)"px",		CSS_TOKEN_LENGTH,	CSS_TOKEN_DIMENSION },
+	{ (unsigned char *)"rad",	CSS_TOKEN_ANGLE,	CSS_TOKEN_DIMENSION },
+	{ (unsigned char *)"s",		CSS_TOKEN_TIME,		CSS_TOKEN_DIMENSION },
 
-	{ "rgb",	CSS_TOKEN_RGB,		CSS_TOKEN_FUNCTION },
-	{ "url",	CSS_TOKEN_URL,		CSS_TOKEN_FUNCTION },
+	{ (unsigned char *)"rgb",	CSS_TOKEN_RGB,		CSS_TOKEN_FUNCTION },
+	{ (unsigned char *)"url",	CSS_TOKEN_URL,		CSS_TOKEN_FUNCTION },
 
-	{ "charset",	CSS_TOKEN_AT_CHARSET,	CSS_TOKEN_AT_KEYWORD },
-	{ "font-face",	CSS_TOKEN_AT_FONT_FACE,	CSS_TOKEN_AT_KEYWORD },
-	{ "import",	CSS_TOKEN_AT_IMPORT,	CSS_TOKEN_AT_KEYWORD },
-	{ "media",	CSS_TOKEN_AT_MEDIA,	CSS_TOKEN_AT_KEYWORD },
-	{ "page",	CSS_TOKEN_AT_PAGE,	CSS_TOKEN_AT_KEYWORD },
+	{ (unsigned char *)"charset",	CSS_TOKEN_AT_CHARSET,	CSS_TOKEN_AT_KEYWORD },
+	{ (unsigned char *)"font-face",	CSS_TOKEN_AT_FONT_FACE,	CSS_TOKEN_AT_KEYWORD },
+	{ (unsigned char *)"import",	CSS_TOKEN_AT_IMPORT,	CSS_TOKEN_AT_KEYWORD },
+	{ (unsigned char *)"media",	CSS_TOKEN_AT_MEDIA,	CSS_TOKEN_AT_KEYWORD },
+	{ (unsigned char *)"page",	CSS_TOKEN_AT_PAGE,	CSS_TOKEN_AT_KEYWORD },
 
 	{ NULL, CSS_TOKEN_NONE, CSS_TOKEN_NONE },
 };
@@ -126,7 +126,7 @@ scan_css_token(struct scanner *scanner, struct scanner_token *token)
 {
 	const unsigned char *string = scanner->position;
 	unsigned char first_char = *string;
-	enum css_token_type type = CSS_TOKEN_GARBAGE;
+	int type = CSS_TOKEN_GARBAGE;
 	int real_length = -1;
 
 	assert(first_char);
@@ -294,7 +294,7 @@ scan_css_token(struct scanner *scanner, struct scanner_token *token)
 
 	} else if (first_char == '!') {
 		scan_css(scanner, string, CSS_CHAR_WHITESPACE);
-		if (!c_strncasecmp(string, "important", 9)) {
+		if (!c_strncasecmp((const char *)string, "important", 9)) {
 			type = CSS_TOKEN_IMPORTANT;
 			string += 9;
 		}

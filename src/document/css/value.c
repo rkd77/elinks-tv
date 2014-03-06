@@ -50,7 +50,7 @@ css_parse_color_value(struct css_property_info *propinfo,
 				return 0;
 
 			/* Parse the digit */
-			part = strtol(token->string, (char **) &nstring, 10);
+			part = strtol((const char *)token->string, (char **) &nstring, 10);
 			if (token->string == nstring)
 				return 0;
 
@@ -127,14 +127,14 @@ css_parse_font_style_value(struct css_property_info *propinfo,
 
 	if (token->type != CSS_TOKEN_IDENT) return 0;
 
-	if (scanner_token_contains(token, "italic")
-	    || scanner_token_contains(token, "oblique")) {
+	if (scanner_token_contains(token, (const unsigned char *)"italic")
+	    || scanner_token_contains(token, (const unsigned char *)"oblique")) {
 		value->font_attribute.add |= AT_ITALIC;
 
-	} else if (scanner_token_contains(token, "underline")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"underline")) {
 		value->font_attribute.add |= AT_UNDERLINE;
 
-	} else if (scanner_token_contains(token, "normal")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"normal")) {
 		value->font_attribute.rem |= AT_ITALIC;
 
 	} else {
@@ -158,16 +158,16 @@ css_parse_font_weight_value(struct css_property_info *propinfo,
 	assert(propinfo->value_type == CSS_VT_FONT_ATTRIBUTE);
 
 	if (token->type == CSS_TOKEN_IDENT) {
-		if (scanner_token_contains(token, "bolder")) {
+		if (scanner_token_contains(token, (const unsigned char *)"bolder")) {
 			value->font_attribute.add |= AT_BOLD;
 
-		} else if (scanner_token_contains(token, "lighter")) {
+		} else if (scanner_token_contains(token, (const unsigned char *)"lighter")) {
 			value->font_attribute.rem |= AT_BOLD;
 
-		} else if (scanner_token_contains(token, "bold")) {
+		} else if (scanner_token_contains(token, (const unsigned char *)"bold")) {
 			value->font_attribute.add |= AT_BOLD;
 
-		} else if (scanner_token_contains(token, "normal")) {
+		} else if (scanner_token_contains(token, (const unsigned char *)"normal")) {
 			value->font_attribute.rem |= AT_BOLD;
 
 		} else {
@@ -181,7 +181,7 @@ css_parse_font_weight_value(struct css_property_info *propinfo,
 	if (token->type != CSS_TOKEN_NUMBER) return 0;
 
 	/* TODO: Comma separated list of weights?! */
-	weight = strtol(token->string, (char **) &nstring, 10);
+	weight = strtol((const char *)token->string, (char **) &nstring, 10);
 	if (token->string == nstring) return 0;
 
 	skip_css_tokens(scanner, CSS_TOKEN_NUMBER);
@@ -208,67 +208,67 @@ css_parse_list_style_value(struct css_property_info *propinfo,
 
 	if (token->type != CSS_TOKEN_IDENT) return 0;
 
-	if (scanner_token_contains(token, "none")) {
+	if (scanner_token_contains(token, (const unsigned char *)"none")) {
 		value->list_style = CSS_LIST_NONE;
 
-	} else if (scanner_token_contains(token, "disc")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"disc")) {
 		value->list_style = CSS_LIST_DISC;
 
-	} else if (scanner_token_contains(token, "circle")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"circle")) {
 		value->list_style = CSS_LIST_CIRCLE;
 
-	} else if (scanner_token_contains(token, "square")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"square")) {
 		value->list_style = CSS_LIST_SQUARE;
 
-	} else if (scanner_token_contains(token, "decimal")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"decimal")) {
 		value->list_style = CSS_LIST_DECIMAL;
 
-	} else if (scanner_token_contains(token, "decimal-leading-zero")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"decimal-leading-zero")) {
 		value->list_style = CSS_LIST_DECIMAL_LEADING_ZERO;
 
-	} else if (scanner_token_contains(token, "lower-roman")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"lower-roman")) {
 		value->list_style = CSS_LIST_LOWER_ROMAN;
 
-	} else if (scanner_token_contains(token, "upper-roman")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"upper-roman")) {
 		value->list_style = CSS_LIST_UPPER_ROMAN;
 
-	} else if (scanner_token_contains(token, "lower-alpha")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"lower-alpha")) {
 		value->list_style = CSS_LIST_LOWER_ALPHA;
 
-	} else if (scanner_token_contains(token, "upper-alpha")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"upper-alpha")) {
 		value->list_style = CSS_LIST_UPPER_ALPHA;
 
-	} else if (scanner_token_contains(token, "lower-greek")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"lower-greek")) {
 		value->list_style = CSS_LIST_LOWER_GREEK;
 
-	} else if (scanner_token_contains(token, "lower-latin")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"lower-latin")) {
 		value->list_style = CSS_LIST_LOWER_LATIN;
 
-	} else if (scanner_token_contains(token, "upper-latin")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"upper-latin")) {
 		value->list_style = CSS_LIST_UPPER_LATIN;
 
-	} else if (scanner_token_contains(token, "hebrew")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"hebrew")) {
 		value->list_style = CSS_LIST_HEBREW;
 
-	} else if (scanner_token_contains(token, "armenian")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"armenian")) {
 		value->list_style = CSS_LIST_ARMENIAN;
 
-	} else if (scanner_token_contains(token, "georgian")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"georgian")) {
 		value->list_style = CSS_LIST_GEORGIAN;
 
-	} else if (scanner_token_contains(token, "cjk-ideographic")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"cjk-ideographic")) {
 		value->list_style = CSS_LIST_CJK_IDEOGRAPHIC;
 
-	} else if (scanner_token_contains(token, "hiragana")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"hiragana")) {
 		value->list_style = CSS_LIST_HIRAGANA;
 
-	} else if (scanner_token_contains(token, "katakana")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"katakana")) {
 		value->list_style = CSS_LIST_KATAKANA;
 
-	} else if (scanner_token_contains(token, "hiragana-iroha")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"hiragana-iroha")) {
 		value->list_style = CSS_LIST_HIRAGANA_IROHA;
 
-	} else if (scanner_token_contains(token, "katakana-iroha")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"katakana-iroha")) {
 		value->list_style = CSS_LIST_KATAKANA_IROHA;
 
 	} else {
@@ -290,16 +290,16 @@ css_parse_text_align_value(struct css_property_info *propinfo,
 
 	if (token->type != CSS_TOKEN_IDENT) return 0;
 
-	if (scanner_token_contains(token, "left")) {
+	if (scanner_token_contains(token, (const unsigned char *)"left")) {
 		value->text_align = ALIGN_LEFT;
 
-	} else 	if (scanner_token_contains(token, "right")) {
+	} else 	if (scanner_token_contains(token, (const unsigned char *)"right")) {
 		value->text_align = ALIGN_RIGHT;
 
-	} else 	if (scanner_token_contains(token, "center")) {
+	} else 	if (scanner_token_contains(token, (const unsigned char *)"center")) {
 		value->text_align = ALIGN_CENTER;
 
-	} else 	if (scanner_token_contains(token, "justify")) {
+	} else 	if (scanner_token_contains(token, (const unsigned char *)"justify")) {
 		value->text_align = ALIGN_JUSTIFY;
 
 	} else {
@@ -324,10 +324,10 @@ css_parse_text_decoration_value(struct css_property_info *propinfo,
 
 	/* TODO: It is possible to have multiple values here,
 	 * 'background'-style. --pasky */
-	if (scanner_token_contains(token, "underline")) {
+	if (scanner_token_contains(token, (const unsigned char *)"underline")) {
 		value->font_attribute.add |= AT_UNDERLINE;
 
-	} else if (scanner_token_contains(token, "none")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"none")) {
 		value->font_attribute.rem |= AT_UNDERLINE;
 
 	} else {
@@ -350,10 +350,10 @@ css_parse_white_space_value(struct css_property_info *propinfo,
 	if (token->type != CSS_TOKEN_IDENT) return 0;
 
 	/* FIXME: nowrap */
-	if (scanner_token_contains(token, "pre")) {
+	if (scanner_token_contains(token, (const unsigned char *)"pre")) {
 		value->font_attribute.add |= AT_PREFORMATTED;
 
-	} else if (scanner_token_contains(token, "normal")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"normal")) {
 		value->font_attribute.rem |= AT_PREFORMATTED;
 
 	} else {
@@ -376,13 +376,13 @@ css_parse_display_value(struct css_property_info *propinfo,
 	if (token->type != CSS_TOKEN_IDENT) return 0;
 
 	/* FIXME: This is _very_ simplistic */
-	if (scanner_token_contains(token, "inline")) {
+	if (scanner_token_contains(token, (const unsigned char *)"inline")) {
 		value->display = CSS_DISP_INLINE;
-	} else if (scanner_token_contains(token, "inline-block")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"inline-block")) {
 		value->display = CSS_DISP_INLINE; /* XXX */
-	} else if (scanner_token_contains(token, "block")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"block")) {
 		value->display = CSS_DISP_BLOCK;
-	} else if (scanner_token_contains(token, "none")) {
+	} else if (scanner_token_contains(token, (const unsigned char *)"none")) {
 		value->display = CSS_DISP_NONE;
 	} else {
 		return 0;

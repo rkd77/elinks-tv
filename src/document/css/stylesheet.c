@@ -27,8 +27,8 @@
 
 struct css_selector *
 find_css_selector(struct css_selector_set *sels,
-                  enum css_selector_type type,
-                  enum css_selector_relation rel,
+                  int type,
+                  int rel,
                   const unsigned char *name, int namelen)
 {
 	struct css_selector *selector;
@@ -48,8 +48,8 @@ find_css_selector(struct css_selector_set *sels,
 
 struct css_selector *
 init_css_selector(struct css_selector_set *sels,
-                  enum css_selector_type type,
-                  enum css_selector_relation relation,
+                  int type,
+                  int relation,
                   const unsigned char *name, int namelen)
 {
 	struct css_selector *selector;
@@ -84,7 +84,7 @@ init_css_selector(struct css_selector_set *sels,
 
 void
 set_css_selector_relation(struct css_selector *selector,
-			  enum css_selector_relation relation)
+			  int relation)
 {
 	/* Changing the relation after the selector is in a set might require
 	 * setting css_relation_set.may_contain_rel_ancestor_or_parent,
@@ -95,8 +95,8 @@ set_css_selector_relation(struct css_selector *selector,
 
 struct css_selector *
 get_css_selector(struct css_selector_set *sels,
-                 enum css_selector_type type,
-                 enum css_selector_relation rel,
+                 int type,
+                 int rel,
                  const unsigned char *name, int namelen)
 {
 	struct css_selector *selector = NULL;

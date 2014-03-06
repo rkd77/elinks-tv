@@ -158,7 +158,7 @@ static const css_applier_T css_appliers[CSS_PT_LAST] = {
 /** This looks for a match in list of selectors. */
 static void
 examine_element(struct html_context *html_context, struct css_selector *base,
-		enum css_selector_type seltype, enum css_selector_relation rel,
+		int seltype, int rel,
 		struct css_selector_set *selectors,
 		struct html_element *element)
 {
@@ -213,7 +213,7 @@ examine_element(struct html_context *html_context, struct css_selector *base,
 
 	if (seltype <= CST_ELEMENT && element->namelen) {
 		selector = find_css_selector(selectors, CST_ELEMENT, rel,
-		                             "*", 1);
+		                             (const unsigned char *)"*", 1);
 		process_found_selector(selector, CST_ELEMENT, base);
 
 		selector = find_css_selector(selectors, CST_ELEMENT, rel,
@@ -226,11 +226,11 @@ examine_element(struct html_context *html_context, struct css_selector *base,
 
 	/* TODO: More pseudo-classess. --pasky */
 	if (element->pseudo_class & ELEMENT_LINK) {
-		selector = find_css_selector(selectors, CST_PSEUDO, rel, "link", -1);
+		selector = find_css_selector(selectors, CST_PSEUDO, rel, (const unsigned char *)"link", -1);
 		process_found_selector(selector, CST_PSEUDO, base);
 	}
 	if (element->pseudo_class & ELEMENT_VISITED) {
-		selector = find_css_selector(selectors, CST_PSEUDO, rel, "visited", -1);
+		selector = find_css_selector(selectors, CST_PSEUDO, rel, (const unsigned char *)"visited", -1);
 		process_found_selector(selector, CST_PSEUDO, base);
 	}
 
@@ -286,7 +286,7 @@ get_css_selector_for_element(struct html_context *html_context,
 	DBG("Element %.*s applied.", element->namelen, element->name);
 #endif
 
-	code = get_attr_val(element->options, "style", html_context->doc_cp);
+	code = get_attr_val(element->options, (unsigned char *)"style", html_context->doc_cp);
 	if (code) {
 		struct css_selector *stylesel;
 		struct scanner scanner;

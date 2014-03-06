@@ -27,7 +27,7 @@ struct text_style_color {
 };
 
 struct text_style {
-	enum text_style_format attr;
+	int attr;
 	struct text_style_color color;
 };
 

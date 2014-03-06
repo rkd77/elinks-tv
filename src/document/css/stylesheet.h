@@ -88,10 +88,10 @@ struct css_selector {
 	/** This defines relation between this selector fragment and its
 	 * parent in the selector tree.
 	 * Update with set_css_selector_relation().  */
-	enum css_selector_relation relation;
+	int relation;
 	struct css_selector_set leaves;
 
-	enum css_selector_type type;
+	int type;
 	unsigned char *name;
 
 	LIST_OF(struct css_property) properties;
@@ -142,8 +142,8 @@ void done_css_stylesheet(struct css_stylesheet *css);
 /** Returns a new freshly made selector adding it to the given selector
  * set, or NULL. */
 struct css_selector *get_css_selector(struct css_selector_set *set,
-                                      enum css_selector_type type,
-                                      enum css_selector_relation rel,
+                                      int type,
+                                      int rel,
                                       const unsigned char *name, int namelen);
 
 #define get_css_base_selector(stylesheet, type, rel, name, namelen) \
@@ -153,8 +153,8 @@ struct css_selector *get_css_selector(struct css_selector_set *set,
 /** Looks up the selector of the name @a name and length @a namelen in
  * the given set of selectors. */
 struct css_selector *find_css_selector(struct css_selector_set *set,
-                                       enum css_selector_type type,
-                                       enum css_selector_relation rel,
+                                       int type,
+                                       int rel,
                                        const unsigned char *name, int namelen);
 
 #define find_css_base_selector(stylesheet, type, rel, name, namelen) \
@@ -163,8 +163,8 @@ struct css_selector *find_css_selector(struct css_selector_set *set,
 /** Initialize the selector structure. This is a rather low-level
  * function from your POV. */
 struct css_selector *init_css_selector(struct css_selector_set *set,
-                                       enum css_selector_type type,
-                                       enum css_selector_relation relation,
+                                       int type,
+                                       int relation,
                                        const unsigned char *name, int namelen);
 
 /** Add all properties from the list to the given @a selector. */
@@ -176,7 +176,7 @@ void merge_css_selectors(struct css_selector *sel1, struct css_selector *sel2);
 
 /** Use this function instead of modifying css_selector.relation directly.  */
 void set_css_selector_relation(struct css_selector *,
-			       enum css_selector_relation);
+			       int);
 
 /** Destroy a selector. done_css_stylesheet() normally does that for you. */
 void done_css_selector(struct css_selector *selector);

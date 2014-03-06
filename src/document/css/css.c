@@ -97,7 +97,7 @@ supports_css_media_type(const unsigned char *optstr,
 			++optstr;
 
 		beg = optstr;
-		optstr += strcspn(optstr, ",");
+		optstr += strcspn((const char *)optstr, ",");
 		end = optstr;
 		while (end > beg && end[-1] == ' ')
 			--end;
@@ -121,7 +121,7 @@ supports_css_media_type(const unsigned char *optstr,
 	}
 
 	/* An explicit "all" is probably rarer than e.g. "tty".  */
-	if (!strlcasecmp(token, token_length, "all", 3))
+	if (!strlcasecmp(token, token_length, (const unsigned char *)"all", 3))
 		return 1;
 
 	return 0;
@@ -200,13 +200,13 @@ change_hook_css(struct session *ses, struct option *current, struct option *chan
 {
 	int reload_css = 0;
 
-	if (!strcmp(changed->name, "stylesheet")) {
+	if (!strcmp((const char *)changed->name, "stylesheet")) {
 		/** @todo TODO: We need to update all entries in
 		 * format cache. --jonas */
 		import_default_css();
 	}
 
-	if (!strcmp(changed->name, "media"))
+	if (!strcmp((const char *)changed->name, "media"))
 		reload_css = 1;
 
 	/* Instead of using the value of the @ses parameter, iterate
@@ -221,7 +221,7 @@ static void
 init_css(struct module *module)
 {
 	static const struct change_hook_info css_change_hooks[] = {
-		{ "document.css",		change_hook_css },
+		{ (const unsigned char *)"document.css",		change_hook_css },
 		{ NULL,				NULL },
 	};
 
