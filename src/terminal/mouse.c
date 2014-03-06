@@ -52,8 +52,8 @@ extern struct itrm *ditrm;
 void
 send_mouse_init_sequence(int h)
 {
-	write_sequence(h, INIT_TWIN_MOUSE_SEQ);
-	write_sequence(h, INIT_XWIN_MOUSE_SEQ);
+	write_sequence(h, (unsigned char *)INIT_TWIN_MOUSE_SEQ);
+	write_sequence(h, (unsigned char *)INIT_XWIN_MOUSE_SEQ);
 }
 
 #define DONE_TWIN_MOUSE_SEQ	"\033[?9l"	/**< Don't Send MIT Mouse Row & Column on Button Press */
@@ -65,8 +65,8 @@ send_mouse_done_sequence(int h)
 	/* This is a hack to make xterm + alternate screen working,
 	 * if we send only DONE_XWIN_MOUSE_SEQ, mouse is not totally
 	 * released it seems, in rxvt and xterm... --Zas */
-	write_sequence(h, DONE_TWIN_MOUSE_SEQ);
-	write_sequence(h, DONE_XWIN_MOUSE_SEQ);
+	write_sequence(h, (unsigned char *)DONE_TWIN_MOUSE_SEQ);
+	write_sequence(h, (unsigned char *)DONE_XWIN_MOUSE_SEQ);
 }
 
 static int mouse_enabled;

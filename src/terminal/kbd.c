@@ -99,7 +99,7 @@ itrm_queue_write(struct itrm *itrm)
 			     get_handler(itrm->out.sock, SELECT_HANDLER_READ),
 			     NULL,
 			     get_handler(itrm->out.sock, SELECT_HANDLER_ERROR),
-			     get_handler(itrm->out.sock, SELECT_HANDLER_DATA));
+			     (void *)get_handler(itrm->out.sock, SELECT_HANDLER_DATA));
 	} else {
 		assert(itrm->out.queue.len > 0);
 		memmove(itrm->out.queue.data, itrm->out.queue.data + written, itrm->out.queue.len);
@@ -167,16 +167,16 @@ kbd_ctrl_c(void)
 static void
 send_init_sequence(int h, int altscreen)
 {
-	write_sequence(h, INIT_TERMINAL_SEQ);
+	write_sequence(h, (unsigned char *)INIT_TERMINAL_SEQ);
 
 	/* If alternate screen is supported switch to it. */
 	if (altscreen) {
-		write_sequence(h, INIT_ALT_SCREEN_SEQ);
+		write_sequence(h, (unsigned char *)INIT_ALT_SCREEN_SEQ);
 	}
 #ifdef CONFIG_MOUSE
 	send_mouse_init_sequence(h);
 #endif
-	write_sequence(h, INIT_BRACKETED_PASTE_SEQ);
+	write_sequence(h, (unsigned char *)INIT_BRACKETED_PASTE_SEQ);
 }
 
 #define DONE_CLS_SEQ		"\033[2J"	/**< Erase in Display, Clear All */
@@ -187,8 +187,8 @@ send_init_sequence(int h, int altscreen)
 static void
 send_done_sequence(int h, int altscreen)
 {
-	write_sequence(h, DONE_BRACKETED_PASTE_SEQ);
-	write_sequence(h, DONE_CLS_SEQ);
+	write_sequence(h, (unsigned char *)DONE_BRACKETED_PASTE_SEQ);
+	write_sequence(h, (unsigned char *)DONE_CLS_SEQ);
 
 #ifdef CONFIG_MOUSE
 	send_mouse_done_sequence(h);
@@ -196,10 +196,10 @@ send_done_sequence(int h, int altscreen)
 
 	/* Switch from alternate screen. */
 	if (altscreen) {
-		write_sequence(h, DONE_ALT_SCREEN_SEQ);
+		write_sequence(h, (unsigned char *)DONE_ALT_SCREEN_SEQ);
 	}
 
-	write_sequence(h, DONE_TERMINAL_SEQ);
+	write_sequence(h, (unsigned char *)DONE_TERMINAL_SEQ);
 }
 
 
@@ -213,7 +213,7 @@ resize_terminal(void)
 
 	get_terminal_size(ditrm->out.std, &width, &height);
 	set_resize_interlink_event(&ev, width, height);
-	itrm_queue_event(ditrm, (char *) &ev, sizeof(ev));
+	itrm_queue_event(ditrm, (unsigned char *) &ev, sizeof(ev));
 }
 
 extern int terminalColumns;
@@ -225,13 +225,13 @@ resizeTerminal(struct itrm *itrm)
 	struct interlink_event ev;
 
 	set_resize_interlink_event(&ev, terminalColumns, terminalLines);
-	itrm_queue_event(itrm, (char *) &ev, sizeof(ev));
+	itrm_queue_event(itrm, (unsigned char *) &ev, sizeof(ev));
 }
 
 void
 get_terminal_name(unsigned char name[MAX_TERM_LEN])
 {
-	unsigned char *term = getenv("TERM");
+	unsigned char *term = (unsigned char *)getenv("TERM");
 	int i;
 
 	memset(name, 0, MAX_TERM_LEN);
@@ -353,7 +353,7 @@ handle_trm(int std_in, int std_out, int sock_in, int sock_out, int ctl_in,
 	/* If the master does not tell which charset it's using in
 	 * this terminal, assume it's some ISO 8859.  Because that's
 	 * what older versions of ELinks did.  */
-	itrm->title_codepage = get_cp_index("ISO-8859-1");
+	itrm->title_codepage = get_cp_index((const unsigned char *)"ISO-8859-1");
 
 	/* FIXME: Combination altscreen + xwin does not work as it should,
 	 * mouse clicks are reportedly partially ignored. */
@@ -386,8 +386,8 @@ handle_trm(int std_in, int std_out, int sock_in, int sock_out, int ctl_in,
 		mem_free(ts);
 	}
 
-	itrm_queue_event(itrm, (char *) &info, TERMINAL_INFO_SIZE);
-	itrm_queue_event(itrm, (char *) init_string, init_len);
+	itrm_queue_event(itrm, (unsigned char *) &info, TERMINAL_INFO_SIZE);
+	itrm_queue_event(itrm, (unsigned char *) init_string, init_len);
 	return itrm;
 }
 
@@ -461,7 +461,7 @@ free_itrm(struct itrm *itrm)
 			get_terminal_name(title);
 			if (*title)
 				set_window_title(title,
-						 get_cp_index("US-ASCII"));
+						 get_cp_index((const unsigned char *)"US-ASCII"));
 		}
 
 
@@ -503,7 +503,7 @@ resize_terminal_from_str(unsigned char *text)
 	if_assert_failed return;
 
 	for (i = 0; i < NUMBERS; i++) {
-		unsigned char *p = strchr((char *)text, ',');
+		unsigned char *p = (unsigned char *)strchr((char *)text, ',');
 
 		if (p) {
 			*p++ = '\0';
@@ -512,7 +512,7 @@ resize_terminal_from_str(unsigned char *text)
 			return;
 		}
 
-		numbers[i] = atoi(text);
+		numbers[i] = atoi((const char *)text);
 
 		if (p) text = p;
 	}
@@ -544,7 +544,7 @@ dispatch_special(unsigned char *text)
 			 * be most appropriate?  */
 			set_window_title(text + 1,
 					 ditrm ? ditrm->title_codepage
-					 : get_cp_index("US-ASCII"));
+					 : get_cp_index((const unsigned char *)"US-ASCII"));
 			break;
 		case TERM_FN_RESIZE:
 			if (ditrm && ditrm->remote)
@@ -560,7 +560,7 @@ dispatch_special(unsigned char *text)
 				 * unrecognized charset, assume only
 				 * that it's ASCII compatible.  */
 				if (cp == -1)
-					cp = get_cp_index("US-ASCII");
+					cp = get_cp_index((const unsigned char *)"US-ASCII");
 				ditrm->title_codepage = cp;
 			}
 			break;
@@ -655,7 +655,7 @@ has_nul_byte:
 		 * in a blocked terminal?  There is similar code in
 		 * exec_on_terminal().  --KON, 2007 */
 		if (is_blocked() && fg != TERM_EXEC_BG) {
-			if (*delete_.source) unlink(delete_.source);
+			if (*delete_.source) unlink((const char *)delete_.source);
 			goto nasty_thing;
 		}
 
@@ -1074,7 +1074,7 @@ kbd_timeout(struct itrm *itrm)
 		el = 1;
 	}
 	itrm->bracketed_pasting = 0;
-	itrm_queue_event(itrm, (char *) &ev, sizeof(ev));
+	itrm_queue_event(itrm, (unsigned char *) &ev, sizeof(ev));
 
 	itrm->in.queue.len -= el;
 	if (itrm->in.queue.len)
@@ -1198,7 +1198,7 @@ process_queue(struct itrm *itrm)
 	/* The call to decode_terminal_escape_sequence() might have changed the
 	 * keyboard event to a mouse event. */
 	if (ev.ev == EVENT_MOUSE || ev.info.keyboard.key != KBD_UNDEF) {
-		itrm_queue_event(itrm, (char *) &ev, sizeof(ev));
+		itrm_queue_event(itrm, (unsigned char *) &ev, sizeof(ev));
 		itrm->bracketed_pasting = 
 			(ev.ev == EVENT_KBD
 			 && (ev.info.keyboard.modifier & KBD_MOD_PASTE));

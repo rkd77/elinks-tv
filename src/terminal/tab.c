@@ -119,7 +119,7 @@ get_tab_by_number(struct terminal *term, int num)
 	 * window.  */
 	assertm((LIST_OF(struct window) *) win != &term->windows,
 	        "tab number out of range");
-	if_assert_failed return term->windows.next;
+	if_assert_failed return (struct window *)term->windows.next;
 
 	return win;
 }
@@ -150,7 +150,7 @@ switch_to_tab(struct terminal *term, int tab, int tabs_count)
 
 	if (tabs_count > 1) {
 		if (get_opt_bool((const unsigned char *)"ui.tabs.wraparound",
-		                 get_current_tab(term)->data)) {
+		                 (struct session *)get_current_tab(term)->data)) {
 			tab %= tabs_count;
 			if (tab < 0) tab += tabs_count;
 		} else

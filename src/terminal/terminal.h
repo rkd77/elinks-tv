@@ -153,7 +153,7 @@ struct terminal {
 #endif
 
 	/** The type of environment this terminal lives in. */
-	enum term_env_type environment;
+	int environment;
 
 	/** The current working directory for this terminal / ELinks instance. */
 	unsigned char cwd[MAX_CWD_LEN];

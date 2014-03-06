@@ -150,7 +150,7 @@ term_send_ucs(struct terminal *term, unicode_val_T u,
 
 	set_kbd_term_event(&ev, KBD_UNDEF, modifier);
 	recoded = u2cp_no_nbsp(u, get_terminal_codepage(term));
-	if (!recoded) recoded = "*";
+	if (!recoded) recoded = (const unsigned char *)"*";
 	while (*recoded) {
 		ev.info.keyboard.key = *recoded;
 		term_send_event(term, &ev);
@@ -170,11 +170,11 @@ check_terminal_name(struct terminal *term, struct terminal_info *info)
 	for (i = 0; info->name[i]; i++) {
 		if (isident(info->name[i])) continue;
 
-		usrerror(_("Warning: terminal name contains illicit chars.", term));
+		usrerror((const char *)_("Warning: terminal name contains illicit chars.", term));
 		return;
 	}
 
-	snprintf(name, sizeof(name), "terminal.%s", info->name);
+	snprintf((char *)name, sizeof(name), "terminal.%s", info->name);
 
 	/* Unlock the default _template_ option tree that was asigned by
 	 * init_term() and get the correct one. */
@@ -256,7 +256,7 @@ handle_interlink_event(struct terminal *term, struct interlink_event *ilev)
 			/* Make sure the user is notified if the initialization
 			 * of the first session fails. */
 			if (program.terminate) {
-				usrerror(_("Failed to create session.", term));
+				usrerror((const char *)_("Failed to create session.", term));
 				program.retval = RET_FATAL;
 			}
 			return 0;

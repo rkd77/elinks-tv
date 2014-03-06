@@ -84,8 +84,8 @@ color_T get_term_color256(unsigned int index);
 #endif
 
 void get_screen_char_color(struct screen_char *schar, struct color_pair *pair,
-		      color_flags_T flags, enum color_mode color_mode);
+		      color_flags_T flags, int color_mode);
 void set_term_color(struct screen_char *schar, struct color_pair *pair,
-		    color_flags_T flags, enum color_mode mode);
+		    color_flags_T flags, int mode);
 
 #endif

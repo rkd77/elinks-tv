@@ -31,11 +31,11 @@
  * Please mention ELinks bug 96 in commit logs.  --KON */
 
 /** Mapping from (enum ::border_char - 0xB0) to ASCII characters.  */
-const unsigned char frame_dumb[48] =	"   ||||++||++++++--|-+||++--|-+----++++++++     ";
+const unsigned char frame_dumb[] =	"   ||||++||++++++--|-+||++--|-+----++++++++     ";
 
 /** Mapping from (enum ::border_char - 0xB0) to VT100 line-drawing
  * characters.  */
-static const unsigned char frame_vt100[48] =	"aaaxuuukkuxkjjjkmvwtqnttmlvwtqnvvwwmmllnnjla    ";
+static const unsigned char frame_vt100[] =	"aaaxuuukkuxkjjjkmvwtqnttmlvwtqnvvwwmmllnnjla    ";
 
 /** Mapping from (enum ::border_char - 0xB0) to VT100 line-drawing
  * characters encoded in CP437.
@@ -228,7 +228,7 @@ struct screen_driver_opt {
 	const struct string *underline;
 
 	/** The color mode */
-	enum color_mode color_mode;
+	int color_mode;
 
 #if defined(CONFIG_88_COLORS) || defined(CONFIG_256_COLORS)
 	const struct string *color256_seqs;
@@ -261,7 +261,7 @@ struct screen_driver {
 
 	/** The terminal._template_.type. Together with the #name member they
 	 * uniquely identify the screen_driver. */
-	enum term_mode_type type;
+	int type;
 
 	/** set_screen_driver_opt() sets these.  */
 	struct screen_driver_opt opt;
@@ -462,18 +462,18 @@ set_screen_driver_opt(struct screen_driver *driver, struct option *term_spec)
 		if (driver->type == TERM_LINUX || driver->type == TERM_FBTERM) {
 			if (get_opt_bool_tree(term_spec, (const unsigned char *)"restrict_852", NULL))
 				driver->opt.frame = frame_restrict;
-			driver->opt.charsets[1] = get_cp_index("cp437");
+			driver->opt.charsets[1] = get_cp_index((const unsigned char *)"cp437");
 
 		} else if (driver->type == TERM_FREEBSD) {
 			driver->opt.frame = frame_freebsd_u;
-			driver->opt.charsets[1] = get_cp_index("cp437");
+			driver->opt.charsets[1] = get_cp_index((const unsigned char *)"cp437");
 
 		} else if (driver->type == TERM_VT100) {
 			driver->opt.frame = frame_vt100_u;
-			driver->opt.charsets[1] = get_cp_index("cp437");
+			driver->opt.charsets[1] = get_cp_index((const unsigned char *)"cp437");
 
 		} else if (driver->type == TERM_KOI8) {
-			driver->opt.charsets[1] = get_cp_index("koi8-r");
+			driver->opt.charsets[1] = get_cp_index((const unsigned char *)"koi8-r");
 
 		} else {
 #ifdef CONFIG_UTF8
@@ -481,7 +481,7 @@ set_screen_driver_opt(struct screen_driver *driver, struct option *term_spec)
 			 * UTF-8, because it is passed to cp2u(),
 			 * which supports only unibyte characters.  */
 			if (driver->opt.utf8_cp)
-				driver->opt.charsets[1] = get_cp_index("US-ASCII");
+				driver->opt.charsets[1] = get_cp_index((const unsigned char *)"US-ASCII");
 			else
 #endif	/* CONFIG_UTF8 */
 				driver->opt.charsets[1] = driver->opt.charsets[0];
@@ -511,12 +511,12 @@ static int
 screen_driver_change_hook(struct session *ses, struct option *term_spec,
 			  struct option *changed)
 {
-	enum term_mode_type type = get_opt_int_tree(term_spec, (const unsigned char *)"type", NULL);
+	int type = get_opt_int_tree(term_spec, (const unsigned char *)"type", NULL);
 	struct screen_driver *driver;
-	unsigned char *name = term_spec->name;
+	unsigned char *name = (unsigned char *)term_spec->name;
 
 	foreach (driver, active_screen_drivers)
-		if (driver->type == type && !strcmp(driver->name, name)) {
+		if (driver->type == type && !strcmp((const char *)driver->name, (const char *)name)) {
 			set_screen_driver_opt(driver, term_spec);
 			break;
 		}
@@ -525,7 +525,7 @@ screen_driver_change_hook(struct session *ses, struct option *term_spec,
 }
 
 static inline struct screen_driver *
-add_screen_driver(enum term_mode_type type, struct terminal *term, int env_len)
+add_screen_driver(int type, struct terminal *term, int env_len)
 {
 	struct screen_driver *driver;
 
@@ -552,14 +552,14 @@ add_screen_driver(enum term_mode_type type, struct terminal *term, int env_len)
 static inline struct screen_driver *
 get_screen_driver(struct terminal *term)
 {
-	enum term_mode_type type = get_opt_int_tree(term->spec, (const unsigned char *)"type", NULL);
-	unsigned char *name = term->spec->name;
+	int type = get_opt_int_tree(term->spec, (const unsigned char *)"type", NULL);
+	unsigned char *name = (unsigned char *)term->spec->name;
 	int len = strlen((const char *)name);
 	struct screen_driver *driver;
 
 	foreach (driver, active_screen_drivers) {
 		if (driver->type != type) continue;
-		if (strcmp(driver->name, name)) continue;
+		if (strcmp((const char *)driver->name, (const char *)name)) continue;
 
 		/* Some simple probably useless MRU ;) */
 		move_to_top_of_list(active_screen_drivers, driver);
@@ -830,7 +830,7 @@ add_char16(struct string *screen, struct screen_driver *driver,
 	   ) {
 		state->bold = bold;
 		if (bold) {
-			add_bytes_to_string(screen, "\033[1m", 4);
+			add_bytes_to_string(screen, (const unsigned char *)"\033[1m", 4);
 		} else {
 			/* Force repainting of the other attributes. */
 			state->color[0] = ch->c.color[0] + 1;
@@ -845,7 +845,7 @@ add_char16(struct string *screen, struct screen_driver *driver,
 	   ) {
 		copy_color_16(state->color, ch->c.color);
 
-		add_bytes_to_string(screen, "\033[0", 3);
+		add_bytes_to_string(screen, (const unsigned char *)"\033[0", 3);
 
 		/* @set_screen_driver_opt has set @driver->opt.color_mode
 		 * according to terminal-type-specific options.
@@ -856,38 +856,38 @@ add_char16(struct string *screen, struct screen_driver *driver,
 		 * - COLOR_MODE_16.  Use 16 colors.
 		 * - An unsupported color mode.  Use 16 colors.  */
 		if (driver->opt.color_mode != COLOR_MODE_MONO) {
-			unsigned char code[6] = ";30;40";
+			char code[] = ";30;40";
 			unsigned char bgcolor = TERM_COLOR_BACKGROUND_16(ch->c.color);
 
 			code[2] += TERM_COLOR_FOREGROUND_16(ch->c.color);
 
 			if (!driver->opt.transparent || bgcolor != 0) {
 				code[5] += bgcolor;
-				add_bytes_to_string(screen, code, 6);
+				add_bytes_to_string(screen, (const unsigned char *)code, 6);
 			} else {
-				add_bytes_to_string(screen, code, 3);
+				add_bytes_to_string(screen, (const unsigned char *)code, 3);
 			}
 
 		} else if (ch->attr & SCREEN_ATTR_STANDOUT) {
 			/* Flip the fore- and background colors for highlighing
 			 * purposes. */
-			add_bytes_to_string(screen, ";7", 2);
+			add_bytes_to_string(screen, (const unsigned char *)";7", 2);
 		}
 
 		if (italic && driver->opt.italic) {
-			add_bytes_to_string(screen, ";3", 2);
+			add_bytes_to_string(screen, (const unsigned char *)";3", 2);
 		}
 
 		if (underline && driver->opt.underline) {
-			add_bytes_to_string(screen, ";4", 2);
+			add_bytes_to_string(screen, (const unsigned char *)";4", 2);
 		}
 
 		/* Check if the char should be rendered bold. */
 		if (bold) {
-			add_bytes_to_string(screen, ";1", 2);
+			add_bytes_to_string(screen, (const unsigned char *)";1", 2);
 		}
 
-		add_bytes_to_string(screen, "m", 1);
+		add_bytes_to_string(screen, (const unsigned char *)"m", 1);
 	}
 
 	add_char_data(screen, driver, ch->data, border);
@@ -1293,7 +1293,7 @@ erase_screen(struct terminal *term)
 		want_draw();
 	}
 
-	hard_write(term->fdout, "\033[2J\033[1;1H", 10);
+	hard_write(term->fdout, (unsigned char *)"\033[2J\033[1;1H", 10);
 	if (term->master) done_draw();
 }
 
@@ -1303,7 +1303,7 @@ beep_terminal(struct terminal *term)
 #ifdef CONFIG_OS_WIN32
 	MessageBeep(MB_ICONEXCLAMATION);
 #else
-	hard_write(term->fdout, "\a", 1);
+	hard_write(term->fdout, (unsigned char *)"\a", 1);
 #endif
 }
 

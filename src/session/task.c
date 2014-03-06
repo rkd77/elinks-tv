@@ -609,7 +609,7 @@ do_follow_url(struct session *ses, struct uri *uri, unsigned char *target,
 		    && can_open_in_new(ses->tab->term)
 		    && !get_cmd_opt_bool((const unsigned char *)"no-connect")
 		    && !get_cmd_opt_bool((const unsigned char *)"no-home")) {
-			enum term_env_type env = ses->tab->term->environment;
+			int env = ses->tab->term->environment;
 
 			open_uri_in_new_window(ses, uri, referrer, env,
 					       cache_mode, task);

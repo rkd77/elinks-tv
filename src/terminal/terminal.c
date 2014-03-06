@@ -86,7 +86,7 @@ get_default_terminal(void)
 		return (struct terminal *)terminals.next;
 }
 
-extern connectTerminalToWindow(struct terminal *term);
+extern void connectTerminalToWindow(struct terminal *term);
 
 struct terminal *
 init_term(int fdin, int fdout)
@@ -175,7 +175,7 @@ destroy_terminal(struct terminal *term)
 	term->current_tab = 0;
 
 	while (!list_empty(term->windows))
-		delete_window(term->windows.next);
+		delete_window((struct window *)term->windows.next);
 
 	/* mem_free_if(term->cwd); */
 	mem_free_if(term->title);
@@ -232,7 +232,7 @@ exec_thread(unsigned char *path, int p)
 	if (path[0] == TERM_EXEC_NEWWIN) setpgid(0, 0);
 #endif
 	exe(path + 1);
-	if (path[plen]) unlink(path + plen);
+	if (path[plen]) unlink((const char *)(path + plen));
 }
 
 void
@@ -342,7 +342,7 @@ exec_on_terminal(struct terminal *term, unsigned char *path,
 	if (path) {
 		if (!*path) return;
 	} else {
-		path = "";
+		path = (unsigned char *)"";
 	}
 
 #ifdef NO_FG_EXEC
@@ -359,7 +359,7 @@ exec_on_terminal(struct terminal *term, unsigned char *path,
 		 * in a blocked terminal?  There is similar code in
 		 * in_sock().  --KON, 2007 */
 		if (fg != TERM_EXEC_BG && is_blocked()) {
-			unlink(delete_);
+			unlink((const char *)delete_);
 			return;
 		}
 
@@ -384,7 +384,7 @@ exec_shell(struct terminal *term)
 
 	sh = get_shell();
 	if (sh && *sh)
-		exec_on_terminal(term, sh, "", TERM_EXEC_FG);
+		exec_on_terminal(term, sh, (unsigned char *)"", TERM_EXEC_FG);
 }
 
 
@@ -412,16 +412,16 @@ set_terminal_title(struct terminal *term, unsigned char *title)
 	int to_cp;
 	unsigned char *converted = NULL;
 
-	if (term->title && !strcmp(title, term->title)) return 0;
+	if (term->title && !strcmp((const char *)title, (const char *)term->title)) return 0;
 
 	/* In which codepage was the title parameter given?  */
 	from_cp = get_terminal_codepage(term);
 
 	/* In which codepage does the terminal want the title?  */
 	if (get_opt_bool_tree(term->spec, (const unsigned char *)"latin1_title", NULL))
-		to_cp = get_cp_index("ISO-8859-1");
+		to_cp = get_cp_index((const unsigned char *)"ISO-8859-1");
 	else if (get_opt_bool_tree(term->spec, (const unsigned char *)"utf_8_io", NULL))
-		to_cp = get_cp_index("UTF-8");
+		to_cp = get_cp_index((const unsigned char *)"UTF-8");
 	else
 		to_cp = from_cp;
 
