@@ -77,13 +77,13 @@ abort_preloading(struct session *ses, int interrupt)
 struct task {
 	struct session *ses;
 	struct uri *uri;
-	enum cache_mode cache_mode;
+	int cache_mode;
 	struct session_task session_task;
 };
 
 void
 ses_load(struct session *ses, struct uri *uri, unsigned char *target_frame,
-	 struct location *target_location, enum cache_mode cache_mode,
+	 struct location *target_location, int cache_mode,
 	 enum task_type task_type)
 {
 	ses->loading.callback = (download_callback_T *) loading_callback;
@@ -175,7 +175,7 @@ check_malicious_uri(struct uri *uri)
 
 void
 ses_goto(struct session *ses, struct uri *uri, unsigned char *target_frame,
-	 struct location *target_location, enum cache_mode cache_mode,
+	 struct location *target_location, int cache_mode,
 	 enum task_type task_type, int redir)
 {
 	/* [gettext_accelerator_context(ses_goto)] */
@@ -577,7 +577,7 @@ end:
 
 static void
 do_follow_url(struct session *ses, struct uri *uri, unsigned char *target,
-	      enum task_type task, enum cache_mode cache_mode, int do_referrer)
+	      enum task_type task, int cache_mode, int do_referrer)
 {
 	struct uri *referrer = NULL;
 	protocol_external_handler_T *external_handler;
@@ -600,7 +600,7 @@ do_follow_url(struct session *ses, struct uri *uri, unsigned char *target,
 			referrer = doc_view->document->uri;
 	}
 
-	if (target && !strcmp(target, "_blank")) {
+	if (target && !strcmp((const char *)target, "_blank")) {
 		int mode = get_opt_int((const unsigned char *)"document.browse.links.target_blank",
 		                       ses);
 
@@ -642,7 +642,7 @@ do_follow_url(struct session *ses, struct uri *uri, unsigned char *target,
 
 static void
 follow_url(struct session *ses, struct uri *uri, unsigned char *target,
-	   enum task_type task, enum cache_mode cache_mode, int referrer)
+	   enum task_type task, int cache_mode, int referrer)
 {
 #ifdef CONFIG_SCRIPTING
 	static int follow_url_event_id = EVENT_NONE;
@@ -690,7 +690,7 @@ goto_uri(struct session *ses, struct uri *uri)
 
 void
 goto_uri_frame(struct session *ses, struct uri *uri,
-	       unsigned char *target, enum cache_mode cache_mode)
+	       unsigned char *target, int cache_mode)
 {
 	follow_url(ses, uri, target, TASK_FORWARD, cache_mode, 1);
 }
@@ -746,7 +746,7 @@ get_hooked_uri(unsigned char *uristring, struct session *ses, unsigned char *cwd
 	uristring = stracpy(uristring);
 	if (!uristring) return NULL;
 
-	set_event_id(goto_url_event_id, "goto-url");
+	set_event_id(goto_url_event_id, (unsigned char *)"goto-url");
 	trigger_event(goto_url_event_id, &uristring, ses);
 	if (!uristring) return NULL;
 #endif
@@ -781,8 +781,8 @@ goto_url_home(struct session *ses)
 {
 	unsigned char *homepage = get_opt_str((const unsigned char *)"ui.sessions.homepage", ses);
 
-	if (!*homepage) homepage = getenv("WWW_HOME");
-	if (!homepage || !*homepage) homepage = WWW_HOME_URL;
+	if (!*homepage) homepage = (unsigned char *)getenv("WWW_HOME");
+	if (!homepage || !*homepage) homepage = (unsigned char *)WWW_HOME_URL;
 
 	if (!homepage || !*homepage) return 0;
 

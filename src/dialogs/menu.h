@@ -34,7 +34,7 @@ void save_url_as(struct session *ses);
 
 void
 open_uri_in_new_window(struct session *ses, struct uri *uri, struct uri *referrer,
-		       int env, enum cache_mode cache_mode,
+		       int env, int cache_mode,
 		       enum task_type task);
 
 void send_open_new_window(struct terminal *term, const struct open_in_new *open, struct session *ses);

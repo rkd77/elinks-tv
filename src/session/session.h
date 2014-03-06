@@ -254,7 +254,7 @@ void set_session_referrer(struct session *ses, struct uri *referrer);
 
 void
 print_error_dialog(struct session *ses, struct connection_state state,
-		   struct uri *uri, enum connection_priority priority);
+		   struct uri *uri, int priority);
 
 void process_file_requests(struct session *);
 
@@ -268,7 +268,7 @@ int decode_session_info(struct terminal *term, struct terminal_info *info);
 /** Registers a base session and returns its id. Value <= 0 means error. */
 int
 add_session_info(struct session *ses, struct uri *uri, struct uri *referrer,
-		 enum cache_mode cache_mode, enum task_type task);
+		 int cache_mode, enum task_type task);
 
 void done_saved_session_info(void);
 
@@ -278,8 +278,8 @@ struct session *init_session(struct session *ses, struct terminal *term,
 void doc_loading_callback(struct download *, struct session *);
 
 void abort_loading(struct session *, int);
-void reload_frame(struct session *, unsigned char *, enum cache_mode);
-void reload(struct session *, enum cache_mode);
+void reload_frame(struct session *, unsigned char *, int);
+void reload(struct session *, int);
 void load_frames(struct session *, struct document_view *);
 
 struct frame *ses_find_frame(struct session *, unsigned char *);

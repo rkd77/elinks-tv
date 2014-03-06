@@ -34,7 +34,7 @@ struct connection {
 	struct uri *referrer;
 
 	/* Cache information. */
-	enum cache_mode cache_mode;
+	int cache_mode;
 	struct cache_entry *cached;
 
 	off_t from;		/* Position for new data in the cache entry. */
@@ -115,7 +115,7 @@ void shutdown_connection_stream(struct connection *conn);
  * that should be probably something else than data, but... ;-) */
 /* Returns 0 on success and -1 on failure. */
 int load_uri(struct uri *uri, struct uri *referrer, struct download *download,
-	     int pri, enum cache_mode cache_mode, off_t start);
+	     int pri, int cache_mode, off_t start);
 
 int is_entry_used(struct cache_entry *cached);
 

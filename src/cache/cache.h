@@ -91,7 +91,7 @@ struct cache_entry *get_cache_entry(struct uri *uri);
 
 /* Searches the cache for a matching entry and checks if it is still valid and
  * usable. Returns NULL if the @cache_mode suggests to reload it again. */
-struct cache_entry *get_validated_cache_entry(struct uri *uri, enum cache_mode cache_mode);
+struct cache_entry *get_validated_cache_entry(struct uri *uri, int cache_mode);
 
 /* Checks if a dangling cache entry pointer is still valid. */
 int cache_entry_is_valid(struct cache_entry *cached);

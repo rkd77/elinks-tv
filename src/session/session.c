@@ -82,7 +82,7 @@ struct session_info {
 	struct uri *uri;
 	struct uri *referrer;
 	enum task_type task;
-	enum cache_mode cache_mode;
+	int cache_mode;
 };
 
 #define file_to_load_is_active(ftl) ((ftl)->req_sent && is_in_progress_state((ftl)->download.state))
@@ -158,7 +158,7 @@ session_info_timeout(int id)
 
 int
 add_session_info(struct session *ses, struct uri *uri, struct uri *referrer,
-		 enum cache_mode cache_mode, enum task_type task)
+		 int cache_mode, enum task_type task)
 {
 	struct session_info *info = (struct session_info *)mem_calloc(1, sizeof(*info));
 
@@ -259,7 +259,7 @@ get_current_download(struct session *ses)
 
 void
 print_error_dialog(struct session *ses, struct connection_state state,
-		   struct uri *uri, enum connection_priority priority)
+		   struct uri *uri, int priority)
 {
 	struct string msg;
 	unsigned char *uristring;
@@ -278,10 +278,10 @@ print_error_dialog(struct session *ses, struct connection_state state,
 #endif /* CONFIG_UTF8 */
 			decode_uri_for_display(uristring);
 		add_format_to_string(&msg,
-			_("Unable to retrieve %s", ses->tab->term),
+			(const char *)_("Unable to retrieve %s", ses->tab->term),
 			uristring);
 		mem_free(uristring);
-		add_to_string(&msg, ":\n\n");
+		add_to_string(&msg, (const unsigned char *)":\n\n");
 	}
 
 	add_to_string(&msg, get_state_message(state, ses->tab->term));
@@ -344,7 +344,7 @@ request_frame(struct session *ses, unsigned char *name,
 	foreach (frame, loc->frames) {
 		struct document_view *doc_view;
 
-		if (c_strcasecmp(frame->name, name))
+		if (c_strcasecmp((const char *)frame->name, (const char *)name))
 			continue;
 
 		foreach (doc_view, ses->scrn_frames) {
@@ -406,7 +406,7 @@ load_css_imports(struct session *ses, struct document_view *doc_view)
 	if (!document) return;
 
 	foreach_uri (uri, index, &document->css_imports) {
-		request_additional_file(ses, "", uri, PRI_CSS);
+		request_additional_file(ses, (unsigned char *)"", uri, PRI_CSS);
 	}
 }
 #else
@@ -424,7 +424,7 @@ load_ecmascript_imports(struct session *ses, struct document_view *doc_view)
 	if (!document) return;
 
 	foreach_uri (uri, index, &document->ecmascript_imports) {
-		request_additional_file(ses, "", uri, /* XXX */ PRI_CSS);
+		request_additional_file(ses, (unsigned char *)"", uri, /* XXX */ PRI_CSS);
 	}
 }
 #else
@@ -718,7 +718,7 @@ request_additional_file(struct session *ses, unsigned char *name, struct uri *ur
 }
 
 static void
-load_additional_file(struct file_to_load *ftl, enum cache_mode cache_mode)
+load_additional_file(struct file_to_load *ftl, int cache_mode)
 {
 	struct document_view *doc_view = current_frame(ftl->ses);
 	struct uri *referrer = doc_view && doc_view->document
@@ -810,7 +810,7 @@ setup_first_session(struct session *ses, struct uri *uri)
 	if (first_use) {
 		/* Only open the goto URL dialog if no URI was passed on the
 		 * command line. */
-		void *handler = (void *)(uri ? NULL : dialog_goto_url_open);
+		done_handler_T *handler = (done_handler_T *)(uri ? NULL : dialog_goto_url_open);
 
 		first_use = 0;
 
@@ -992,7 +992,7 @@ init_remote_session(struct session *ses, remote_session_flags_T *remote_ptr,
 		 * It might be best to keep URIs in plain ASCII and
 		 * then have a function that reversibly converts them
 		 * to IRIs for display in a given encoding.  */
-		uri_cp = get_cp_index("System");
+		uri_cp = get_cp_index((const unsigned char *)"System");
 		add_bookmark_cp(NULL, 1, uri_cp, struri(uri), struri(uri));
 #endif
 
@@ -1142,7 +1142,7 @@ decode_session_info(struct terminal *term, struct terminal_info *info)
 			struct session *ses;
 
 			if (!uri)
-				uri = get_uri("about:blank", 0);
+				uri = get_uri((unsigned char *)"about:blank", 0);
 
 			ses = init_session(base_session, term, uri, backgrounded);
 			if (!ses) {
@@ -1225,14 +1225,14 @@ destroy_session(struct session *ses)
 }
 
 void
-reload(struct session *ses, enum cache_mode cache_mode)
+reload(struct session *ses, int cache_mode)
 {
 	reload_frame(ses, NULL, cache_mode);
 }
 
 void
 reload_frame(struct session *ses, unsigned char *name,
-             enum cache_mode cache_mode)
+             int cache_mode)
 {
 	abort_loading(ses, 0);
 
@@ -1287,7 +1287,7 @@ ses_find_frame(struct session *ses, unsigned char *name)
 	if_assert_failed return NULL;
 
 	foreachback (frame, loc->frames)
-		if (!c_strcasecmp(frame->name, name))
+		if (!c_strcasecmp((const char *)frame->name, (const char *)name))
 			return frame;
 
 	return NULL;

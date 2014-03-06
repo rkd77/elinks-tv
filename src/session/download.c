@@ -153,7 +153,7 @@ abort_download(struct file_download *file_download)
 
 	mem_free_if(file_download->external_handler);
 	if (file_download->file) {
-		if (file_download->delete_) unlink(file_download->file);
+		if (file_download->delete_) unlink((const char *)file_download->file);
 		mem_free(file_download->file);
 	}
 	del_from_list(file_download);
@@ -167,7 +167,7 @@ kill_downloads_to_file(unsigned char *file)
 	struct file_download *file_download;
 
 	foreach (file_download, downloads) {
-		if (strcmp(file_download->file, file))
+		if (strcmp((const char *)file_download->file, (const char *)file))
 			continue;
 
 		file_download = file_download->prev;
@@ -180,7 +180,7 @@ void
 abort_all_downloads(void)
 {
 	while (!list_empty(downloads))
-		abort_download(downloads.next);
+		abort_download((struct file_download *)downloads.next);
 }
 
 
@@ -366,14 +366,14 @@ exec_mailcap_command(void *data)
 			struct string string;
 
 			if (init_string(&string)) {
-				struct uri *ref = get_uri("mailcap:elmailcap", 0);
+				struct uri *ref = get_uri((unsigned char *)"mailcap:elmailcap", 0);
 				struct uri *uri;
 				struct session *ses = exec_mailcap->ses;
 
-				add_to_string(&string, "mailcap:");
+				add_to_string(&string, (const unsigned char *)"mailcap:");
 				add_to_string(&string, exec_mailcap->command);
 				if (exec_mailcap->file) {
-					add_to_string(&string, " && /bin/rm -f ");
+					add_to_string(&string, (const unsigned char *)" && /bin/rm -f ");
 					add_to_string(&string, exec_mailcap->file);
 				}
 
@@ -496,7 +496,7 @@ download_data_store(struct download *download, struct file_download *file_downlo
 		struct utimbuf foo;
 
 		foo.actime = foo.modtime = file_download->remotetime;
-		utime(file_download->file, &foo);
+		utime((const char *)file_download->file, &foo);
 	}
 
 	/* abort_download_and_beep allows term==NULL.  */
@@ -883,7 +883,7 @@ create_download_file_do(struct terminal *term, unsigned char *file,
 	/* O_APPEND means repositioning at the end of file before each write(),
 	 * thus ignoring seek()s and that can hide mysterious bugs. IMHO.
 	 * --pasky */
-	h = open(file, O_CREAT | O_WRONLY
+	h = open((const char *)file, O_CREAT | O_WRONLY
 			| (flags & DOWNLOAD_RESUME_SELECTED ? 0 : O_TRUNC)
 			| (sf && !(flags & DOWNLOAD_RESUME_SELECTED) ? O_EXCL : 0),
 		 sf ? 0600 : 0666);
@@ -1005,7 +1005,7 @@ get_temp_name(struct uri *uri)
 	 * We use tempnam() here, which is unsafe (race condition), for now.
 	 * This should be changed at some time, but it needs an in-depth work
 	 * of whole download code. --Zas */
-	unsigned char *nm = tempnam(NULL, ELINKS_TEMPNAME_PREFIX);
+	unsigned char *nm = (unsigned char *)tempnam(NULL, ELINKS_TEMPNAME_PREFIX);
 
 	if (!nm) return NULL;
 
@@ -1067,9 +1067,9 @@ subst_file(unsigned char *prog, unsigned char *file)
 		struct string s;
 
 		if (init_string(&s)) {
-			add_to_string(&s, "/bin/cat ");
+			add_to_string(&s, (const unsigned char *)"/bin/cat ");
 			add_shell_quoted_to_string(&s, file, strlen((const char *)file));
-			add_to_string(&s, " | ");
+			add_to_string(&s, (const unsigned char *)" | ");
 			add_string_to_string(&s, &name);
 			done_string(&name);
 			return s.source;
@@ -1499,7 +1499,7 @@ tp_open(struct type_query *type_query)
 				exec_later(type_query->ses, handler, NULL);
 			} else {
 				exec_on_terminal(type_query->ses->tab->term,
-						 handler, "", type_query->block ?
+						 handler, (unsigned char *)"", type_query->block ?
 						 TERM_EXEC_FG : TERM_EXEC_BG);
 			}
 			mem_free(handler);
@@ -1509,7 +1509,7 @@ tp_open(struct type_query *type_query)
 		return;
 	}
 
-	continue_download(type_query, "");
+	continue_download(type_query, (unsigned char *)"");
 }
 
 
@@ -1549,13 +1549,13 @@ do_type_query(struct type_query *type_query, unsigned char *ct, struct mime_hand
 
 		/* Start preparing for the type query dialog. */
 		description = handler->description;
-		desc_sep = *description ? "; " : "";
+		desc_sep = *description ? (unsigned char *)"; " : (unsigned char *)"";
 		title = N_("What to do?");
 
 	} else {
 		title = N_("Unknown type");
-		description = "";
-		desc_sep = "";
+		description = (unsigned char *)"";
+		desc_sep = (unsigned char *)"";
 	}
 
 	dlg = calloc_dialog(TYPE_QUERY_WIDGETS_COUNT, MAX_STR_LEN * 2);
@@ -1579,10 +1579,10 @@ do_type_query(struct type_query *type_query, unsigned char *ct, struct mime_hand
 	 * the filename can be NULL, e.g. http://www.spamhaus.org in bug 396. */
 	if (filename.length) {
 		format = _("What would you like to do with the file '%s' (type: %s%s%s)?", term);
-		snprintf(text, MAX_STR_LEN, format, filename.source, ct, desc_sep, description);
+		snprintf((char *)text, MAX_STR_LEN, (const char *)format, filename.source, ct, desc_sep, description);
 	} else {
 		format = _("What would you like to do with the file (type: %s%s%s)?", term);
-		snprintf(text, MAX_STR_LEN, format, ct, desc_sep, description);
+		snprintf((char *)text, MAX_STR_LEN, (const char *)format, ct, desc_sep, description);
 	}
 
 	done_string(&filename);
@@ -1620,7 +1620,7 @@ do_type_query(struct type_query *type_query, unsigned char *ct, struct mime_hand
 		unsigned char *field = text + MAX_STR_LEN;
 
 		format = _("The file will be opened with the program '%s'.", term);
-		snprintf(field, MAX_STR_LEN, format, handler->program);
+		snprintf((char *)field, MAX_STR_LEN, (const char *)format, handler->program);
 		add_dlg_text(dlg, field, ALIGN_LEFT, 0);
 
 		type_query->external_handler = stracpy(handler->program);
@@ -1686,7 +1686,7 @@ do_type_query(struct type_query *type_query, unsigned char *ct, struct mime_hand
 }
 
 struct {
-	unsigned char *type;
+	const char *type;
 	unsigned int plain:1;
 } static const known_types[] = {
 	{ "text/html",			0 },
@@ -1719,7 +1719,7 @@ setup_download_handler(struct session *ses, struct download *loading,
 		goto plaintext_follow;
 
 	for (i = 0; known_types[i].type; i++) {
-		if (c_strcasecmp(ctype, known_types[i].type))
+		if (c_strcasecmp((const char *)ctype, known_types[i].type))
 			continue;
 
 		plaintext = known_types[i].plain;
@@ -1729,7 +1729,7 @@ setup_download_handler(struct session *ses, struct download *loading,
 	xwin = ses->tab->term->environment & ENV_XWIN;
 	handler = get_mime_type_handler(ctype, xwin);
 
-	if (!handler && strlen((const char *)ctype) >= 4 && !c_strncasecmp(ctype, "text", 4))
+	if (!handler && strlen((const char *)ctype) >= 4 && !c_strncasecmp((const char *)ctype, "text", 4))
 		goto plaintext_follow;
 
 	type_query = find_type_query(ses);
@@ -1742,8 +1742,8 @@ setup_download_handler(struct session *ses, struct download *loading,
 #ifdef CONFIG_BITTORRENT
 			/* A terrible waste of a good MIME handler here, but we want
 			 * to use the type_query this is easier. */
-			if ((!c_strcasecmp(ctype, "application/x-bittorrent")
-				|| !c_strcasecmp(ctype, "application/x-torrent"))
+			if ((!c_strcasecmp((const char *)ctype, "application/x-bittorrent")
+				|| !c_strcasecmp((const char *)ctype, "application/x-torrent"))
 			    && !get_cmd_opt_bool((const unsigned char *)"anonymous"))
 				query_bittorrent_dialog(type_query);
 			else
