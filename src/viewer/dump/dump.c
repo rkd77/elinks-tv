@@ -115,7 +115,7 @@ static const unsigned char frame_simplify[FRAME_CHARS_END - FRAME_CHARS_BEGIN]
 static void
 dump_output_prepare_frame(struct dump_output *out, int to_cp)
 {
-	const int cp437 = get_cp_index("cp437");
+	const int cp437 = get_cp_index((const unsigned char *)"cp437");
 	int orig;
 	unsigned char subst;
 
@@ -327,7 +327,7 @@ dump_references(struct document *document, int fd, unsigned char buf[D_BUF])
 	if (document->nlinks
 	    && get_opt_bool((const unsigned char *)"document.dump.references", NULL)) {
 		int x;
-		unsigned char *header = "\nReferences\n\n   Visible links\n";
+		unsigned char *header = (unsigned char *)"\nReferences\n\n   Visible links\n";
 		int headlen = strlen((const char *)header);
 
 		if (hard_write(fd, header, headlen) != headlen)
@@ -342,17 +342,17 @@ dump_references(struct document *document, int fd, unsigned char buf[D_BUF])
 
 			if (document->options.links_numbering) {
 				if (link->title && *link->title)
-					snprintf(buf, D_BUF, "%4d. %s\n\t%s\n",
+					snprintf((char *)buf, D_BUF, "%4d. %s\n\t%s\n",
 						 x + 1, link->title, where);
 				else
-					snprintf(buf, D_BUF, "%4d. %s\n",
+					snprintf((char *)buf, D_BUF, "%4d. %s\n",
 						 x + 1, where);
 			} else {
 				if (link->title && *link->title)
-					snprintf(buf, D_BUF, "   . %s\n\t%s\n",
+					snprintf((char *)buf, D_BUF, "   . %s\n\t%s\n",
 						 link->title, where);
 				else
-					snprintf(buf, D_BUF, "   . %s\n", where);
+					snprintf((char *)buf, D_BUF, "   . %s\n", where);
 			}
 
 			reflen = strlen((const char *)buf);
@@ -604,7 +604,7 @@ dump_loading_callback(struct download *download, void *p)
 	}
 
 	if (!is_in_state(download->state, S_OK)) {
-		usrerror(get_state_message(download->state, NULL));
+		usrerror((const char *)get_state_message(download->state, NULL));
 		program.retval = RET_ERROR;
 		goto terminate;
 	}
@@ -667,17 +667,17 @@ dump_next(LIST_OF(struct string_list_item) *url_list)
 		add_to_list(done_list, item);
 
 		if (!first) {
-			dump_print("document.dump.separator", NULL);
+			dump_print((unsigned char *)"document.dump.separator", NULL);
 		} else {
 			first = 0;
 		}
 
-		dump_print("document.dump.header", &item->string);
+		dump_print((unsigned char *)"document.dump.header", &item->string);
 		dump_start(item->string.source);
 		/* XXX: I think it ought to print footer at the end of
 		 * the whole dump (not only this file). Testing required.
 		 * --pasky */
-		dump_print("document.dump.footer", &item->string);
+		dump_print((unsigned char *)"document.dump.footer", &item->string);
 
 	} else {
 		free_string_list(&done_list);

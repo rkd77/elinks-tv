@@ -45,7 +45,7 @@ struct document_options_image_link {
 };
 
 struct document_options {
-	enum color_mode color_mode;
+	int color_mode;
 	/** cp is the codepage for which the document is being formatted;
 	 * typically it is the codepage of a terminal.  It is set in
 	 * render_document_frames().  */

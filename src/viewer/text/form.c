@@ -115,11 +115,11 @@ fixup_select_state(struct form_control *fc, struct form_state *fs)
 
 	if (fs->state >= 0
 	    && fs->state < fc->nvalues
-	    && !strcmp(fc->values[fs->state], fs->value))
+	    && !strcmp((const char *)fc->values[fs->state], (const char *)fs->value))
 		return;
 
 	for (i = 0; i < fc->nvalues; i++)
-		if (!strcmp(fc->values[i], fs->value)) {
+		if (!strcmp((const char *)fc->values[i], (const char *)fs->value)) {
 			fs->state = i;
 			return;
 		}
@@ -207,7 +207,7 @@ init_form_state(struct document_view *doc_view,
 			fs->vpos = 0;
 			break;
 		case FC_FILE:
-			fs->value = stracpy("");
+			fs->value = stracpy((const unsigned char *)"");
 			fs->state = 0;
 			fs->vpos = 0;
 			break;
@@ -588,7 +588,7 @@ drew_char:
 				s = fc->labels[fs->state];
 			else
 				/* XXX: when can this happen? --pasky */
-				s = "";
+				s = (unsigned char *)"";
 #ifdef CONFIG_UTF8
 			if (term->utf8_cp) goto utf8_select;
 #endif /* CONFIG_UTF8 */
@@ -732,13 +732,13 @@ add_submitted_value_to_list(struct form_control *fc,
 	case FC_IMAGE:
 	        name = straconcat(fc->name, ".x", (unsigned char *) NULL);
 		if (!name) break;
-		sub = init_submitted_value(name, "0", type, fc, position);
+		sub = init_submitted_value(name, (unsigned char *)"0", type, fc, position);
 		mem_free(name);
 		if (sub) add_to_list(*list, sub);
 
 		name = straconcat(fc->name, ".y", (unsigned char *) NULL);
 		if (!name) break;
-		sub = init_submitted_value(name, "0", type, fc, position);
+		sub = init_submitted_value(name, (unsigned char *)"0", type, fc, position);
 		mem_free(name);
 		if (sub) add_to_list(*list, sub);
 
@@ -926,7 +926,7 @@ init_boundary(struct boundary_info *boundary)
 static inline void
 add_boundary(struct string *data, struct boundary_info *boundary)
 {
-	add_to_string(data, "--");
+	add_to_string(data, (const unsigned char *)"--");
 
 	if (realloc_bound_ptrs(&boundary->offsets, boundary->count))
 		boundary->offsets[boundary->count++] = data->length;
@@ -992,14 +992,14 @@ encode_multipart(struct session *ses, LIST_OF(struct submitted_value) *l,
 		 * where xxxxx is the field name corresponding to that field.
 		 * Field names originally in non-ASCII character sets may be
 		 * encoded using the method outlined in RFC 1522. */
-		add_to_string(data, "Content-Disposition: form-data; name=\"");
+		add_to_string(data, (const unsigned char *)"Content-Disposition: form-data; name=\"");
 		add_to_string(data, sv->name);
 		add_char_to_string(data, '"');
 
 		if (sv->type == FC_FILE) {
 			unsigned char *extension;
 
-			add_to_string(data, "; filename=\"");
+			add_to_string(data, (const unsigned char *)"; filename=\"");
 			add_to_string(data, get_filename_position(sv->value));
 			/* It sends bad data if the file name contains ", but
 			   Netscape does the same */
@@ -1009,13 +1009,13 @@ encode_multipart(struct session *ses, LIST_OF(struct submitted_value) *l,
 			add_char_to_string(data, '"');
 
 			/* Add a Content-Type header if the type is configured */
-			extension = strrchr((char *)sv->value, '.');
+			extension = (unsigned char *)strrchr((char *)sv->value, '.');
 			if (extension) {
 				unsigned char *type = get_extension_content_type(extension);
 
 				if (type) {
 					add_crlf_to_string(data);
-					add_to_string(data, "Content-Type: ");
+					add_to_string(data, (const unsigned char *)"Content-Type: ");
 					add_to_string(data, type);
 					mem_free(type);
 				}
@@ -1036,7 +1036,7 @@ encode_multipart(struct session *ses, LIST_OF(struct submitted_value) *l,
 				filename = expand_tilde(sv->value);
 				if (!filename) goto encode_error;
 
-				if (access(filename, R_OK)) {
+				if (access((const char *)filename, R_OK)) {
 					mem_free(filename);
 					goto encode_error;
 				}
@@ -1086,7 +1086,7 @@ encode_multipart(struct session *ses, LIST_OF(struct submitted_value) *l,
 
 	/* End-boundary */
 	add_boundary(data, boundary);
-	add_to_string(data, "--\r\n");
+	add_to_string(data, (const unsigned char *)"--\r\n");
 
 	mem_free_if(boundary->offsets);
 	return;
@@ -1270,7 +1270,7 @@ get_form_uri(struct session *ses, struct document_view *doc_view,
 	switch (form->method) {
 	case FORM_METHOD_GET:
 	{
-		unsigned char *pos = strchr((char *)form->action, '#');
+		unsigned char *pos = (unsigned char *)strchr((char *)form->action, '#');
 
 		if (pos) {
 			add_bytes_to_string(&go, form->action, pos - form->action);
@@ -1298,17 +1298,17 @@ get_form_uri(struct session *ses, struct document_view *doc_view,
 		add_to_string(&go, form->action);
 		add_char_to_string(&go, POST_CHAR);
 		if (form->method == FORM_METHOD_POST) {
-			add_to_string(&go, "application/x-www-form-urlencoded\n");
+			add_to_string(&go, (const unsigned char *)"application/x-www-form-urlencoded\n");
 
 		} else if (form->method == FORM_METHOD_POST_TEXT_PLAIN) {
 			/* Dunno about this one but we don't want the full
 			 * hextcat thingy. --jonas */
-			add_to_string(&go, "text/plain\n");
+			add_to_string(&go, (const unsigned char *)"text/plain\n");
 			add_to_string(&go, data.source);
 			break;
 
 		} else {
-			add_to_string(&go, "multipart/form-data; boundary=");
+			add_to_string(&go, (const unsigned char *)"multipart/form-data; boundary=");
 			add_bytes_to_string(&go, boundary.string, BOUNDARY_LENGTH);
 			add_char_to_string(&go, '\n');
 		}
@@ -1767,7 +1767,7 @@ field_op(struct session *ses, struct document_view *doc_view,
 				break;
 			}
 
-			text = strchr((char *)(fs->value + fs->state), ASCII_LF);
+			text = (unsigned char *)strchr((char *)(fs->value + fs->state), ASCII_LF);
 			if (!text) {
 				fs->value[fs->state] = '\0';
 				break;
@@ -1855,7 +1855,7 @@ field_op(struct session *ses, struct document_view *doc_view,
 			if (form_field_is_readonly(fc)
 #ifndef CONFIG_UTF8
 					|| strlen((const char *)fs->value) >= fc->maxlength
-					|| !insert_in_string(&fs->value, fs->state, "?", 1)
+					|| !insert_in_string(&fs->value, fs->state, (const unsigned char *)"?", 1)
 #endif /* CONFIG_UTF8 */
 					)
 					{
@@ -1928,7 +1928,7 @@ static inline void
 add_form_attr_to_string(struct string *string, struct terminal *term,
 			unsigned char *name, unsigned char *value)
 {
-	add_to_string(string, ", ");
+	add_to_string(string, (const unsigned char *)", ");
 	add_to_string(string, _(name, term));
 	if (value) {
 		add_char_to_string(string, ' ');
@@ -1996,8 +1996,8 @@ get_form_info(struct session *ses, struct document_view *doc_view)
 			else
 				label = N_("press %s to edit");
 
-			add_to_string(&str, " (");
-			add_format_to_string(&str, _(label, term), key);
+			add_to_string(&str, (const unsigned char *)" (");
+			add_format_to_string(&str, (const char *)_(label, term), key);
 			add_char_to_string(&str, ')');
 			mem_free(key);
 			break;
@@ -2035,8 +2035,8 @@ get_form_info(struct session *ses, struct document_view *doc_view)
 		else
 			label = N_("press %s to post to %s");
 
-		add_to_string(&str, " (");
-		add_format_to_string(&str, _(label, term), key, uristring);
+		add_to_string(&str, (const unsigned char *)" (");
+		add_format_to_string(&str, (const char *)_(label, term), key, uristring);
 		mem_free(uristring);
 		mem_free(key);
 
@@ -2061,7 +2061,7 @@ get_form_info(struct session *ses, struct document_view *doc_view)
 
 	if (link->accesskey
 	    && get_opt_bool((const unsigned char *)"document.browse.accesskey.display", ses)) {
-		add_to_string(&str, " (");
+		add_to_string(&str, (const unsigned char *)" (");
 		add_accesskey_to_string(&str, link->accesskey);
 		add_char_to_string(&str, ')');
 	}

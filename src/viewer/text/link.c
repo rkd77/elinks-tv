@@ -67,7 +67,7 @@ current_link_evhook(struct document_view *doc_view, enum script_event_hook_type 
 
 		if (evhook->type != type) continue;
 		ret = evhook->src;
-		while ((ret = strstr((char *)ret, "return ")))
+		while ((ret = (unsigned char *)strstr((char *)ret, "return ")))
 			while (*ret != ' ') *ret++ = ' ';
 		{
 			struct string src = INIT_STRING(evhook->src, strlen((const char *)evhook->src));
@@ -169,8 +169,8 @@ init_link_drawing(struct document_view *doc_view, struct link *link, int invert)
 {
 	struct document_options *doc_opts;
 	static struct screen_char template_;
-	enum color_flags color_flags;
-	enum color_mode color_mode;
+	color_flags_T color_flags;
+	int color_mode;
 	struct color_pair colors;
 
 	template_.attr = SCREEN_ATTR_STANDOUT;
@@ -1213,7 +1213,7 @@ goto_link_number(struct session *ses, unsigned char *num)
 	doc_view = current_frame(ses);
 	assert(doc_view);
 	if_assert_failed return;
-	goto_link_number_do(ses, doc_view, atoi(num) - 1);
+	goto_link_number_do(ses, doc_view, atoi((const char *)num) - 1);
 }
 
 /** See if this document is interested in the key user pressed. */
@@ -1276,7 +1276,7 @@ try_document_key(struct session *ses, struct document_view *doc_view,
 void
 link_menu(struct terminal *term, void *xxx, void *ses_)
 {
-	struct session *ses = ses_;
+	struct session *ses = (struct session *)ses_;
 	struct document_view *doc_view;
 	struct link *link;
 	struct menu_item *mi;
@@ -1488,7 +1488,7 @@ get_current_link_info(struct session *ses, struct document_view *doc_view)
 		if (link->accesskey > 0
 		    && get_opt_bool((const unsigned char *)"document.browse.accesskey.display",
 		                    ses)) {
-			add_to_string(&str, " (");
+			add_to_string(&str, (const unsigned char *)" (");
 			add_accesskey_to_string(&str, link->accesskey);
 			add_char_to_string(&str, ')');
 		}

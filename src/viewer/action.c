@@ -432,7 +432,7 @@ do_action(struct session *ses, action_id_T action_id, int verbose)
 			break;
 
 		case ACT_MAIN_OPEN_LINK_IN_NEW_WINDOW:
-			open_in_new_window(term, send_open_in_new_window, ses);
+			open_in_new_window(term, (void *)send_open_in_new_window, ses);
 			break;
 
 		case ACT_MAIN_OPEN_NEW_TAB:
@@ -444,7 +444,7 @@ do_action(struct session *ses, action_id_T action_id, int verbose)
 			break;
 
 		case ACT_MAIN_OPEN_NEW_WINDOW:
-			open_in_new_window(term, send_open_new_window, ses);
+			open_in_new_window(term, (void *)send_open_new_window, ses);
 			break;
 
 		case ACT_MAIN_OPEN_OS_SHELL:
@@ -591,20 +591,20 @@ do_action(struct session *ses, action_id_T action_id, int verbose)
 
 		case ACT_MAIN_TOGGLE_CSS:
 #ifdef CONFIG_CSS
-			toggle_document_option(ses, "document.css.enable");
+			toggle_document_option(ses, (unsigned char *)"document.css.enable");
 #endif
 			break;
 
 		case ACT_MAIN_TOGGLE_DISPLAY_IMAGES:
-			toggle_document_option(ses, "document.browse.images.show_as_links");
+			toggle_document_option(ses, (unsigned char *)"document.browse.images.show_as_links");
 			break;
 
 		case ACT_MAIN_TOGGLE_DISPLAY_TABLES:
-			toggle_document_option(ses, "document.html.display_tables");
+			toggle_document_option(ses, (unsigned char *)"document.html.display_tables");
 			break;
 
 		case ACT_MAIN_TOGGLE_DOCUMENT_COLORS:
-			toggle_document_option(ses, "document.colors.use_document_colors");
+			toggle_document_option(ses, (unsigned char *)"document.colors.use_document_colors");
 			break;
 
 		case ACT_MAIN_TOGGLE_HTML_PLAIN:
@@ -618,11 +618,11 @@ do_action(struct session *ses, action_id_T action_id, int verbose)
 			break;
 
 		case ACT_MAIN_TOGGLE_NUMBERED_LINKS:
-			toggle_document_option(ses, "document.browse.links.numbering");
+			toggle_document_option(ses, (unsigned char *)"document.browse.links.numbering");
 			break;
 
 		case ACT_MAIN_TOGGLE_PLAIN_COMPRESS_EMPTY_LINES:
-			toggle_document_option(ses, "document.plain.compress_empty_lines");
+			toggle_document_option(ses, (unsigned char *)"document.plain.compress_empty_lines");
 			break;
 
 		case ACT_MAIN_TOGGLE_WRAP_TEXT:

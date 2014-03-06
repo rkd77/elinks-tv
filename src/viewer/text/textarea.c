@@ -526,7 +526,7 @@ save_textarea_file(unsigned char *value)
 	int fd;
 	size_t nmemb, len;
 
-	filename = get_tempdir_filename("elinks-area-XXXXXX");
+	filename = get_tempdir_filename((unsigned char *)"elinks-area-XXXXXX");
 	if (!filename) return NULL;
 
 	fd = safe_mkstemp(filename);
@@ -542,7 +542,7 @@ save_textarea_file(unsigned char *value)
 	if (!fp) {
 
 error:
-		unlink(filename);
+		unlink((const char *)filename);
 		mem_free(filename);
 		close(fd);
 		return NULL;
@@ -645,20 +645,20 @@ textarea_edit(int op, struct terminal *term_, struct form_state *fs_,
 		ed = get_opt_str((const unsigned char *)"document.browse.forms.editor",
 		                 doc_view_->session);
 		if (!ed || !*ed) {
-			ed = getenv("EDITOR");
-			if (!ed || !*ed) ed = "vi";
+			ed = (unsigned char *)getenv("EDITOR");
+			if (!ed || !*ed) ed = (unsigned char *)"vi";
 		}
 
 		ex = straconcat(ed, " ", td->fn, (unsigned char *) NULL);
 		if (!ex) {
-			unlink(td->fn);
+			unlink((const char *)td->fn);
 			done_textarea_data(td);
 			return;
 		}
 
 		td->term->textarea_data = td;
 
-		exec_on_terminal(td->term, ex, "", TERM_EXEC_FG);
+		exec_on_terminal(td->term, ex, (unsigned char *)"", TERM_EXEC_FG);
 		mem_free(ex);
 
 		return;
@@ -695,7 +695,7 @@ textarea_edit(int op, struct terminal *term_, struct form_state *fs_,
 					     " this file: %s"), file.length,
 				             (unsigned int) td->fc_maxlength, td->fn));
 		} else {
-			unlink(td->fn);
+			unlink((const char *)td->fn);
 		}
 
 		mem_free(td->fs->value);
@@ -1130,7 +1130,7 @@ textarea_op_enter(struct form_state *fs, struct form_control *fc)
 
 	if (form_field_is_readonly(fc)
 	    || strlen((const char *)fs->value) >= fc->maxlength
-	    || !insert_in_string(&fs->value, fs->state, "\n", 1))
+	    || !insert_in_string(&fs->value, fs->state, (const unsigned char *)"\n", 1))
 		return FRAME_EVENT_OK;
 
 	fs->state++;

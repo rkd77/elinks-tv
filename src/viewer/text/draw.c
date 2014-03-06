@@ -398,7 +398,7 @@ draw_formatted(struct session *ses, int rerender)
 	refresh_view(ses, ses->doc_view, 1);
 }
 
-extern refreshScrollBars(struct session *ses, struct document_view *doc_view);
+extern void refreshScrollBars(struct session *ses, struct document_view *doc_view);
 //int x, int y, int width, int height, int box_width, int box_height);
 
 void

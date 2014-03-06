@@ -890,8 +890,9 @@ search_for_do(struct session *ses, unsigned char *str, int direction,
 }
 
 static void
-search_for_back(struct session *ses, unsigned char *str)
+search_for_back(void *ses_, unsigned char *str)
 {
+	struct session *ses = (struct session *)ses_;
 	assert(ses && str);
 	if_assert_failed return;
 
@@ -899,8 +900,10 @@ search_for_back(struct session *ses, unsigned char *str)
 }
 
 static void
-search_for(struct session *ses, unsigned char *str)
+search_for(void *ses_, unsigned char *str)
 {
+	struct session *ses = (struct session *)ses_;
+
 	assert(ses && str);
 	if_assert_failed return;
 
@@ -1181,7 +1184,7 @@ get_link_typeahead_text(struct link *link)
 	if (link->where) return link->where;
 	if (link->where_img) return link->where_img;
 
-	return "";
+	return (unsigned char *)"";
 }
 
 static int
@@ -1194,8 +1197,8 @@ match_link_text(struct link *link, unsigned char *text, int textlen,
 	if (link_is_form(link) || textlen > strlen((const char *)match))
 		return -1;
 
-	matchpos = case_sensitive ? strstr((char *)match, (char *)text)
-				  : strcasestr((char *)match, (char *)text);
+	matchpos = case_sensitive ? (unsigned char *)strstr((char *)match, (char *)text)
+				  : (unsigned char *)strcasestr((char *)match, (char *)text);
 
 	if (matchpos) {
 		return matchpos - match;
@@ -1524,7 +1527,7 @@ link_typeahead_handler(struct input_line *line, int action_id)
 			return INPUT_LINE_CANCEL;
 		}
 
-		line->data = "#";
+		line->data = (unsigned char *)"#";
 	}
 
 	switch (do_typeahead(ses, doc_view, buffer, action_id, &offset)) {
@@ -1553,22 +1556,22 @@ enum frame_event_status
 search_typeahead(struct session *ses, struct document_view *doc_view,
 		 action_id_T action_id)
 {
-	unsigned char *prompt = "#";
+	unsigned char *prompt = (unsigned char *)"#";
 	unsigned char *data = NULL;
 	input_line_handler_T handler = text_typeahead_handler;
 	struct input_history *history = &search_history;
 
 	switch (action_id) {
 		case ACT_MAIN_SEARCH_TYPEAHEAD_TEXT:
-			prompt = data = "/";
+			prompt = data = (unsigned char *)"/";
 			break;
 
 		case ACT_MAIN_SEARCH_TYPEAHEAD_TEXT_BACK:
-			prompt = data = "?";
+			prompt = data = (unsigned char *)"?";
 			break;
 
 		case ACT_MAIN_SEARCH_TYPEAHEAD_LINK:
-			data = "#";
+			data = (unsigned char *)"#";
 			/* Falling forward .. good punk rock */
 		case ACT_MAIN_SEARCH_TYPEAHEAD:
 		default:
@@ -1608,9 +1611,9 @@ enum search_option {
 
 static struct option_resolver resolvers[] = {
 #ifdef CONFIG_TRE
-	{ SEARCH_OPT_REGEX,	"regex" },
+	{ SEARCH_OPT_REGEX,	(unsigned char *)"regex" },
 #endif
-	{ SEARCH_OPT_CASE,	"case" },
+	{ SEARCH_OPT_CASE,	(unsigned char *)"case" },
 };
 
 struct search_dlg_hop {
@@ -1706,7 +1709,7 @@ search_dlg_do(struct terminal *term, struct memory_list *ml,
 	add_dlg_radio(dlg, _("Case sensitive", term), 2, 1, &hop->values[SEARCH_OPT_CASE].number);
 	add_dlg_radio(dlg, _("Case insensitive", term), 2, 0, &hop->values[SEARCH_OPT_CASE].number);
 
-	add_dlg_button(dlg, _("~OK", term), B_ENTER, search_dlg_ok, fn);
+	add_dlg_button(dlg, _("~OK", term), B_ENTER, search_dlg_ok, (void *)fn);
 	add_dlg_button(dlg, _("~Cancel", term), B_ESC, search_dlg_cancel, NULL);
 
 	add_dlg_end(dlg, SEARCH_WIDGETS_COUNT);
@@ -1715,11 +1718,13 @@ search_dlg_do(struct terminal *term, struct memory_list *ml,
 	do_dialog(term, dlg, ml);
 }
 
+typedef void (search_fn_T)(void *, unsigned char *);
+
 enum frame_event_status
 search_dlg(struct session *ses, struct document_view *doc_view, int direction)
 {
 	unsigned char *title;
-	void *search_function;
+	search_fn_T *search_function;
 
 	assert(direction);
 	if_assert_failed return FRAME_EVENT_OK;
@@ -1743,12 +1748,12 @@ search_dlg(struct session *ses, struct document_view *doc_view, int direction)
 static enum evhook_status
 search_history_write_hook(va_list ap, void *data)
 {
-	save_input_history(&search_history, SEARCH_HISTORY_FILENAME);
+	save_input_history(&search_history, (unsigned char *)SEARCH_HISTORY_FILENAME);
 	return EVENT_HOOK_STATUS_NEXT;
 }
 
 static struct event_hook_info search_history_hooks[] = {
-	{ "periodic-saving", 0, search_history_write_hook, NULL },
+	{ (const unsigned char *)"periodic-saving", 0, search_history_write_hook, NULL },
 
 	NULL_EVENT_HOOK_INFO,
 };
@@ -1756,13 +1761,13 @@ static struct event_hook_info search_history_hooks[] = {
 static void
 init_search_history(struct module *module)
 {
-	load_input_history(&search_history, SEARCH_HISTORY_FILENAME);
+	load_input_history(&search_history, (unsigned char *)SEARCH_HISTORY_FILENAME);
 }
 
 static void
 done_search_history(struct module *module)
 {
-	save_input_history(&search_history, SEARCH_HISTORY_FILENAME);
+	save_input_history(&search_history, (unsigned char *)SEARCH_HISTORY_FILENAME);
 	free_list(search_history.entries);
 }
 
