@@ -82,17 +82,17 @@ error_reporter(JSContext *ctx, const char *message, JSErrorReport *report)
 	    || !init_string(&msg))
 		goto reported;
 
-	strict	  = JSREPORT_IS_STRICT(report->flags) ? " strict" : "";
-	exception = JSREPORT_IS_EXCEPTION(report->flags) ? " exception" : "";
-	warning   = JSREPORT_IS_WARNING(report->flags) ? " warning" : "";
-	error	  = !report->flags ? " error" : "";
+	strict	  = JSREPORT_IS_STRICT(report->flags) ? (unsigned char *)" strict" : (unsigned char *)"";
+	exception = JSREPORT_IS_EXCEPTION(report->flags) ? (unsigned char *)" exception" : (unsigned char *)"";
+	warning   = JSREPORT_IS_WARNING(report->flags) ? (unsigned char *)" warning" : (unsigned char *)"";
+	error	  = !report->flags ? (unsigned char *)" error" : (unsigned char *)"";
 
-	add_format_to_string(&msg, _("A script embedded in the current "
+	add_format_to_string(&msg, (const char *)_("A script embedded in the current "
 			"document raised the following%s%s%s%s", term),
 			strict, exception, warning, error);
 
-	add_to_string(&msg, ":\n\n");
-	add_to_string(&msg, message);
+	add_to_string(&msg, (const unsigned char *)":\n\n");
+	add_to_string(&msg, (const unsigned char *)message);
 
 	if (report->linebuf && report->tokenptr) {
 		int pos = report->tokenptr - report->linebuf;
@@ -219,7 +219,7 @@ spidermonkey_get_interpreter(struct ecmascript_interpreter *interpreter)
 				   (JSPropertySpec *) unibar_props, NULL,
 				   NULL, NULL);
 	if (!menubar_obj) goto release_and_fail;
-	if (!JS_SetPrivate(ctx, menubar_obj, "t")) /* to @menubar_class */
+	if (!JS_SetPrivate(ctx, menubar_obj, (void *)"t")) /* to @menubar_class */
 		goto release_and_fail;
 
 	statusbar_obj = JS_InitClass(ctx, window_obj, NULL,
@@ -227,7 +227,7 @@ spidermonkey_get_interpreter(struct ecmascript_interpreter *interpreter)
 				     (JSPropertySpec *) unibar_props, NULL,
 				     NULL, NULL);
 	if (!statusbar_obj) goto release_and_fail;
-	if (!JS_SetPrivate(ctx, statusbar_obj, "s")) /* to @statusbar_class */
+	if (!JS_SetPrivate(ctx, statusbar_obj, (void *)"s")) /* to @statusbar_class */
 		goto release_and_fail;
 
 	navigator_obj = JS_InitClass(ctx, window_obj, NULL,
@@ -273,7 +273,7 @@ spidermonkey_eval(struct ecmascript_interpreter *interpreter,
 #endif
 	interpreter->ret = ret;
 	JS_EvaluateScript(ctx, JS_GetGlobalObject(ctx),
-	                  code->source, code->length, "", 0, &rval);
+	                  (const char *)code->source, code->length, "", 0, &rval);
 #if defined(CONFIG_ECMASCRIPT_SMJS_HEARTBEAT)
 	done_heartbeat(interpreter->heartbeat);
 #endif
@@ -298,7 +298,7 @@ spidermonkey_eval_stringback(struct ecmascript_interpreter *interpreter,
 	setup_safeguard(interpreter, ctx);
 #endif
 	ret = JS_EvaluateScript(ctx, JS_GetGlobalObject(ctx),
-	                        code->source, code->length, "", 0, &rval);
+	                        (const char *)code->source, code->length, "", 0, &rval);
 #if defined(CONFIG_ECMASCRIPT_SMJS_HEARTBEAT)
 	done_heartbeat(interpreter->heartbeat);
 #endif
@@ -327,7 +327,7 @@ spidermonkey_eval_boolback(struct ecmascript_interpreter *interpreter,
 	if (!js_module_init_ok) return 0;
 	ctx = (JSContext *)interpreter->backend_data;
 	interpreter->ret = NULL;
-	fun = JS_CompileFunction(ctx, NULL, "", 0, NULL, code->source,
+	fun = JS_CompileFunction(ctx, NULL, "", 0, NULL, (const char *)code->source,
 				 code->length, "", 0);
 	if (!fun)
 		return -1;

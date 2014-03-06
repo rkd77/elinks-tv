@@ -110,7 +110,7 @@ history_go(JSContext *ctx, uintN argc, jsval *rval)
 	if (argc != 1)
 		return JS_TRUE;
 
-	index  = atol(jsval_to_string(ctx, &argv[0]));
+	index  = atol((const char *)jsval_to_string(ctx, &argv[0]));
 
 	for (loc = cur_loc(ses);
 	     loc != (struct location *) &ses->history.history;

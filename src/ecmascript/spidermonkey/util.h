@@ -23,7 +23,7 @@ string_to_jsval(JSContext *ctx, jsval *vp, unsigned char *string)
 	if (!string) {
 		*vp = JSVAL_NULL;
 	} else {
-		*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(ctx, string));
+		*vp = STRING_TO_JSVAL(JS_NewStringCopyZ(ctx, (const char *)string));
 	}
 }
 

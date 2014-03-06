@@ -109,24 +109,24 @@ document_get_property(JSContext *ctx, JSObject *obj, jsid id, jsval *vp)
 		unsigned char *string = jsid_to_string(ctx, &id);
 
 #ifdef CONFIG_COOKIES
-		if (!strcmp(string, "cookie")) {
+		if (!strcmp((const char *)string, "cookie")) {
 			struct string *cookies = send_cookies(vs->uri);
 
 			if (cookies) {
 				static unsigned char cookiestr[1024];
 
-				strncpy(cookiestr, cookies->source, 1024);
+				strncpy((char *)cookiestr, (const char *)cookies->source, 1024);
 				done_string(cookies);
 
 				string_to_jsval(ctx, vp, cookiestr);
 			} else {
-				string_to_jsval(ctx, vp, "");
+				string_to_jsval(ctx, vp, (unsigned char *)"");
 			}
 			return JS_TRUE;
 		}
 #endif
 		foreach (form, document->forms) {
-			if (!form->name || c_strcasecmp(string, form->name))
+			if (!form->name || c_strcasecmp((const char *)string, (const char *)form->name))
 				continue;
 
 			object_to_jsval(ctx, vp, get_form_object(ctx, obj, find_form_view(doc_view, form)));
@@ -211,7 +211,7 @@ document_set_property(JSContext *ctx, JSObject *obj, jsid id, JSBool strict, jsv
 
 	if (JSID_IS_STRING(id)) {
 #ifdef CONFIG_COOKIES
-		if (!strcmp(jsid_to_string(ctx, &id), "cookie")) {
+		if (!strcmp((const char *)jsid_to_string(ctx, &id), "cookie")) {
 			set_cookie(vs->uri, jsval_to_string(ctx, vp));
 			/* Do NOT touch our .cookie property, evil
 			 * SpiderMonkey!! */

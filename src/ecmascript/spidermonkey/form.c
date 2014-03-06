@@ -275,17 +275,17 @@ input_get_property(JSContext *ctx, JSObject *obj, jsid id, jsval *vp)
 		unsigned char *s = NULL;
 
 		switch (fc->type) {
-		case FC_TEXT: s = "text"; break;
-		case FC_PASSWORD: s = "password"; break;
-		case FC_FILE: s = "file"; break;
-		case FC_CHECKBOX: s = "checkbox"; break;
-		case FC_RADIO: s = "radio"; break;
-		case FC_SUBMIT: s = "submit"; break;
-		case FC_IMAGE: s = "image"; break;
-		case FC_RESET: s = "reset"; break;
-		case FC_BUTTON: s = "button"; break;
-		case FC_HIDDEN: s = "hidden"; break;
-		case FC_SELECT: s = "select"; break;
+		case FC_TEXT: s = (unsigned char *)"text"; break;
+		case FC_PASSWORD: s = (unsigned char *)"password"; break;
+		case FC_FILE: s = (unsigned char *)"file"; break;
+		case FC_CHECKBOX: s = (unsigned char *)"checkbox"; break;
+		case FC_RADIO: s = (unsigned char *)"radio"; break;
+		case FC_SUBMIT: s = (unsigned char *)"submit"; break;
+		case FC_IMAGE: s = (unsigned char *)"image"; break;
+		case FC_RESET: s = (unsigned char *)"reset"; break;
+		case FC_BUTTON: s = (unsigned char *)"button"; break;
+		case FC_HIDDEN: s = (unsigned char *)"hidden"; break;
+		case FC_SELECT: s = (unsigned char *)"select"; break;
 		default: INTERNAL("input_get_property() upon a non-input item."); break;
 		}
 		string_to_jsval(ctx, vp, s);
@@ -654,7 +654,7 @@ spidermonkey_moved_form_state(struct form_state *fs)
 
 static JSObject *
 get_form_control_object(JSContext *ctx, JSObject *jsform,
-			enum form_type type, struct form_state *fs)
+			int type, struct form_state *fs)
 {
 	switch (type) {
 		case FC_TEXT:
@@ -907,8 +907,8 @@ form_elements_namedItem2(JSContext *ctx, JSObject *obj, uintN argc, jsval *argv,
 	undef_to_jsval(ctx, rval);
 
 	foreach (fc, form->items) {
-		if ((fc->id && !c_strcasecmp(string, fc->id))
-		    || (fc->name && !c_strcasecmp(string, fc->name))) {
+		if ((fc->id && !c_strcasecmp((const char *)string, (const char *)fc->id))
+		    || (fc->name && !c_strcasecmp((const char *)string, (const char *)fc->name))) {
 			struct form_state *fs = find_form_state(doc_view, fc);
 
 			if (fs) {
@@ -965,7 +965,7 @@ static const spidermonkeyFunctionSpec form_funcs[] = {
 static struct form_view *
 form_get_form_view(JSContext *ctx, JSObject *jsform, jsval *argv)
 {
-	struct form_view *fv = JS_GetInstancePrivate(ctx, jsform,
+	struct form_view *fv = (struct form_view *)JS_GetInstancePrivate(ctx, jsform,
 						     (JSClass *) &form_class,
 						     argv);
 
@@ -1001,7 +1001,7 @@ form_get_property(JSContext *ctx, JSObject *obj, jsid id, jsval *vp)
 	assert(JS_InstanceOf(ctx, parent_win, (JSClass *) &window_class, NULL));
 	if_assert_failed return JS_FALSE;
 
-	vs = JS_GetInstancePrivate(ctx, parent_win,
+	vs = (struct view_state *)JS_GetInstancePrivate(ctx, parent_win,
 				   (JSClass *) &window_class, NULL);
 	doc_view = vs->doc_view;
 	fv = form_get_form_view(ctx, obj, NULL);
@@ -1019,8 +1019,8 @@ form_get_property(JSContext *ctx, JSObject *obj, jsid id, jsval *vp)
 			JSObject *fcobj = NULL;
 			struct form_state *fs;
 
-			if ((!fc->id || c_strcasecmp(string, fc->id))
-			    && (!fc->name || c_strcasecmp(string, fc->name)))
+			if ((!fc->id || c_strcasecmp((const char *)string, (const char *)fc->id))
+			    && (!fc->name || c_strcasecmp((const char *)string, (const char *)fc->name)))
 				continue;
 
 			undef_to_jsval(ctx, vp);
@@ -1063,13 +1063,13 @@ form_get_property(JSContext *ctx, JSObject *obj, jsid id, jsval *vp)
 		switch (form->method) {
 		case FORM_METHOD_GET:
 		case FORM_METHOD_POST:
-			string_to_jsval(ctx, vp, "application/x-www-form-urlencoded");
+			string_to_jsval(ctx, vp, (unsigned char *)"application/x-www-form-urlencoded");
 			break;
 		case FORM_METHOD_POST_MP:
-			string_to_jsval(ctx, vp, "multipart/form-data");
+			string_to_jsval(ctx, vp, (unsigned char *)"multipart/form-data");
 			break;
 		case FORM_METHOD_POST_TEXT_PLAIN:
-			string_to_jsval(ctx, vp, "text/plain");
+			string_to_jsval(ctx, vp, (unsigned char *)"text/plain");
 			break;
 		}
 		break;
@@ -1081,13 +1081,13 @@ form_get_property(JSContext *ctx, JSObject *obj, jsid id, jsval *vp)
 	case JSP_FORM_METHOD:
 		switch (form->method) {
 		case FORM_METHOD_GET:
-			string_to_jsval(ctx, vp, "GET");
+			string_to_jsval(ctx, vp, (unsigned char *)"GET");
 			break;
 
 		case FORM_METHOD_POST:
 		case FORM_METHOD_POST_MP:
 		case FORM_METHOD_POST_TEXT_PLAIN:
-			string_to_jsval(ctx, vp, "POST");
+			string_to_jsval(ctx, vp, (unsigned char *)"POST");
 			break;
 		}
 		break;
@@ -1161,21 +1161,21 @@ form_set_property(JSContext *ctx, JSObject *obj, jsid id, JSBool strict, jsval *
 
 	case JSP_FORM_ENCODING:
 		string = jsval_to_string(ctx, vp);
-		if (!c_strcasecmp(string, "application/x-www-form-urlencoded")) {
+		if (!c_strcasecmp((const char *)string, "application/x-www-form-urlencoded")) {
 			form->method = form->method == FORM_METHOD_GET ? FORM_METHOD_GET
 			                                               : FORM_METHOD_POST;
-		} else if (!c_strcasecmp(string, "multipart/form-data")) {
+		} else if (!c_strcasecmp((const char *)string, "multipart/form-data")) {
 			form->method = FORM_METHOD_POST_MP;
-		} else if (!c_strcasecmp(string, "text/plain")) {
+		} else if (!c_strcasecmp((const char *)string, "text/plain")) {
 			form->method = FORM_METHOD_POST_TEXT_PLAIN;
 		}
 		break;
 
 	case JSP_FORM_METHOD:
 		string = jsval_to_string(ctx, vp);
-		if (!c_strcasecmp(string, "GET")) {
+		if (!c_strcasecmp((const char *)string, "GET")) {
 			form->method = FORM_METHOD_GET;
-		} else if (!c_strcasecmp(string, "POST")) {
+		} else if (!c_strcasecmp((const char *)string, "POST")) {
 			form->method = FORM_METHOD_POST;
 		}
 		break;
@@ -1403,7 +1403,7 @@ find_form_by_name(JSContext *ctx, JSObject *jsdoc,
 		return;
 
 	foreach (form, doc_view->document->forms) {
-		if (form->name && !c_strcasecmp(string, form->name)) {
+		if (form->name && !c_strcasecmp((const char *)string, (const char *)form->name)) {
 			object_to_jsval(ctx, rval, get_form_object(ctx, jsdoc,
 					find_form_view(doc_view, form)));
 			break;

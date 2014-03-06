@@ -267,7 +267,7 @@ window_set_property(JSContext *ctx, JSObject *obj, jsid id, JSBool strict, jsval
 	vs = (struct view_state *)JS_GetInstancePrivate(ctx, obj, (JSClass *) &window_class, NULL);
 
 	if (JSID_IS_STRING(id)) {
-		if (!strcmp(jsid_to_string(ctx, &id), "location")) {
+		if (!strcmp((const char *)jsid_to_string(ctx, &id), "location")) {
 			struct document_view *doc_view = vs->doc_view;
 
 			location_goto(doc_view, jsval_to_string(ctx, vp));
@@ -406,7 +406,7 @@ window_open(JSContext *ctx, uintN argc, jsval *rval)
 		return JS_TRUE;
 	}
 
-	if (frame && *frame && c_strcasecmp(frame, "_blank")) {
+	if (frame && *frame && c_strcasecmp((const char *)frame, "_blank")) {
 		struct delayed_open *deo = (struct delayed_open *)mem_calloc(1, sizeof(*deo));
 
 		if (deo) {
@@ -468,7 +468,7 @@ window_setTimeout(JSContext *ctx, uintN argc, jsval *rval)
 	code = stracpy(code);
 	if (!code)
 		return JS_TRUE;
-	timeout = atoi(jsval_to_string(ctx, &argv[1]));
+	timeout = atoi((const char *)jsval_to_string(ctx, &argv[1]));
 	if (timeout <= 0) {
 		mem_free(code);
 		return JS_TRUE;

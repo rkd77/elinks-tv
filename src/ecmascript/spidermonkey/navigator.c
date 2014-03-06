@@ -90,15 +90,15 @@ navigator_get_property(JSContext *ctx, JSObject *obj, jsid id, jsval *vp)
 
 	switch (JSID_TO_INT(id)) {
 	case JSP_NAVIGATOR_APP_CODENAME:
-		string_to_jsval(ctx, vp, "Mozilla"); /* More like a constant nowadays. */
+		string_to_jsval(ctx, vp, (unsigned char *)"Mozilla"); /* More like a constant nowadays. */
 		break;
 	case JSP_NAVIGATOR_APP_NAME:
 		/* This evil hack makes the compatibility checking .indexOf()
 		 * code find what it's looking for. */
-		string_to_jsval(ctx, vp, "ELinks (roughly compatible with Netscape Navigator, Mozilla and Microsoft Internet Explorer)");
+		string_to_jsval(ctx, vp, (unsigned char *)"ELinks (roughly compatible with Netscape Navigator, Mozilla and Microsoft Internet Explorer)");
 		break;
 	case JSP_NAVIGATOR_APP_VERSION:
-		string_to_jsval(ctx, vp, VERSION);
+		string_to_jsval(ctx, vp, (unsigned char *)VERSION);
 		break;
 	case JSP_NAVIGATOR_LANGUAGE:
 #ifdef CONFIG_NLS
@@ -116,7 +116,7 @@ navigator_get_property(JSContext *ctx, JSObject *obj, jsid id, jsval *vp)
 		unsigned char *optstr = get_opt_str((const unsigned char *)"protocol.http.user_agent",
 		                                    NULL);
 
-		if (*optstr && strcmp(optstr, " ")) {
+		if (*optstr && strcmp((const char *)optstr, " ")) {
 			unsigned char *ustr, ts[64] = "";
 			static unsigned char custr[256];
 			/* TODO: Somehow get the terminal in which the
@@ -130,7 +130,7 @@ navigator_get_property(JSContext *ctx, JSObject *obj, jsid id, jsval *vp)
 				ts[tslen++] = 'x';
 				ulongcat(ts, &tslen, term->height, 3, 0);
 			}
-			ustr = subst_user_agent(optstr, VERSION_STRING, system_name, ts);
+			ustr = subst_user_agent(optstr, (unsigned char *)VERSION_STRING, system_name, ts);
 
 			if (ustr) {
 				safe_strncpy(custr, ustr, 256);

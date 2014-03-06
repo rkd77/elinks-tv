@@ -71,7 +71,7 @@ jsval_to_string(JSContext *ctx, jsval *vp)
 	jsval val;
 
 	if (JS_ConvertValue(ctx, *vp, JSTYPE_STRING, &val) == JS_FALSE) {
-		return "";
+		return (unsigned char *)"";
 	}
 
 	return empty_string_or_(JS_EncodeString(ctx, JS_ValueToString(ctx, val)));
