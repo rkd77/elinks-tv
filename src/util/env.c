@@ -45,7 +45,7 @@ env_set(unsigned char *name, unsigned char *value, int length)
 			allocated = 1;
 		}
 
-		ret = setenv(name, value, 1);
+		ret = setenv((const char *)name, (const char *)value, 1);
 		if (allocated) mem_free(value);
 		return ret;
 	}

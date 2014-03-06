@@ -255,7 +255,7 @@ add_date_to_string(struct string *string, const unsigned char *fmt,
 	time_t when_time = date ? *date : time(NULL);
 	struct tm *when_local = localtime(&when_time);
 
-	if (strftime(buffer, sizeof(buffer), fmt, when_local) <= 0)
+	if (strftime((char *)buffer, sizeof(buffer), (const char *)fmt, when_local) <= 0)
 		return NULL;
 
 	return add_to_string(string, buffer);
@@ -289,7 +289,7 @@ add_html_to_string(struct string *string, const unsigned char *src, int len)
 		    || *src == '\"' || *src == '\'') {
 			int rollback_length = string->length;
 
-			if (!add_bytes_to_string(string, "&#", 2)
+			if (!add_bytes_to_string(string, (const unsigned char *)"&#", 2)
 			    || !add_long_to_string(string, (long long)*src)
 			    || !add_char_to_string(string, ';')) {
 				string->length = rollback_length;
@@ -323,7 +323,7 @@ add_cp_html_to_string(struct string *string, int src_codepage,
 		    || unicode == '\"' || unicode == '\'') {
 			int rollback_length = string->length;
 
-			if (!add_bytes_to_string(string, "&#", 2)
+			if (!add_bytes_to_string(string, (const unsigned char *)"&#", 2)
 			    || !add_long_to_string(string, unicode)
 			    || !add_char_to_string(string, ';')) {
 				string->length = rollback_length;
@@ -358,7 +358,7 @@ add_shell_quoted_to_string(struct string *string, unsigned char *src, int len)
 	add_char_to_string(string, '\'');
 	for (; len; len--, ++src)
 		if (*src == '\'')
-			add_to_string(string, "'\\''");
+			add_to_string(string, (const unsigned char *)"'\\''");
 		else
 			add_char_to_string(string, *src);
 	add_char_to_string(string, '\'');
@@ -396,7 +396,7 @@ strtolx(unsigned char *str, unsigned char **end)
 	unsigned char postfix;
 
 	errno = 0;
-	num = strtol(str, (char **) end, 10);
+	num = strtol((const char *)str, (char **) end, 10);
 	if (errno) return 0;
 	if (!*end) return num;
 

@@ -179,7 +179,7 @@ xstrcmp(const unsigned char *s1, const unsigned char *s2)
 {
 	if (!s1) return -!!s2;
 	if (!s2) return 1;
-	return strcmp(s1, s2);
+	return strcmp((const char *)s1, (const char *)s2);
 }
 
 unsigned char *
@@ -188,7 +188,7 @@ safe_strncpy(unsigned char *dst, const unsigned char *src, size_t dst_size)
 	assertm(dst && src && dst_size > 0, "[safe_strncpy]");
 	if_assert_failed return NULL;
 
-	strncpy(dst, src, dst_size);
+	strncpy((char *)dst, (const char *)src, dst_size);
 	dst[dst_size - 1] = '\0';
 
 	return dst;
@@ -422,7 +422,7 @@ add_file_to_string(struct string *string, const unsigned char *filename)
 
 	check_string_magic(string);
 
-	file = fopen(filename, "rb");
+	file = fopen((const char *)filename, "rb");
 	if (!file) return NULL;
 
 	if (fseeko(file, 0, SEEK_END)) goto err;
@@ -535,7 +535,7 @@ add_format_to_string(struct string *string, const char *format, ...)
 		return NULL;
 
 	va_start(ap, format);
-	vsnprintf(&string->source[string->length], width + 1, format, ap);
+	vsnprintf((char *)&string->source[string->length], width + 1, format, ap);
 	va_end(ap);
 
 	string->length = newlength;

@@ -46,7 +46,7 @@ er(int bell, int shall_sleep, unsigned char *fmt, va_list params)
 #else
 		fputc(7, stderr); /* load and annoying on Windows */
 #endif
-	vfprintf(stderr, fmt, params);
+	vfprintf(stderr, (const char *)fmt, params);
 	fputc('\n', stderr);
 	fflush(stderr);
 	if (shall_sleep) sleep(1);
@@ -63,7 +63,7 @@ elinks_debug(const char *fmt, ...)
 
 	va_start(params, fmt);
 
-	snprintf(errbuf, sizeof(errbuf), "DEBUG MESSAGE at %s:%d: %s",
+	snprintf((char *)errbuf, sizeof(errbuf), "DEBUG MESSAGE at %s:%d: %s",
 		 errfile, errline, fmt);
 
 	er(0, 0, errbuf, params);
@@ -79,7 +79,7 @@ elinks_wdebug(const char *fmt, ...)
 
 	va_start(params, fmt);
 
-	snprintf(errbuf, sizeof(errbuf), "DEBUG MESSAGE at %s:%d: %s",
+	snprintf((char *)errbuf, sizeof(errbuf), "DEBUG MESSAGE at %s:%d: %s",
 		 errfile, errline, fmt);
 
 	er(0, 1, errbuf, params);
@@ -95,7 +95,7 @@ elinks_error(const char *fmt, ...)
 
 	va_start(params, fmt);
 
-	snprintf(errbuf, sizeof(errbuf), "ERROR at %s:%d: %s",
+	snprintf((char *)errbuf, sizeof(errbuf), "ERROR at %s:%d: %s",
 		 errfile, errline, fmt);
 
 	er(1, 1, errbuf, params);
@@ -111,7 +111,7 @@ elinks_internal(const char *fmt, ...)
 
 	va_start(params, fmt);
 
-	snprintf(errbuf, sizeof(errbuf),
+	snprintf((char *)errbuf, sizeof(errbuf),
 		 "\033[1mINTERNAL ERROR\033[0m at %s:%d: %s",
 		 errfile, errline, fmt);
 

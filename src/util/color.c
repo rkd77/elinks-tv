@@ -61,7 +61,7 @@ colors_list_next(void)
 }
 
 static struct fastfind_index ff_colors_index
-	= INIT_FASTFIND_INDEX("colors_lookup", colors_list_reset, colors_list_next);
+	= INIT_FASTFIND_INDEX((unsigned char *)"colors_lookup", colors_list_reset, colors_list_next);
 
 #endif /* USE_FASTFIND */
 
@@ -102,7 +102,7 @@ decode_hex_color:
 		}
 
 		errno = 0;
-		string_color = strtoul(str, (char **) &end, 16);
+		string_color = strtoul((const char *)str, (char **) &end, 16);
 		if (!errno && (end == str + 6) && string_color <= 0xFFFFFF) {
 			*color = string_color;
 			return 0;
@@ -143,7 +143,7 @@ get_color_string(color_T color, unsigned char hexcolor[8])
 
 	for (cs = color_specs; cs->name; cs++)
 		if (cs->rgb == color)
-			return cs->name;
+			return (const unsigned char *)cs->name;
 
 	color_to_string(color, hexcolor);
 	return hexcolor;

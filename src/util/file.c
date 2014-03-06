@@ -57,11 +57,11 @@ int
 file_exists(const unsigned char *filename)
 {
 #ifdef HAVE_ACCESS
-	return access(filename, F_OK) >= 0;
+	return access((const char *)filename, F_OK) >= 0;
 #else
 	struct stat buf;
 
-	return stat(filename, &buf) >= 0;
+	return stat((const char *)filename, &buf) >= 0;
 #endif
 }
 
@@ -69,9 +69,9 @@ int
 file_can_read(const unsigned char *filename)
 {
 #ifdef HAVE_ACCESS
-	return access(filename, R_OK) >= 0;
+	return access((const char *)filename, R_OK) >= 0;
 #else
-	FILE *f = fopen(filename, "rb");
+	FILE *f = fopen((const char *)filename, "rb");
 	int ok = !!f;
 
 	if (f) fclose(f);
@@ -84,7 +84,7 @@ file_is_dir(const unsigned char *filename)
 {
 	struct stat st;
 
-	if (stat(filename, &st))
+	if (stat((const char *)filename, &st))
 		return 0;
 
 	return S_ISDIR(st.st_mode);
@@ -113,7 +113,7 @@ expand_tilde(unsigned char *filename)
 
 	if (filename[0] == '~') {
 		if (!filename[1] || dir_sep(filename[1])) {
-			unsigned char *home = getenv("HOME");
+			unsigned char *home = (unsigned char *)getenv("HOME");
 
 			if (home) {
 				add_to_string(&file, home);
@@ -130,12 +130,12 @@ expand_tilde(unsigned char *filename)
 
 			user = memacpy(user, userlen);
 			if (user) {
-				passwd = getpwnam(user);
+				passwd = getpwnam((const char *)user);
 				mem_free(user);
 			}
 
 			if (passwd && passwd->pw_dir) {
-				add_to_string(&file, passwd->pw_dir);
+				add_to_string(&file, (const unsigned char *)passwd->pw_dir);
 				filename += 1 + userlen;
 			}
 #endif
@@ -181,12 +181,12 @@ get_unique_name(unsigned char *fileprefix)
 unsigned char *
 get_tempdir_filename(unsigned char *name)
 {
-	unsigned char *tmpdir = getenv("TMPDIR");
+	unsigned char *tmpdir = (unsigned char *)getenv("TMPDIR");
 
-	if (!tmpdir || !*tmpdir) tmpdir = getenv("TMP");
-	if (!tmpdir || !*tmpdir) tmpdir = getenv("TEMPDIR");
-	if (!tmpdir || !*tmpdir) tmpdir = getenv("TEMP");
-	if (!tmpdir || !*tmpdir) tmpdir = "/tmp";
+	if (!tmpdir || !*tmpdir) tmpdir = (unsigned char *)getenv("TMP");
+	if (!tmpdir || !*tmpdir) tmpdir = (unsigned char *)getenv("TEMPDIR");
+	if (!tmpdir || !*tmpdir) tmpdir = (unsigned char *)getenv("TEMP");
+	if (!tmpdir || !*tmpdir) tmpdir = (unsigned char *)"/tmp";
 
 	return straconcat(tmpdir, "/", name, (unsigned char *) NULL);
 }
@@ -204,8 +204,8 @@ file_read_line(unsigned char *line, size_t *size, FILE *file, int *lineno)
 		*size = MAX_STR_LEN;
 	}
 
-	while (fgets(line + offset, *size - offset, file)) {
-		unsigned char *linepos = strchr((char *)(line + offset), '\n');
+	while (fgets((char *)(line + offset), *size - offset, file)) {
+		unsigned char *linepos = (unsigned char *)strchr((char *)(line + offset), '\n');
 
 		if (!linepos) {
 			/* Test if the line buffer should be increase because
@@ -276,7 +276,7 @@ safe_mkstemp(unsigned char *template_)
 #ifndef CONFIG_OS_WIN32
 	mode_t saved_mask = umask(S_IXUSR | S_IRWXG | S_IRWXO);
 #endif
-	int fd = mkstemp(template_);
+	int fd = mkstemp((char *)template_);
 #ifndef CONFIG_OS_WIN32
 	umask(saved_mask);
 #endif
@@ -293,7 +293,7 @@ compare_dir_entries(const void *v1, const void *v2)
 	if (d2->name[0] == '.' && d2->name[1] == '.' && !d2->name[2]) return 1;
 	if (d1->attrib[0] == 'd' && d2->attrib[0] != 'd') return -1;
 	if (d1->attrib[0] != 'd' && d2->attrib[0] == 'd') return 1;
-	return strcmp(d1->name, d2->name);
+	return strcmp((const char *)d1->name, (const char *)d2->name);
 }
 
 
@@ -330,7 +330,7 @@ get_directory_entries(unsigned char *dirname, int get_hidden)
 	struct dirent *entry;
 	int is_root_directory = dirname[0] == '/' && !dirname[1];
 
-	directory = opendir(dirname);
+	directory = opendir((const char *)dirname);
 	if (!directory) return NULL;
 
 	while ((entry = readdir(directory))) {
@@ -339,7 +339,7 @@ get_directory_entries(unsigned char *dirname, int get_hidden)
 		unsigned char *name;
 		struct string attrib;
 
-		if (!file_visible(entry->d_name, get_hidden, is_root_directory))
+		if (!file_visible((unsigned char *)entry->d_name, get_hidden, is_root_directory))
 			continue;
 
 		new_entries = (struct directory_entry *)mem_realloc(entries, (size + 2) * sizeof(*new_entries));
@@ -359,9 +359,9 @@ get_directory_entries(unsigned char *dirname, int get_hidden)
 		}
 
 #ifdef FS_UNIX_SOFTLINKS
-		stp = (lstat(name, &st)) ? NULL : &st;
+		stp = (lstat((const char *)name, &st)) ? NULL : &st;
 #else
-		stp = (stat(name, &st)) ? NULL : &st;
+		stp = (stat((const char *)name, &st)) ? NULL : &st;
 #endif
 
 		stat_type(&attrib, stp);
@@ -417,7 +417,7 @@ mkalldirs(const unsigned char *path)
 
 		p[pos] = 0;
 
-		ret = mkdir(p, S_IRWXU);
+		ret = mkdir((const char *)p, S_IRWXU);
 
 		p[pos] = separator;
 

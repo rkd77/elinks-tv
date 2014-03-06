@@ -104,9 +104,9 @@ secure_open_umask(unsigned char *file_name)
 
 	/* Check properties of final file. */
 #ifdef FS_UNIX_SOFTLINKS
-	if (lstat(ssi->file_name, &st)) {
+	if (lstat((const char *)ssi->file_name, &st)) {
 #else
-	if (stat(ssi->file_name, &st)) {
+	if (stat((const char *)ssi->file_name, &st)) {
 #endif
 		/* We ignore error caused by file inexistence. */
 		if (errno != ENOENT) {
@@ -122,7 +122,7 @@ secure_open_umask(unsigned char *file_name)
 		} else {
 #ifdef HAVE_ACCESS
 			/* XXX: access() do not work with setuid programs. */
-			if (access(ssi->file_name, R_OK | W_OK) < 0) {
+			if (access((const char *)ssi->file_name, R_OK | W_OK) < 0) {
 				ssi->err = errno;
 				secsave_errno = SS_ERR_ACCESS;
 				goto free_file_name;
@@ -161,7 +161,7 @@ secure_open_umask(unsigned char *file_name)
 		}
 
 		/* No need to use safe_mkstemp() here. --Zas */
-		fd = mkstemp(randname);
+		fd = mkstemp((char *)randname);
 		if (fd == -1) {
 			secsave_errno = SS_ERR_MKSTEMP;
 			mem_free(randname);
@@ -179,7 +179,7 @@ secure_open_umask(unsigned char *file_name)
 		ssi->tmp_file_name = randname;
 	} else {
 		/* No need to create a temporary file here. */
-		ssi->fp = fopen(ssi->file_name, "wb");
+		ssi->fp = fopen((const char *)ssi->file_name, "wb");
 		if (!ssi->fp) {
 			secsave_errno = SS_ERR_OPEN_WRITE;
 			ssi->err = errno;
@@ -277,13 +277,13 @@ secure_close(struct secure_save_info *ssi)
 #if defined(CONFIG_OS_OS2) || defined(CONFIG_OS_WIN32)
 		/* OS/2 needs this, however it breaks atomicity on
 		 * UN*X. */
-		unlink(ssi->file_name);
+		unlink((const char *)ssi->file_name);
 #endif
 		/* FIXME: Race condition on ssi->file_name. The file
 		 * named ssi->file_name may have changed since
 		 * secure_open() call (where we stat() file and
 		 * more..).  */
-		if (rename(ssi->tmp_file_name, ssi->file_name) == -1) {
+		if (rename((const char *)ssi->tmp_file_name, (const char *)ssi->file_name) == -1) {
 			ret = errno;
 			secsave_errno = SS_ERR_RENAME;
 			goto free;
