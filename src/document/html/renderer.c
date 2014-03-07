@@ -141,7 +141,7 @@ static inline void
 set_screen_char_color(struct screen_char *schar,
 		      color_T bgcolor, color_T fgcolor,
 		      color_flags_T color_flags,
-		      enum color_mode color_mode)
+		      int color_mode)
 {
 	struct color_pair colors = INIT_COLOR_PAIR(bgcolor, fgcolor);
 
@@ -2082,7 +2082,7 @@ color_link_lines(struct html_context *html_context)
 {
 	struct document *document = html_context->part->document;
 	struct color_pair colors = INIT_COLOR_PAIR(par_format.color.background, 0x0);
-	enum color_mode color_mode = document->options.color_mode;
+	int color_mode = document->options.color_mode;
 	color_flags_T color_flags = document->options.color_flags;
 	int y;
 

@@ -51,7 +51,7 @@ add_frameset_entry(struct frameset_desc *frameset_desc,
 	frame_desc->name = null_or_stracpy(name);
 	frame_desc->uri = (url && *url) ? get_uri(url, 0) : NULL;
 	if (!frame_desc->uri)
-		frame_desc->uri = get_uri("about:blank", 0);
+		frame_desc->uri = get_uri((unsigned char *)"about:blank", 0);
 
 	frameset_desc->box.x++;
 	if (frameset_desc->box.x >= frameset_desc->box.width) {
@@ -137,7 +137,7 @@ find_fd(struct session *ses, unsigned char *name,
 
 	foreachback (doc_view, ses->scrn_frames) {
 		if (doc_view->used) continue;
-		if (c_strcasecmp(doc_view->name, name)) continue;
+		if (c_strcasecmp((const char *)doc_view->name, (const char *)name)) continue;
 
 		doc_view->used = 1;
 		doc_view->depth = depth;
@@ -407,7 +407,7 @@ extract_rows_or_cols_values(unsigned char *str, int max_value, int pixels_per_ch
 		/* Some platforms (FreeBSD) set errno when the first char is
 		 * not a digit others (GNU/Linux) don't so ignore errno. */
 		/* Extract number. */
-		number = strtoul(str, (char **) &end, 10);
+		number = strtoul((const char *)str, (char **) &end, 10);
 		if (end == str) {
 			number = 0;
 		} else {
@@ -434,7 +434,7 @@ extract_rows_or_cols_values(unsigned char *str, int max_value, int pixels_per_ch
 		values[values_count++] = val;
 
 		/* Check for next field if any. */
-		tmp_str = strchr((char *)str, ',');
+		tmp_str = (unsigned char *)strchr((char *)str, ',');
 		if (!tmp_str) break;	/* It was the last field. */
 
 		str = tmp_str + 1;

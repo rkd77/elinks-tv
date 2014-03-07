@@ -1134,7 +1134,7 @@ draw_table_frames(struct table *table, int indent, int y,
 	int fh_size = (table->cols + 2) * (table->rows + 1);
 	int fv_size = (table->cols + 1) * (table->rows + 2);
 
-	frame[0] = (char *)fmem_alloc(fh_size + fv_size);
+	frame[0] = (signed char *)fmem_alloc(fh_size + fv_size);
 	if (!frame[0]) return;
 	memset(frame[0], -1, fh_size + fv_size);
 

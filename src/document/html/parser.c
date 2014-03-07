@@ -83,7 +83,7 @@ get_bgcolor(struct html_context *html_context, unsigned char *a, color_T *rgb)
 	if (!use_document_bg_colors(html_context->options))
 		return -1;
 
-	return extract_color(html_context, a, "bgcolor", rgb);
+	return extract_color(html_context, a, (unsigned char *)"bgcolor", rgb);
 }
 
 unsigned char *
@@ -91,11 +91,11 @@ get_target(struct document_options *options, unsigned char *a)
 {
 	/* FIXME (bug 784): options->cp is the terminal charset;
 	 * should use the document charset instead.  */
-	unsigned char *v = get_attr_val(a, "target", options->cp);
+	unsigned char *v = get_attr_val(a, (unsigned char *)"target", options->cp);
 
 	if (!v) return NULL;
 
-	if (!*v || !c_strcasecmp(v, "_self")) {
+	if (!*v || !c_strcasecmp((const char *)v, "_self")) {
 		mem_free_set(&v, stracpy(options->framename));
 	}
 
@@ -129,7 +129,7 @@ put_chrs(struct html_context *html_context, unsigned char *start, int len)
 		break;
 
 	case HTML_SPACE_ADD:
-		html_context->put_chars_f(html_context, " ", 1);
+		html_context->put_chars_f(html_context, (unsigned char *)" ", 1);
 		html_context->position++;
 		html_context->putsp = HTML_SPACE_SUPPRESS;
 
@@ -251,24 +251,24 @@ html_focusable(struct html_context *html_context, unsigned char *a)
 
 	cp = html_context->doc_cp;
 
-	accesskey = get_attr_val(a, "accesskey", cp);
+	accesskey = get_attr_val(a, (unsigned char *)"accesskey", cp);
 	if (accesskey) {
 		format.accesskey = accesskey_string_to_unicode(accesskey);
 		mem_free(accesskey);
 	}
 
-	tabindex = get_num(a, "tabindex", cp);
+	tabindex = get_num(a, (unsigned char *)"tabindex", cp);
 	if (0 < tabindex && tabindex < 32767) {
 		format.tabindex = (tabindex & 0x7fff) << 16;
 	}
 
-	mem_free_set(&format.onclick, get_attr_val(a, "onclick", cp));
-	mem_free_set(&format.ondblclick, get_attr_val(a, "ondblclick", cp));
-	mem_free_set(&format.onmouseover, get_attr_val(a, "onmouseover", cp));
-	mem_free_set(&format.onhover, get_attr_val(a, "onhover", cp));
-	mem_free_set(&format.onfocus, get_attr_val(a, "onfocus", cp));
-	mem_free_set(&format.onmouseout, get_attr_val(a, "onmouseout", cp));
-	mem_free_set(&format.onblur, get_attr_val(a, "onblur", cp));
+	mem_free_set(&format.onclick, get_attr_val(a, (unsigned char *)"onclick", cp));
+	mem_free_set(&format.ondblclick, get_attr_val(a, (unsigned char *)"ondblclick", cp));
+	mem_free_set(&format.onmouseover, get_attr_val(a, (unsigned char *)"onmouseover", cp));
+	mem_free_set(&format.onhover, get_attr_val(a, (unsigned char *)"onhover", cp));
+	mem_free_set(&format.onfocus, get_attr_val(a, (unsigned char *)"onfocus", cp));
+	mem_free_set(&format.onmouseout, get_attr_val(a, (unsigned char *)"onmouseout", cp));
+	mem_free_set(&format.onblur, get_attr_val(a, (unsigned char *)"onblur", cp));
 }
 
 void
@@ -286,7 +286,7 @@ check_head_for_refresh(struct html_context *html_context, unsigned char *head)
 	unsigned char *joined_url = NULL;
 	unsigned long seconds;
 
-	refresh = parse_header(head, "Refresh", NULL);
+	refresh = parse_header(head, (const unsigned char *)"Refresh", NULL);
 	if (!refresh) return;
 
 	if (html_parse_meta_refresh(refresh, &seconds, &url) == 0) {
@@ -307,7 +307,7 @@ check_head_for_refresh(struct html_context *html_context, unsigned char *head)
 
 		html_focusable(html_context, NULL);
 
-		put_link_line("Refresh: ", url, joined_url,
+		put_link_line((unsigned char *)"Refresh: ", url, joined_url,
 			      html_context->options->framename, html_context);
 		html_context->special_f(html_context, SP_REFRESH, seconds, joined_url);
 	}
@@ -333,19 +333,19 @@ check_head_for_cache_control(struct html_context *html_context,
 	 * headers and if we should still process Cache-Control max-age
 	 * if we already set max age to date mentioned in Expires.
 	 * --jonas */
-	if ((d = parse_header(head, "Pragma", NULL))) {
+	if ((d = parse_header(head, (const unsigned char *)"Pragma", NULL))) {
 		if (strstr((char *)d, "no-cache")) {
 			no_cache = 1;
 		}
 		mem_free(d);
 	}
 
-	if (!no_cache && (d = parse_header(head, "Cache-Control", NULL))) {
+	if (!no_cache && (d = parse_header(head, (const unsigned char *)"Cache-Control", NULL))) {
 		if (strstr((char *)d, "no-cache") || strstr((char *)d, "must-revalidate")) {
 			no_cache = 1;
 
 		} else  {
-			unsigned char *pos = strstr((char *)d, "max-age=");
+			unsigned char *pos = (unsigned char *)strstr((char *)d, "max-age=");
 
 			assert(!no_cache);
 
@@ -353,7 +353,7 @@ check_head_for_cache_control(struct html_context *html_context,
 				/* Grab the number of seconds. */
 				timeval_T max_age, seconds;
 
-				timeval_from_seconds(&seconds, atol(pos + 8));
+				timeval_from_seconds(&seconds, atol((const char *)(pos + 8)));
 				timeval_now(&max_age);
 				timeval_add_interval(&max_age, &seconds);
 
@@ -364,7 +364,7 @@ check_head_for_cache_control(struct html_context *html_context,
 		mem_free(d);
 	}
 
-	if (!no_cache && (d = parse_header(head, "Expires", NULL))) {
+	if (!no_cache && (d = parse_header(head, (unsigned char *)"Expires", NULL))) {
 		/* Convert date to seconds. */
 		if (strstr((char *)d, "now")) {
 			timeval_T now;
@@ -419,12 +419,12 @@ look_for_map(unsigned char **pos, unsigned char *eof, struct uri *uri,
 		return 1;
 	}
 
-	if (c_strlcasecmp(name, namelen, "MAP", 3)) return 1;
+	if (c_strlcasecmp(name, namelen, (const unsigned char *)"MAP", 3)) return 1;
 
 	if (uri && uri->fragment) {
 		/* FIXME (bug 784): options->cp is the terminal charset;
 		 * should use the document charset instead.  */
-		al = get_attr_val(attr, "name", options->cp);
+		al = get_attr_val(attr, (unsigned char *)"name", options->cp);
 		if (!al) return 1;
 
 		if (c_strlcasecmp(al, -1, uri->fragment, uri->fragmentlen)) {
@@ -474,12 +474,12 @@ look_for_tag(unsigned char **pos, unsigned char *eof,
 
 	if (parse_element(*pos, eof, NULL, NULL, NULL, &pos2)) return 1;
 
-	if (c_strlcasecmp(name, namelen, "A", 1)
-	    && c_strlcasecmp(name, namelen, "/A", 2)
-	    && c_strlcasecmp(name, namelen, "MAP", 3)
-	    && c_strlcasecmp(name, namelen, "/MAP", 4)
-	    && c_strlcasecmp(name, namelen, "AREA", 4)
-	    && c_strlcasecmp(name, namelen, "/AREA", 5)) {
+	if (c_strlcasecmp(name, namelen, (const unsigned char *)"A", 1)
+	    && c_strlcasecmp(name, namelen, (const unsigned char *)"/A", 2)
+	    && c_strlcasecmp(name, namelen, (const unsigned char *)"MAP", 3)
+	    && c_strlcasecmp(name, namelen, (const unsigned char *)"/MAP", 4)
+	    && c_strlcasecmp(name, namelen, (const unsigned char *)"AREA", 4)
+	    && c_strlcasecmp(name, namelen, (const unsigned char *)"/AREA", 5)) {
 		*pos = pos2;
 		return 1;
 	}
@@ -519,15 +519,15 @@ look_for_link(unsigned char **pos, unsigned char *eof, struct menu_item **menu,
 		return 1;
 	}
 
-	if (!c_strlcasecmp(name, namelen, "A", 1)) {
+	if (!c_strlcasecmp(name, namelen, (const unsigned char *)"A", 1)) {
 		while (look_for_tag(pos, eof, name, namelen, &label));
 
 		if (*pos >= eof) return -1;
 
-	} else if (!c_strlcasecmp(name, namelen, "AREA", 4)) {
+	} else if (!c_strlcasecmp(name, namelen, (const unsigned char *)"AREA", 4)) {
 		/* FIXME (bug 784): options->cp is the terminal charset;
 		 * should use the document charset instead.  */
-		unsigned char *alt = get_attr_val(attr, "alt", options->cp);
+		unsigned char *alt = get_attr_val(attr, (unsigned char *)"alt", options->cp);
 
 		if (alt) {
 			/* CSM_NONE because get_attr_val() already
@@ -540,7 +540,7 @@ look_for_link(unsigned char **pos, unsigned char *eof, struct menu_item **menu,
 			label = NULL;
 		}
 
-	} else if (!c_strlcasecmp(name, namelen, "/MAP", 4)) {
+	} else if (!c_strlcasecmp(name, namelen, (const unsigned char *)"/MAP", 4)) {
 		/* This is the only successful return from here! */
 		add_to_ml(ml, (void *) *menu, (void *) NULL);
 		return 0;
@@ -565,7 +565,7 @@ look_for_link(unsigned char **pos, unsigned char *eof, struct menu_item **menu,
 
 	/* FIXME (bug 784): options->cp is the terminal charset;
 	 * should use the document charset instead.  */
-	href = get_url_val(attr, "href", options->cp);
+	href = get_url_val(attr, (unsigned char *)"href", options->cp);
 	if (!href) {
 		mem_free_if(label);
 		mem_free(target);
@@ -588,8 +588,8 @@ look_for_link(unsigned char **pos, unsigned char *eof, struct menu_item **menu,
 	for (nmenu = 0; !mi_is_end_of_menu(&(*menu)[nmenu]); nmenu++) {
 		struct link_def *ll = (struct link_def *)(*menu)[nmenu].data;
 
-		if (!strcmp(ll->link, ld->link) &&
-		    !strcmp(ll->target, ld->target)) {
+		if (!strcmp((const char *)ll->link, (const char *)ld->link) &&
+		    !strcmp((const char *)ll->target, (const char *)ld->target)) {
 			mem_free(ld->link);
 			mem_free(ld->target);
 			mem_free(ld);

@@ -33,7 +33,7 @@ html_parse_meta_refresh(const unsigned char *content,
 		++scan;
 
 	/* TODO: Do we need to switch to the "C" locale and back?  */
-	*delay_out = strtoul(scan, &delay_end, 10);
+	*delay_out = strtoul((const char *)scan, &delay_end, 10);
 	saw_delay = (scan != (const unsigned char *) delay_end);
 	scan = (const unsigned char *) delay_end;
 
@@ -94,11 +94,11 @@ html_parse_meta_refresh(const unsigned char *content,
 	if (*url_begin == '"' || *url_begin == '\'') {
 		unsigned char quote = *url_begin++;
 
-		url_end = strchr((char *)url_begin, quote);
+		url_end = (unsigned char *)strchr((char *)url_begin, quote);
 		if (url_end == NULL)
-			url_end = strchr((char *)url_begin, '\0');
+			url_end = (unsigned char *)strchr((char *)url_begin, '\0');
 	} else {
-		url_end = strchr((char *)url_begin, '\0');
+		url_end = (unsigned char *)strchr((char *)url_begin, '\0');
 	}
 
 	/* In any case, trim all spaces from the end of the URL.  */

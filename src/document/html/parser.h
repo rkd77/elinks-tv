@@ -91,7 +91,8 @@ enum format_list_flag {
 };
 
 struct par_attrib {
-	enum format_align align;
+	//enum format_align align;
+	int align;
 	int leftmargin;
 	int rightmargin;
 	int width;
