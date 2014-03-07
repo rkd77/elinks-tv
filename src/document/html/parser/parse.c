@@ -260,7 +260,7 @@ get_num(unsigned char *a, unsigned char *name, int cp)
 		long num;
 
 		errno = 0;
-		num = strtol(al, (char **) &end, 10);
+		num = strtol((const char *)al, (char **) &end, 10);
 		if (!errno && *al && !*end && num >= 0 && num <= INT_MAX)
 			result = (int) num;
 
@@ -425,80 +425,80 @@ struct element_info {
 };
 
 static struct element_info elements[] = {
- {"A",           html_a,           NULL,                 0, ET_NON_NESTABLE},
- {"ABBR",        html_italic,      NULL,                 0, ET_NESTABLE    },
- {"ADDRESS",     html_address,     NULL,                 2, ET_NESTABLE    },
- {"APPLET",      html_applet,      NULL,                 1, ET_NON_PAIRABLE},
- {"AUDIO",       html_audio,       NULL,                 1, ET_NON_PAIRABLE},
- {"B",           html_bold,        NULL,                 0, ET_NESTABLE    },
- {"BASE",        html_base,        NULL,                 0, ET_NON_PAIRABLE},
- {"BASEFONT",    html_font,        NULL,                 0, ET_NON_PAIRABLE},
- {"BLOCKQUOTE",  html_blockquote,  NULL,                 2, ET_NESTABLE    },
- {"BODY",        html_body,        NULL,                 0, ET_NESTABLE    },
- {"BR",          html_br,          NULL,                 1, ET_NON_PAIRABLE},
- {"BUTTON",      html_button,      NULL,                 0, ET_NESTABLE    },
- {"CAPTION",     html_center,      NULL,                 1, ET_NESTABLE    },
- {"CENTER",      html_center,      NULL,                 1, ET_NESTABLE    },
- {"CODE",        html_fixed,       NULL,                 0, ET_NESTABLE    },
- {"DD",          html_dd,          NULL,                 1, ET_NON_PAIRABLE},
- {"DFN",         html_bold,        NULL,                 0, ET_NESTABLE    },
- {"DIR",         html_ul,          NULL,                 2, ET_NESTABLE    },
- {"DIV",         html_linebrk,     NULL,                 1, ET_NESTABLE    },
- {"DL",          html_dl,          NULL,                 2, ET_NESTABLE    },
- {"DT",          html_dt,          NULL,                 1, ET_NON_PAIRABLE},
- {"EM",          html_italic,      NULL,                 0, ET_NESTABLE    },
- {"EMBED",       html_embed,       NULL,                 0, ET_NON_PAIRABLE},
- {"FIXED",       html_fixed,       NULL,                 0, ET_NESTABLE    },
- {"FONT",        html_font,        NULL,                 0, ET_NESTABLE    },
- {"FORM",        html_form,        NULL,                 1, ET_NESTABLE    },
- {"FRAME",       html_frame,       NULL,                 1, ET_NON_PAIRABLE},
- {"FRAMESET",    html_frameset,    NULL,                 1, ET_NESTABLE    },
- {"H1",          html_h1,          NULL,                 2, ET_NON_NESTABLE},
- {"H2",          html_h2,          NULL,                 2, ET_NON_NESTABLE},
- {"H3",          html_h3,          NULL,                 2, ET_NON_NESTABLE},
- {"H4",          html_h4,          NULL,                 2, ET_NON_NESTABLE},
- {"H5",          html_h5,          NULL,                 2, ET_NON_NESTABLE},
- {"H6",          html_h6,          NULL,                 2, ET_NON_NESTABLE},
- {"HEAD",        html_head,        NULL,                 0, ET_NESTABLE    },
- {"HR",          html_hr,          NULL,                 2, ET_NON_PAIRABLE},
- {"HTML",        html_html,        html_html_close,      0, ET_NESTABLE    },
- {"I",           html_italic,      NULL,                 0, ET_NESTABLE    },
- {"IFRAME",      html_iframe,      NULL,                 1, ET_NON_PAIRABLE},
- {"IMG",         html_img,         NULL,                 0, ET_NON_PAIRABLE},
- {"INPUT",       html_input,       NULL,                 0, ET_NON_PAIRABLE},
- {"LI",          html_li,          NULL,                 1, ET_LI          },
- {"LINK",        html_link,        NULL,                 1, ET_NON_PAIRABLE},
- {"LISTING",     html_pre,         NULL,                 2, ET_NESTABLE    },
- {"MENU",        html_ul,          NULL,                 2, ET_NESTABLE    },
- {"META",        html_meta,        NULL,                 0, ET_NON_PAIRABLE},
- {"NOFRAMES",    html_noframes,    NULL,                 0, ET_NESTABLE    },
- {"NOSCRIPT",    html_noscript,    NULL,                 0, ET_NESTABLE    },
- {"OBJECT",      html_object,      NULL,                 1, ET_NON_PAIRABLE},
- {"OL",          html_ol,          NULL,                 2, ET_NESTABLE    },
- {"OPTION",      html_option,      NULL,                 1, ET_NON_PAIRABLE},
- {"P",           html_p,           NULL,                 2, ET_NON_NESTABLE},
- {"PRE",         html_pre,         NULL,                 2, ET_NESTABLE    },
- {"Q",           html_quote,       html_quote_close,     0, ET_NESTABLE    },
- {"S",           html_underline,   NULL,                 0, ET_NESTABLE    },
- {"SCRIPT",      html_script,      NULL,                 0, ET_NESTABLE    },
- {"SELECT",      html_select,      NULL,                 0, ET_NESTABLE    },
- {"SPAN",        html_span,        NULL,                 0, ET_NESTABLE    },
- {"STRIKE",      html_underline,   NULL,                 0, ET_NESTABLE    },
- {"STRONG",      html_bold,        NULL,                 0, ET_NESTABLE    },
- {"STYLE",       html_style,       html_style_close,     0, ET_NESTABLE    },
- {"SUB",         html_subscript,   html_subscript_close, 0, ET_NESTABLE    },
- {"SUP",         html_superscript, NULL,                 0, ET_NESTABLE    },
- {"TABLE",       html_table,       NULL,                 2, ET_NESTABLE    },
- {"TD",          html_td,          NULL,                 0, ET_NESTABLE    },
- {"TEXTAREA",    html_textarea,    NULL,                 0, ET_NON_PAIRABLE},
- {"TH",          html_th,          NULL,                 0, ET_NESTABLE    },
- {"TITLE",       html_title,       NULL,                 0, ET_NESTABLE    },
- {"TR",          html_tr,          NULL,                 1, ET_NESTABLE    },
- {"TT",          html_tt,          NULL,                 0, ET_NON_NESTABLE},
- {"U",           html_underline,   NULL,                 0, ET_NESTABLE    },
- {"UL",          html_ul,          NULL,                 2, ET_NESTABLE    },
- {"VIDEO",       html_video,       NULL,                 1, ET_NON_PAIRABLE},
- {"XMP",         html_xmp,         html_xmp_close,       2, ET_NESTABLE    },
+ {(unsigned char *)"A",           html_a,           NULL,                 0, ET_NON_NESTABLE},
+ {(unsigned char *)"ABBR",        html_italic,      NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"ADDRESS",     html_address,     NULL,                 2, ET_NESTABLE    },
+ {(unsigned char *)"APPLET",      html_applet,      NULL,                 1, ET_NON_PAIRABLE},
+ {(unsigned char *)"AUDIO",       html_audio,       NULL,                 1, ET_NON_PAIRABLE},
+ {(unsigned char *)"B",           html_bold,        NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"BASE",        html_base,        NULL,                 0, ET_NON_PAIRABLE},
+ {(unsigned char *)"BASEFONT",    html_font,        NULL,                 0, ET_NON_PAIRABLE},
+ {(unsigned char *)"BLOCKQUOTE",  html_blockquote,  NULL,                 2, ET_NESTABLE    },
+ {(unsigned char *)"BODY",        html_body,        NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"BR",          html_br,          NULL,                 1, ET_NON_PAIRABLE},
+ {(unsigned char *)"BUTTON",      html_button,      NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"CAPTION",     html_center,      NULL,                 1, ET_NESTABLE    },
+ {(unsigned char *)"CENTER",      html_center,      NULL,                 1, ET_NESTABLE    },
+ {(unsigned char *)"CODE",        html_fixed,       NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"DD",          html_dd,          NULL,                 1, ET_NON_PAIRABLE},
+ {(unsigned char *)"DFN",         html_bold,        NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"DIR",         html_ul,          NULL,                 2, ET_NESTABLE    },
+ {(unsigned char *)"DIV",         html_linebrk,     NULL,                 1, ET_NESTABLE    },
+ {(unsigned char *)"DL",          html_dl,          NULL,                 2, ET_NESTABLE    },
+ {(unsigned char *)"DT",          html_dt,          NULL,                 1, ET_NON_PAIRABLE},
+ {(unsigned char *)"EM",          html_italic,      NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"EMBED",       html_embed,       NULL,                 0, ET_NON_PAIRABLE},
+ {(unsigned char *)"FIXED",       html_fixed,       NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"FONT",        html_font,        NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"FORM",        html_form,        NULL,                 1, ET_NESTABLE    },
+ {(unsigned char *)"FRAME",       html_frame,       NULL,                 1, ET_NON_PAIRABLE},
+ {(unsigned char *)"FRAMESET",    html_frameset,    NULL,                 1, ET_NESTABLE    },
+ {(unsigned char *)"H1",          html_h1,          NULL,                 2, ET_NON_NESTABLE},
+ {(unsigned char *)"H2",          html_h2,          NULL,                 2, ET_NON_NESTABLE},
+ {(unsigned char *)"H3",          html_h3,          NULL,                 2, ET_NON_NESTABLE},
+ {(unsigned char *)"H4",          html_h4,          NULL,                 2, ET_NON_NESTABLE},
+ {(unsigned char *)"H5",          html_h5,          NULL,                 2, ET_NON_NESTABLE},
+ {(unsigned char *)"H6",          html_h6,          NULL,                 2, ET_NON_NESTABLE},
+ {(unsigned char *)"HEAD",        html_head,        NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"HR",          html_hr,          NULL,                 2, ET_NON_PAIRABLE},
+ {(unsigned char *)"HTML",        html_html,        html_html_close,      0, ET_NESTABLE    },
+ {(unsigned char *)"I",           html_italic,      NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"IFRAME",      html_iframe,      NULL,                 1, ET_NON_PAIRABLE},
+ {(unsigned char *)"IMG",         html_img,         NULL,                 0, ET_NON_PAIRABLE},
+ {(unsigned char *)"INPUT",       html_input,       NULL,                 0, ET_NON_PAIRABLE},
+ {(unsigned char *)"LI",          html_li,          NULL,                 1, ET_LI          },
+ {(unsigned char *)"LINK",        html_link,        NULL,                 1, ET_NON_PAIRABLE},
+ {(unsigned char *)"LISTING",     html_pre,         NULL,                 2, ET_NESTABLE    },
+ {(unsigned char *)"MENU",        html_ul,          NULL,                 2, ET_NESTABLE    },
+ {(unsigned char *)"META",        html_meta,        NULL,                 0, ET_NON_PAIRABLE},
+ {(unsigned char *)"NOFRAMES",    html_noframes,    NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"NOSCRIPT",    html_noscript,    NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"OBJECT",      html_object,      NULL,                 1, ET_NON_PAIRABLE},
+ {(unsigned char *)"OL",          html_ol,          NULL,                 2, ET_NESTABLE    },
+ {(unsigned char *)"OPTION",      html_option,      NULL,                 1, ET_NON_PAIRABLE},
+ {(unsigned char *)"P",           html_p,           NULL,                 2, ET_NON_NESTABLE},
+ {(unsigned char *)"PRE",         html_pre,         NULL,                 2, ET_NESTABLE    },
+ {(unsigned char *)"Q",           html_quote,       html_quote_close,     0, ET_NESTABLE    },
+ {(unsigned char *)"S",           html_underline,   NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"SCRIPT",      html_script,      NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"SELECT",      html_select,      NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"SPAN",        html_span,        NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"STRIKE",      html_underline,   NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"STRONG",      html_bold,        NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"STYLE",       html_style,       html_style_close,     0, ET_NESTABLE    },
+ {(unsigned char *)"SUB",         html_subscript,   html_subscript_close, 0, ET_NESTABLE    },
+ {(unsigned char *)"SUP",         html_superscript, NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"TABLE",       html_table,       NULL,                 2, ET_NESTABLE    },
+ {(unsigned char *)"TD",          html_td,          NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"TEXTAREA",    html_textarea,    NULL,                 0, ET_NON_PAIRABLE},
+ {(unsigned char *)"TH",          html_th,          NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"TITLE",       html_title,       NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"TR",          html_tr,          NULL,                 1, ET_NESTABLE    },
+ {(unsigned char *)"TT",          html_tt,          NULL,                 0, ET_NON_NESTABLE},
+ {(unsigned char *)"U",           html_underline,   NULL,                 0, ET_NESTABLE    },
+ {(unsigned char *)"UL",          html_ul,          NULL,                 2, ET_NESTABLE    },
+ {(unsigned char *)"VIDEO",       html_video,       NULL,                 1, ET_NON_PAIRABLE},
+ {(unsigned char *)"XMP",         html_xmp,         html_xmp_close,       2, ET_NESTABLE    },
  {NULL,          NULL,             NULL,                 0, ET_NESTABLE    },
 };
 
@@ -545,7 +545,7 @@ tags_list_next(void)
 }
 
 static struct fastfind_index ff_tags_index
-	= INIT_FASTFIND_INDEX("tags_lookup", tags_list_reset, tags_list_next);
+	= INIT_FASTFIND_INDEX((unsigned char *)"tags_lookup", tags_list_reset, tags_list_next);
 
 #endif /* USE_FASTFIND */
 
@@ -692,7 +692,7 @@ main_loop:
 				put_chrs(html_context, base_pos, html - base_pos);
 			} else {
 				put_chrs(html_context, base_pos, html - base_pos - 1);
-				put_chrs(html_context, " ", 1);
+				put_chrs(html_context, (unsigned char *)" ", 1);
 			}
 
 skip_w:
@@ -705,7 +705,7 @@ skip_w:
 			html_context->putsp = HTML_SPACE_NORMAL;
 			if (*html == ASCII_TAB) {
 				put_chrs(html_context, base_pos, html - base_pos);
-				put_chrs(html_context, "        ",
+				put_chrs(html_context, (unsigned char *)"        ",
 				         8 - (html_context->position % 8));
 				html++;
 				continue;
@@ -780,7 +780,7 @@ next_break:
 element:
 		endingtag = *name == '/'; name += endingtag; namelen -= endingtag;
 		if (!endingtag && html_context->putsp == HTML_SPACE_ADD && !html_top->invisible)
-			put_chrs(html_context, " ", 1);
+			put_chrs(html_context, (unsigned char *)" ", 1);
 		put_chrs(html_context, base_pos, html - base_pos);
 		if (!html_is_preformatted() && !endingtag && html_context->putsp == HTML_SPACE_NORMAL) {
 			unsigned char *ee = end;
@@ -790,7 +790,7 @@ element:
 				if (*nm == '/')
 					goto ng;
 			if (ee < eof && isspace(*ee)) {
-				put_chrs(html_context, " ", 1);
+				put_chrs(html_context, (unsigned char *)" ", 1);
 			}
 		}
 ng:
@@ -820,7 +820,7 @@ start_element(struct element_info *ei,
 {
 #define ELEMENT_RENDER_PROLOGUE \
 	ln_break(html_context, ei->linebreak); \
-	a = get_attr_val(attr, "id", html_context->doc_cp); \
+	a = get_attr_val(attr, (unsigned char *)"id", html_context->doc_cp); \
 	if (a) { \
 		html_context->special_f(html_context, SP_TAG, a); \
 		mem_free(a); \
@@ -871,7 +871,7 @@ start_element(struct element_info *ei,
 #ifdef CONFIG_CSS
 	if (ei->open == html_style && html_context->options->css_enable) {
 		unsigned char *media
-			= get_attr_val(attr, "media", html_context->doc_cp);
+			= get_attr_val(attr, (unsigned char *)"media", html_context->doc_cp);
 		int support = supports_html_media_attr(media);
 		mem_free_if(media);
 
@@ -935,13 +935,13 @@ start_element(struct element_info *ei,
 	/* If the element has an onClick handler for scripts, make it
 	 * clickable. */
 #ifdef CONFIG_ECMASCRIPT
-	if (has_attr(attr, "onClick", html_context->doc_cp)) {
+	if (has_attr(attr, (unsigned char *)"onClick", html_context->doc_cp)) {
 		/* XXX: Put something better to format.link. --pasky */
-		mem_free_set(&format.link, stracpy("javascript:void(0);"));
+		mem_free_set(&format.link, stracpy((const unsigned char *)"javascript:void(0);"));
 		mem_free_set(&format.target, stracpy(html_context->base_target));
 		format.style.color.foreground = format.color.clink;
 		html_top->pseudo_class = ELEMENT_LINK;
-		mem_free_set(&format.title, stracpy("onClick placeholder"));
+		mem_free_set(&format.title, stracpy((const unsigned char *)"onClick placeholder"));
 		/* Er. I know. Well, double html_focusable()s shouldn't
 		 * really hurt. */
 		html_focusable(html_context, attr);
@@ -973,9 +973,9 @@ start_element(struct element_info *ei,
 		 * rescan on your own from somewhere else (2) html_stack_dup()
 		 * in our own way.  --pasky */
 		mem_free_set(&html_top->attr.id,
-			     get_attr_val(attr, "id", html_context->doc_cp));
+			     get_attr_val(attr, (unsigned char *)"id", html_context->doc_cp));
 		mem_free_set(&html_top->attr.class_,
-			     get_attr_val(attr, "class", html_context->doc_cp));
+			     get_attr_val(attr, (unsigned char *)"class", html_context->doc_cp));
 		/* Call it now to gain some of the stuff which might affect
 		 * formatting of some elements. */
 		/* FIXME: The caching of the CSS selector is broken, since t can
@@ -1165,7 +1165,7 @@ process_element(unsigned char *name, int namelen, int endingtag,
 #endif
 	if (html_context->was_xmp || html_context->was_style) {
 		if (!ei || (ei->open != html_xmp && ei->open != html_style) || !endingtag) {
-			put_chrs(html_context, "<", 1);
+			put_chrs(html_context, (unsigned char *)"<", 1);
 			return prev_html + 1;
 		}
 	}
@@ -1203,10 +1203,10 @@ sp:
 	if (parse_element(s, eof, &name, &namelen, &attr, &s)) goto sp;
 
 ps:
-	if (!c_strlcasecmp(name, namelen, "HEAD", 4)) goto se;
-	if (!c_strlcasecmp(name, namelen, "/HEAD", 5)) return;
-	if (!c_strlcasecmp(name, namelen, "BODY", 4)) return;
-	if (title && !title->length && !c_strlcasecmp(name, namelen, "TITLE", 5)) {
+	if (!c_strlcasecmp(name, namelen, (const unsigned char *)"HEAD", 4)) goto se;
+	if (!c_strlcasecmp(name, namelen, (const unsigned char *)"/HEAD", 5)) return;
+	if (!c_strlcasecmp(name, namelen, (const unsigned char *)"BODY", 4)) return;
+	if (title && !title->length && !c_strlcasecmp(name, namelen, (const unsigned char *)"TITLE", 5)) {
 		unsigned char *s1;
 
 xse:
@@ -1229,20 +1229,20 @@ xsp:
 		clr_spaces(title->source);
 		goto ps;
 	}
-	if (c_strlcasecmp(name, namelen, "META", 4)) goto se;
+	if (c_strlcasecmp(name, namelen, (const unsigned char *)"META", 4)) goto se;
 
 	/* FIXME (bug 784): cp is the terminal charset;
 	 * should use the document charset instead.  */
-	he = get_attr_val(attr, "charset", cp);
+	he = get_attr_val(attr, (unsigned char *)"charset", cp);
 	if (he) {
-		add_to_string(head, "Charset: ");
+		add_to_string(head, (const unsigned char *)"Charset: ");
 		add_to_string(head, he);
 		mem_free(he);
 	}
 
 	/* FIXME (bug 784): cp is the terminal charset;
 	 * should use the document charset instead.  */
-	he = get_attr_val(attr, "http-equiv", cp);
+	he = get_attr_val(attr, (unsigned char *)"http-equiv", cp);
 	if (!he) goto se;
 
 	add_to_string(head, he);
@@ -1250,9 +1250,9 @@ xsp:
 
 	/* FIXME (bug 784): cp is the terminal charset;
 	 * should use the document charset instead.  */
-	c = get_attr_val(attr, "content", cp);
+	c = get_attr_val(attr, (unsigned char *)"content", cp);
 	if (c) {
-		add_to_string(head, ": ");
+		add_to_string(head, (const unsigned char *)": ");
 		add_to_string(head, c);
 	        mem_free(c);
 	}
@@ -1303,7 +1303,7 @@ supports_html_media_attr(const unsigned char *media)
 		while (*media == ' ')
 			++media;
 		beg = media;
-		media += strcspn(media, ",");
+		media += strcspn((const char *)media, ",");
 		if (*media == ',')
 			++media;
 

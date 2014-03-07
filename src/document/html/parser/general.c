@@ -80,26 +80,26 @@ void
 html_subscript(struct html_context *html_context, unsigned char *a,
                unsigned char *xxx3, unsigned char *xxx4, unsigned char **xxx5)
 {
-	put_chrs(html_context, "[", 1);
+	put_chrs(html_context, (unsigned char *)"[", 1);
 }
 
 void
 html_subscript_close(struct html_context *html_context, unsigned char *a,
                 unsigned char *xxx3, unsigned char *xxx4, unsigned char **xxx5)
 {
-	put_chrs(html_context, "]", 1);
+	put_chrs(html_context, (unsigned char *)"]", 1);
 }
 
 void
 html_superscript(struct html_context *html_context, unsigned char *a,
                  unsigned char *xxx3, unsigned char *xxx4, unsigned char **xxx5)
 {
-	put_chrs(html_context, "^", 1);
+	put_chrs(html_context, (unsigned char *)"^", 1);
 }
 
 /* TODO: Add more languages.
  * Entities can be used in these strings.  */
-static unsigned char *quote_char[2] = { "\"", "'" };
+static unsigned char *quote_char[2] = { (unsigned char *)"\"", (unsigned char *)"'" };
 
 void
 html_quote(struct html_context *html_context, unsigned char *a,
@@ -137,7 +137,7 @@ void
 html_font(struct html_context *html_context, unsigned char *a,
           unsigned char *xxx3, unsigned char *xxx4, unsigned char **xxx5)
 {
-	unsigned char *al = get_attr_val(a, "size", html_context->doc_cp);
+	unsigned char *al = get_attr_val(a, (unsigned char *)"size", html_context->doc_cp);
 
 	if (al) {
 		int p = 0;
@@ -149,7 +149,7 @@ html_font(struct html_context *html_context, unsigned char *a,
 		else if (*al == '-') p = -1, nn++;
 
 		errno = 0;
-		s = strtoul(nn, (char **) &end, 10);
+		s = strtoul((const char *)nn, (char **) &end, 10);
 		if (!errno && *nn && !*end) {
 			if (s > 7) s = 7;
 			if (!p) format.fontsize = s;
@@ -159,16 +159,16 @@ html_font(struct html_context *html_context, unsigned char *a,
 		}
 		mem_free(al);
 	}
-	get_color(html_context, a, "color", &format.style.color.foreground);
+	get_color(html_context, a, (unsigned char *)"color", &format.style.color.foreground);
 }
 
 void
 html_body(struct html_context *html_context, unsigned char *a,
           unsigned char *xxx3, unsigned char *xxx4, unsigned char **xxx5)
 {
-	get_color(html_context, a, "text", &format.style.color.foreground);
-	get_color(html_context, a, "link", &format.color.clink);
-	get_color(html_context, a, "vlink", &format.color.vlink);
+	get_color(html_context, a, (unsigned char *)"text", &format.style.color.foreground);
+	get_color(html_context, a, (unsigned char *)"link", &format.color.clink);
+	get_color(html_context, a, (unsigned char *)"vlink", &format.color.vlink);
 
 	if (get_bgcolor(html_context, a, &format.style.color.background) != -1)
 		html_context->was_body_background = 1;
@@ -199,7 +199,7 @@ html_apply_canvas_bgcolor(struct html_context *html_context)
 
 	if (html_context->has_link_lines
 	    && par_format.color.background != html_context->options->default_style.color.background
-	    && !search_html_stack(html_context, "BODY")) {
+	    && !search_html_stack(html_context, (unsigned char *)"BODY")) {
 		html_context->special_f(html_context, SP_COLOR_LINK_LINES);
 	}
 }
@@ -224,14 +224,14 @@ html_script(struct html_context *html_context, unsigned char *a,
 	/* Ref:
 	 * http://www.ietf.org/internet-drafts/draft-hoehrmann-script-types-03.txt
 	 */
-	type = get_attr_val(a, "type", html_context->doc_cp);
+	type = get_attr_val(a, (unsigned char *)"type", html_context->doc_cp);
 	if (type) {
 		unsigned char *pos = type;
 
-		if (!c_strncasecmp(type, "text/", 5)) {
+		if (!c_strncasecmp((const char *)type, "text/", 5)) {
 			pos += 5;
 
-		} else if (!c_strncasecmp(type, "application/", 12)) {
+		} else if (!c_strncasecmp((const char *)type, "application/", 12)) {
 			pos += 12;
 
 		} else {
@@ -242,7 +242,7 @@ not_processed:
 			return;
 		}
 
-		if (!c_strncasecmp(pos, "javascript", 10)) {
+		if (!c_strncasecmp((const char *)pos, "javascript", 10)) {
 			int len = strlen((const char *)pos);
 
 			if (len > 10 && !isdigit(pos[10])) {
@@ -250,11 +250,11 @@ not_processed:
 				goto not_processed;
 			}
 
-		} else if (c_strcasecmp(pos, "ecmascript")
-		    && c_strcasecmp(pos, "jscript")
-		    && c_strcasecmp(pos, "livescript")
-		    && c_strcasecmp(pos, "x-javascript")
-		    && c_strcasecmp(pos, "x-ecmascript")) {
+		} else if (c_strcasecmp((const char *)pos, "ecmascript")
+		    && c_strcasecmp((const char *)pos, "jscript")
+		    && c_strcasecmp((const char *)pos, "livescript")
+		    && c_strcasecmp((const char *)pos, "x-javascript")
+		    && c_strcasecmp((const char *)pos, "x-ecmascript")) {
 			mem_free(type);
 			goto not_processed;
 		}
@@ -266,13 +266,13 @@ not_processed:
 	 * language attribute can be JavaScript with optional version digits
 	 * postfixed (like: ``JavaScript1.1'').
 	 * That attribute is deprecated in favor of type by HTML 4.01 */
-	language = get_attr_val(a, "language", html_context->doc_cp);
+	language = get_attr_val(a, (unsigned char *)"language", html_context->doc_cp);
 	if (language) {
 		int languagelen = strlen((const char *)language);
 
 		if (languagelen < 10
 		    || (languagelen > 10 && !isdigit(language[10]))
-		    || c_strncasecmp(language, "javascript", 10)) {
+		    || c_strncasecmp((const char *)language, "javascript", 10)) {
 			mem_free(language);
 			html_top->invisible++;
 			return;
@@ -283,7 +283,7 @@ not_processed:
 	}
 
 	if (html_context->part->document
-	    && (src = get_attr_val(a, "src", html_context->doc_cp))) {
+	    && (src = get_attr_val(a, (unsigned char *)"src", html_context->doc_cp))) {
 		/* External reference. */
 
 		unsigned char *import_url;
@@ -309,7 +309,7 @@ not_processed:
 		done_uri(uri);
 
 		/* Create URL reference onload snippet. */
-		insert_in_string(&import_url, 0, "^", 1);
+		insert_in_string(&import_url, 0, (const unsigned char *)"^", 1);
 		add_to_string_list(&html_context->part->document->onload_snippets,
 		                   import_url, -1);
 
@@ -323,11 +323,11 @@ imported:
 
 	/* First position to the real script start. */
 	while (html < eof && *html <= ' ') html++;
-	if (eof - html > 4 && !strncmp(html, "<!--", 4)) {
+	if (eof - html > 4 && !strncmp((const char *)html, "<!--", 4)) {
 		in_comment = 1;
 		/* We either skip to the end of line or to -->. */
 		for (; *html != '\n' && *html != '\r' && eof - html >= 3; html++) {
-			if (!strncmp(html, "-->", 3)) {
+			if (!strncmp((const char *)html, "-->", 3)) {
 				/* This means the document is probably broken.
 				 * We will now try to process the rest of
 				 * <script> contents, which is however likely
@@ -359,7 +359,7 @@ imported:
 			 * distinction, this should be disabled in the
 			 * standards mode (and we should just look for CDATA
 			 * end, which is "</"). --pasky */
-			if (eof - *end >= 3 && !strncmp(*end, "-->", 3)) {
+			if (eof - *end >= 3 && !strncmp((const char *)*end, "-->", 3)) {
 				/* Next iteration will jump passed the ending '>' */
 				(*end) += 2;
 				in_comment = 0;
@@ -377,7 +377,7 @@ imported:
 		 * argument. */
 		if (parse_element(*end, eof, &name, &namelen, NULL, NULL))
 			continue;
-		if (c_strlcasecmp(name, namelen, "/script", 7))
+		if (c_strlcasecmp(name, namelen, (const unsigned char *)"/script", 7))
 			continue;
 		/* We have won! */
 		break;
@@ -486,16 +486,16 @@ void
 html_linebrk(struct html_context *html_context, unsigned char *a,
              unsigned char *xxx3, unsigned char *xxx4, unsigned char **xxx5)
 {
-	unsigned char *al = get_attr_val(a, "align", html_context->doc_cp);
+	unsigned char *al = get_attr_val(a, (unsigned char *)"align", html_context->doc_cp);
 
 	if (al) {
-		if (!c_strcasecmp(al, "left")) par_format.align = ALIGN_LEFT;
-		else if (!c_strcasecmp(al, "right")) par_format.align = ALIGN_RIGHT;
-		else if (!c_strcasecmp(al, "center")) {
+		if (!c_strcasecmp((const char *)al, "left")) par_format.align = ALIGN_LEFT;
+		else if (!c_strcasecmp((const char *)al, "right")) par_format.align = ALIGN_RIGHT;
+		else if (!c_strcasecmp((const char *)al, "center")) {
 			par_format.align = ALIGN_CENTER;
 			if (!html_context->table_level)
 				par_format.leftmargin = par_format.rightmargin = 0;
-		} else if (!c_strcasecmp(al, "justify")) par_format.align = ALIGN_JUSTIFY;
+		} else if (!c_strcasecmp((const char *)al, "justify")) par_format.align = ALIGN_JUSTIFY;
 		mem_free(al);
 	}
 }
@@ -639,7 +639,7 @@ html_hr(struct html_context *html_context, unsigned char *a,
 {
 	int i/* = par_format.width - 10*/;
 	unsigned char r = (unsigned char) BORDER_DHLINE;
-	int q = get_num(a, "size", html_context->doc_cp);
+	int q = get_num(a, (unsigned char *)"size", html_context->doc_cp);
 
 	if (q >= 0 && q < 2) r = (unsigned char) BORDER_SHLINE;
 	html_stack_dup(html_context, ELEMENT_KILLABLE);
@@ -650,7 +650,7 @@ html_hr(struct html_context *html_context, unsigned char *a,
 	if (par_format.align == ALIGN_JUSTIFY) par_format.align = ALIGN_CENTER;
 	par_format.leftmargin = par_format.rightmargin = html_context->margin;
 
-	i = get_width(a, "width", 1, html_context);
+	i = get_width(a, (unsigned char *)"width", 1, html_context);
 	if (i == -1) i = get_html_max_width();
 	format.style.attr = AT_GRAPHICS;
 	html_context->special_f(html_context, SP_NOWRAP, 1);
@@ -699,9 +699,10 @@ html_th(struct html_context *html_context, unsigned char *a,
 {
 	/*html_linebrk(html_context, a, html, eof, end);*/
 	kill_html_stack_until(html_context, 1,
-	                      "TD", "TH", "", "TR", "TABLE", NULL);
+	                      (unsigned char *)"TD", (unsigned char *)"TH", (unsigned char *)"",
+	                      (unsigned char *)"TR", (unsigned char *)"TABLE", NULL);
 	format.style.attr |= AT_BOLD;
-	put_chrs(html_context, " ", 1);
+	put_chrs(html_context, (unsigned char *)" ", 1);
 }
 
 void
@@ -710,9 +711,10 @@ html_td(struct html_context *html_context, unsigned char *a,
 {
 	/*html_linebrk(html_context, a, html, eof, end);*/
 	kill_html_stack_until(html_context, 1,
-	                      "TD", "TH", "", "TR", "TABLE", NULL);
+	                      (unsigned char *)"TD", (unsigned char *)"TH", (unsigned char *)"",
+	                      (unsigned char *)"TR", (unsigned char *)"TABLE", NULL);
 	format.style.attr &= ~AT_BOLD;
-	put_chrs(html_context, " ", 1);
+	put_chrs(html_context, (unsigned char *)" ", 1);
 }
 
 void
@@ -721,7 +723,7 @@ html_base(struct html_context *html_context, unsigned char *a,
 {
 	unsigned char *al;
 
-	al = get_url_val(a, "href", html_context->doc_cp);
+	al = get_url_val(a, (unsigned char *)"href", html_context->doc_cp);
 	if (al) {
 		unsigned char *base = join_urls(html_context->base_href, al);
 		struct uri *uri = base ? get_uri(base, 0) : NULL;
@@ -750,13 +752,13 @@ html_ul(struct html_context *html_context, unsigned char *a,
 	par_format.list_number = 0;
 	par_format.flags = P_DISC;
 
-	al = get_attr_val(a, "type", html_context->doc_cp);
+	al = get_attr_val(a, (unsigned char *)"type", html_context->doc_cp);
 	if (al) {
-		if (!c_strcasecmp(al, "disc"))
+		if (!c_strcasecmp((const char *)al, "disc"))
 			par_format.flags = P_DISC;
-		else if (!c_strcasecmp(al, "circle"))
+		else if (!c_strcasecmp((const char *)al, "circle"))
 			par_format.flags = P_O;
-		else if (!c_strcasecmp(al, "square"))
+		else if (!c_strcasecmp((const char *)al, "square"))
 			par_format.flags = P_SQUARE;
 		mem_free(al);
 	}
@@ -776,12 +778,12 @@ html_ol(struct html_context *html_context, unsigned char *a,
 	int st;
 
 	par_format.list_level++;
-	st = get_num(a, "start", html_context->doc_cp);
+	st = get_num(a, (unsigned char *)"start", html_context->doc_cp);
 	if (st == -1) st = 1;
 	par_format.list_number = st;
 	par_format.flags = P_NUMBER;
 
-	al = get_attr_val(a, "type", html_context->doc_cp);
+	al = get_attr_val(a, (unsigned char *)"type", html_context->doc_cp);
 	if (al) {
 		if (*al && !al[1]) {
 			if (*al == '1') par_format.flags = P_NUMBER;
@@ -807,25 +809,25 @@ static struct {
 	int n;
 	unsigned char *s;
 } roman_tbl[] = {
-	{1000,	"m"},
-	{999,	"im"},
-	{990,	"xm"},
-	{900,	"cm"},
-	{500,	"d"},
-	{499,	"id"},
-	{490,	"xd"},
-	{400,	"cd"},
-	{100,	"c"},
-	{99,	"ic"},
-	{90,	"xc"},
-	{50,	"l"},
-	{49,	"il"},
-	{40,	"xl"},
-	{10,	"x"},
-	{9,	"ix"},
-	{5,	"v"},
-	{4,	"iv"},
-	{1,	"i"},
+	{1000,	(unsigned char *)"m"},
+	{999,	(unsigned char *)"im"},
+	{990,	(unsigned char *)"xm"},
+	{900,	(unsigned char *)"cm"},
+	{500,	(unsigned char *)"d"},
+	{499,	(unsigned char *)"id"},
+	{490,	(unsigned char *)"xd"},
+	{400,	(unsigned char *)"cd"},
+	{100,	(unsigned char *)"c"},
+	{99,	(unsigned char *)"ic"},
+	{90,	(unsigned char *)"xc"},
+	{50,	(unsigned char *)"l"},
+	{49,	(unsigned char *)"il"},
+	{40,	(unsigned char *)"xl"},
+	{10,	(unsigned char *)"x"},
+	{9,	(unsigned char *)"ix"},
+	{5,	(unsigned char *)"v"},
+	{4,	(unsigned char *)"iv"},
+	{1,	(unsigned char *)"i"},
 	{0,	NULL}
 };
 
@@ -835,11 +837,11 @@ roman(struct string  *p, unsigned n)
 	int i = 0;
 
 	if (n >= 4000) {
-		add_to_string(p, "---");
+		add_to_string(p, (const unsigned char *)"---");
 		return;
 	}
 	if (!n) {
-		add_to_string(p, "o");
+		add_to_string(p, (const unsigned char *)"o");
 		return;
 	}
 	while (n) {
@@ -874,12 +876,12 @@ html_li(struct html_context *html_context, unsigned char *a,
 		/* Print nothing. */
 	} else if (!par_format.list_number) {
 		if (t == P_O) /* Print U+25E6 WHITE BULLET. */
-			put_chrs(html_context, "&#9702;", 7);
+			put_chrs(html_context, (unsigned char *)"&#9702;", 7);
 		else if (t == P_SQUARE) /* Print U+25AA BLACK SMALL SQUARE. */
-			put_chrs(html_context, "&#9642;", 7);
+			put_chrs(html_context, (unsigned char *)"&#9642;", 7);
 		else /* Print U+2022 BULLET. */
-			put_chrs(html_context, "&#8226;", 7);
-		put_chrs(html_context, "&nbsp;", 6);
+			put_chrs(html_context, (unsigned char *)"&#8226;", 7);
+		put_chrs(html_context, (unsigned char *)"&nbsp;", 6);
 		par_format.leftmargin += 2;
 		par_format.align = ALIGN_LEFT;
 
@@ -887,7 +889,7 @@ html_li(struct html_context *html_context, unsigned char *a,
 		unsigned char c = 0;
 		int nlen;
 		int t = par_format.flags & P_LISTMASK;
-		int s = get_num(a, "value", html_context->doc_cp);
+		int s = get_num(a, (unsigned char *)"value", html_context->doc_cp);
 		struct string n;
 
 		if (!init_string(&n)) return;
@@ -897,7 +899,7 @@ html_li(struct html_context *html_context, unsigned char *a,
 		if (t == P_ALPHA || t == P_alpha) {
 			unsigned char n0;
 
-			put_chrs(html_context, "&nbsp;", 6);
+			put_chrs(html_context, (unsigned char *)"&nbsp;", 6);
 			c = 1;
 			n0 = par_format.list_number
 			       ? (par_format.list_number - 1) % 26
@@ -916,7 +918,7 @@ html_li(struct html_context *html_context, unsigned char *a,
 		} else {
 			unsigned char n0[64];
 			if (par_format.list_number < 10) {
-				put_chrs(html_context, "&nbsp;", 6);
+				put_chrs(html_context, (unsigned char *)"&nbsp;", 6);
 				c = 1;
 			}
 
@@ -926,7 +928,7 @@ html_li(struct html_context *html_context, unsigned char *a,
 
 		nlen = n.length;
 		put_chrs(html_context, n.source, nlen);
-		put_chrs(html_context, ".&nbsp;", 7);
+		put_chrs(html_context, (unsigned char *)".&nbsp;", 7);
 		par_format.leftmargin += nlen + c + 2;
 		par_format.align = ALIGN_LEFT;
 		done_string(&n);
@@ -934,7 +936,7 @@ html_li(struct html_context *html_context, unsigned char *a,
 		{
 			struct html_element *element;
 
-			element = search_html_stack(html_context, "ol");
+			element = search_html_stack(html_context, (unsigned char *)"ol");
 			if (element)
 				element->parattr.list_number = par_format.list_number + 1;
 		}
@@ -952,7 +954,7 @@ html_dl(struct html_context *html_context, unsigned char *a,
         unsigned char *xxx3, unsigned char *xxx4, unsigned char **xxx5)
 {
 	par_format.flags &= ~P_COMPACT;
-	if (has_attr(a, "compact", html_context->doc_cp))
+	if (has_attr(a, (unsigned char *)"compact", html_context->doc_cp))
 		par_format.flags |= P_COMPACT;
 	if (par_format.list_level) par_format.leftmargin += 5;
 	par_format.list_level++;
@@ -970,11 +972,11 @@ void
 html_dt(struct html_context *html_context, unsigned char *a,
         unsigned char *xxx3, unsigned char *xxx4, unsigned char **xxx5)
 {
-	kill_html_stack_until(html_context, 0, "", "DL", NULL);
+	kill_html_stack_until(html_context, 0, (unsigned char *)"", (unsigned char *)"DL", NULL);
 	par_format.align = ALIGN_LEFT;
 	par_format.leftmargin = par_format.dd_margin;
 	if (!(par_format.flags & P_COMPACT)
-	    && !has_attr(a, "compact", html_context->doc_cp))
+	    && !has_attr(a, (unsigned char *)"compact", html_context->doc_cp))
 		ln_break(html_context, 2);
 }
 
@@ -982,7 +984,7 @@ void
 html_dd(struct html_context *html_context, unsigned char *a,
         unsigned char *xxx3, unsigned char *xxx4, unsigned char **xxx5)
 {
-	kill_html_stack_until(html_context, 0, "", "DL", NULL);
+	kill_html_stack_until(html_context, 0, (unsigned char *)"", (unsigned char *)"DL", NULL);
 
 	par_format.leftmargin = par_format.dd_margin + 3;
 
@@ -1003,7 +1005,7 @@ html_noframes(struct html_context *html_context, unsigned char *a,
 
 	if (!html_context->options->frames) return;
 
-	element = search_html_stack(html_context, "frameset");
+	element = search_html_stack(html_context, (unsigned char *)"frameset");
 	if (element && !element->frameset) return;
 
 	html_skip(html_context, a);
@@ -1015,16 +1017,16 @@ html_frame(struct html_context *html_context, unsigned char *a,
 {
 	unsigned char *name, *src, *url;
 
-	src = get_url_val(a, "src", html_context->doc_cp);
+	src = get_url_val(a, (unsigned char *)"src", html_context->doc_cp);
 	if (!src) {
-		url = stracpy("about:blank");
+		url = stracpy((const unsigned char *)"about:blank");
 	} else {
 		url = join_urls(html_context->base_href, src);
 		mem_free(src);
 	}
 	if (!url) return;
 
-	name = get_attr_val(a, "name", html_context->doc_cp);
+	name = get_attr_val(a, (unsigned char *)"name", html_context->doc_cp);
 	if (!name) {
 		name = stracpy(url);
 	} else if (!name[0]) {
@@ -1036,7 +1038,7 @@ html_frame(struct html_context *html_context, unsigned char *a,
 
 	if (!html_context->options->frames || !html_top->frameset) {
 		html_focusable(html_context, a);
-		put_link_line("Frame: ", name, url, "", html_context);
+		put_link_line((unsigned char *)"Frame: ", name, url, (unsigned char *)"", html_context);
 
 	} else {
 		if (html_context->special_f(html_context, SP_USED, NULL)) {
@@ -1063,20 +1065,20 @@ html_frameset(struct html_context *html_context, unsigned char *a,
 	 * is still better than nothing and it should heal up the security
 	 * concerns at least because sane sites should enclose the documents in
 	 * <body> elements ;-). See also bug 171. --pasky */
-	if (search_html_stack(html_context, "BODY")
+	if (search_html_stack(html_context, (unsigned char *)"BODY")
 	    || !html_context->options->frames
 	    || !html_context->special_f(html_context, SP_USED, NULL))
 		return;
 
-	cols = get_attr_val(a, "cols", html_context->doc_cp);
+	cols = get_attr_val(a, (unsigned char *)"cols", html_context->doc_cp);
 	if (!cols) {
-		cols = stracpy("100%");
+		cols = stracpy((const unsigned char *)"100%");
 		if (!cols) return;
 	}
 
-	rows = get_attr_val(a, "rows", html_context->doc_cp);
+	rows = get_attr_val(a, (unsigned char *)"rows", html_context->doc_cp);
 	if (!rows) {
-		rows = stracpy("100%");
+		rows = stracpy((const unsigned char *)"100%");
 	       	if (!rows) {
 			mem_free(cols);
 			return;

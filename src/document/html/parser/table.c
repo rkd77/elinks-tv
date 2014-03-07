@@ -70,12 +70,12 @@ get_bordercolor(struct html_context *html_context, unsigned char *a, color_T *rg
 	if (!use_document_fg_colors(html_context->options))
 		return;
 
-	at = get_attr_val(a, "bordercolor", html_context->doc_cp);
+	at = get_attr_val(a, (unsigned char *)"bordercolor", html_context->doc_cp);
 	/* Try some other MSIE-specific attributes if any. */
 	if (!at)
-		at = get_attr_val(a, "bordercolorlight", html_context->doc_cp);
+		at = get_attr_val(a, (unsigned char *)"bordercolorlight", html_context->doc_cp);
 	if (!at)
-		at = get_attr_val(a, "bordercolordark", html_context->doc_cp);
+		at = get_attr_val(a, (unsigned char *)"bordercolordark", html_context->doc_cp);
 	if (!at) return;
 
 	decode_color(at, strlen((const char *)at), rgb);
@@ -85,29 +85,29 @@ get_bordercolor(struct html_context *html_context, unsigned char *a, color_T *rg
 static void
 get_align(struct html_context *html_context, unsigned char *attr, int *a)
 {
-	unsigned char *al = get_attr_val(attr, "align", html_context->doc_cp);
+	unsigned char *al = get_attr_val(attr, (unsigned char *)"align", html_context->doc_cp);
 
 	if (!al) return;
 
-	if (!c_strcasecmp(al, "left")) *a = ALIGN_LEFT;
-	else if (!c_strcasecmp(al, "right")) *a = ALIGN_RIGHT;
-	else if (!c_strcasecmp(al, "center")) *a = ALIGN_CENTER;
-	else if (!c_strcasecmp(al, "justify")) *a = ALIGN_JUSTIFY;
-	else if (!c_strcasecmp(al, "char")) *a = ALIGN_RIGHT; /* NOT IMPLEMENTED */
+	if (!c_strcasecmp((const char *)al, "left")) *a = ALIGN_LEFT;
+	else if (!c_strcasecmp((const char *)al, "right")) *a = ALIGN_RIGHT;
+	else if (!c_strcasecmp((const char *)al, "center")) *a = ALIGN_CENTER;
+	else if (!c_strcasecmp((const char *)al, "justify")) *a = ALIGN_JUSTIFY;
+	else if (!c_strcasecmp((const char *)al, "char")) *a = ALIGN_RIGHT; /* NOT IMPLEMENTED */
 	mem_free(al);
 }
 
 static void
 get_valign(struct html_context *html_context, unsigned char *attr, int *a)
 {
-	unsigned char *al = get_attr_val(attr, "valign", html_context->doc_cp);
+	unsigned char *al = get_attr_val(attr, (unsigned char *)"valign", html_context->doc_cp);
 
 	if (!al) return;
 
-	if (!c_strcasecmp(al, "top")) *a = VALIGN_TOP;
-	else if (!c_strcasecmp(al, "middle")) *a = VALIGN_MIDDLE;
-	else if (!c_strcasecmp(al, "bottom")) *a = VALIGN_BOTTOM;
-	else if (!c_strcasecmp(al, "baseline")) *a = VALIGN_BASELINE; /* NOT IMPLEMENTED */
+	if (!c_strcasecmp((const char *)al, "top")) *a = VALIGN_TOP;
+	else if (!c_strcasecmp((const char *)al, "middle")) *a = VALIGN_MIDDLE;
+	else if (!c_strcasecmp((const char *)al, "bottom")) *a = VALIGN_BOTTOM;
+	else if (!c_strcasecmp((const char *)al, "baseline")) *a = VALIGN_BASELINE; /* NOT IMPLEMENTED */
 	mem_free(al);
 }
 
@@ -115,7 +115,7 @@ static void
 get_column_width(unsigned char *attr, int *width, int sh,
                  struct html_context *html_context)
 {
-	unsigned char *al = get_attr_val(attr, "width", html_context->doc_cp);
+	unsigned char *al = get_attr_val(attr, (unsigned char *)"width", html_context->doc_cp);
 	int len;
 
 	if (!al) return;
@@ -127,11 +127,11 @@ get_column_width(unsigned char *attr, int *width, int sh,
 
 		al[len - 1] = '\0';
 		errno = 0;
-		n = strtoul(al, (char **) &en, 10);
+		n = strtoul((const char *)al, (char **) &en, 10);
 		if (!errno && n >= 0 && (!*en || *en == '.'))
 			*width = WIDTH_RELATIVE - n;
 	} else {
-		int w = get_width(attr, "width", sh, html_context);
+		int w = get_width(attr, (unsigned char *)"width", sh, html_context);
 
 		if (w >= 0) *width = w;
 	}
@@ -151,16 +151,16 @@ set_table_frame(struct html_context *html_context, struct table *table,
 
 	table->frame = TABLE_FRAME_BOX;
 
-	al = get_attr_val(attr, "frame", html_context->doc_cp);
+	al = get_attr_val(attr, (unsigned char *)"frame", html_context->doc_cp);
 	if (!al) return;
 
-	if (!c_strcasecmp(al, "void")) table->frame = TABLE_FRAME_VOID;
-	else if (!c_strcasecmp(al, "above")) table->frame = TABLE_FRAME_ABOVE;
-	else if (!c_strcasecmp(al, "below")) table->frame = TABLE_FRAME_BELOW;
-	else if (!c_strcasecmp(al, "hsides")) table->frame = TABLE_FRAME_HSIDES;
-	else if (!c_strcasecmp(al, "vsides")) table->frame = TABLE_FRAME_VSIDES;
-	else if (!c_strcasecmp(al, "lhs")) table->frame = TABLE_FRAME_LHS;
-	else if (!c_strcasecmp(al, "rhs")) table->frame = TABLE_FRAME_RHS;
+	if (!c_strcasecmp((const char *)al, "void")) table->frame = TABLE_FRAME_VOID;
+	else if (!c_strcasecmp((const char *)al, "above")) table->frame = TABLE_FRAME_ABOVE;
+	else if (!c_strcasecmp((const char *)al, "below")) table->frame = TABLE_FRAME_BELOW;
+	else if (!c_strcasecmp((const char *)al, "hsides")) table->frame = TABLE_FRAME_HSIDES;
+	else if (!c_strcasecmp((const char *)al, "vsides")) table->frame = TABLE_FRAME_VSIDES;
+	else if (!c_strcasecmp((const char *)al, "lhs")) table->frame = TABLE_FRAME_LHS;
+	else if (!c_strcasecmp((const char *)al, "rhs")) table->frame = TABLE_FRAME_RHS;
 	/* Following tests are useless since TABLE_FRAME_BOX is the default.
 	 * else if (!c_strcasecmp(al, "box")) table->frame = TABLE_FRAME_BOX;
 	 * else if (!c_strcasecmp(al, "border")) table->frame = TABLE_FRAME_BOX;
@@ -176,14 +176,14 @@ set_table_rules(struct html_context *html_context, struct table *table,
 
 	table->rules = table->border ? TABLE_RULE_ALL : TABLE_RULE_NONE;
 
-	al = get_attr_val(attr, "rules", html_context->doc_cp);
+	al = get_attr_val(attr, (unsigned char *)"rules", html_context->doc_cp);
 	if (!al) return;
 
-	if (!c_strcasecmp(al, "none")) table->rules = TABLE_RULE_NONE;
-	else if (!c_strcasecmp(al, "groups")) table->rules = TABLE_RULE_GROUPS;
-	else if (!c_strcasecmp(al, "rows")) table->rules = TABLE_RULE_ROWS;
-	else if (!c_strcasecmp(al, "cols")) table->rules = TABLE_RULE_COLS;
-	else if (!c_strcasecmp(al, "all")) table->rules = TABLE_RULE_ALL;
+	if (!c_strcasecmp((const char *)al, "none")) table->rules = TABLE_RULE_NONE;
+	else if (!c_strcasecmp((const char *)al, "groups")) table->rules = TABLE_RULE_GROUPS;
+	else if (!c_strcasecmp((const char *)al, "rows")) table->rules = TABLE_RULE_ROWS;
+	else if (!c_strcasecmp((const char *)al, "cols")) table->rules = TABLE_RULE_COLS;
+	else if (!c_strcasecmp((const char *)al, "all")) table->rules = TABLE_RULE_ALL;
 	mem_free(al);
 }
 
@@ -191,11 +191,11 @@ static void
 parse_table_attributes(struct table *table, unsigned char *attr, int real,
                        struct html_context *html_context)
 {
-	table->fragment_id = get_attr_val(attr, "id", html_context->doc_cp);
+	table->fragment_id = get_attr_val(attr, (unsigned char *)"id", html_context->doc_cp);
 
 	get_bordercolor(html_context, attr, &table->color.border);
 
-	table->width = get_width(attr, "width", real, html_context);
+	table->width = get_width(attr, (unsigned char *)"width", real, html_context);
 	if (table->width == -1) {
 		table->width = get_html_max_width();
 		table->full_width = 1;
@@ -212,18 +212,18 @@ parse_table_attributes(struct table *table, unsigned char *attr, int real,
 	 * interpreted as the value of the frame attribute. It implies
 	 * rules="all" and some default (non-zero) value for the border
 	 * attribute. */
-	table->border = get_num(attr, "border", html_context->doc_cp);
+	table->border = get_num(attr, (unsigned char *)"border", html_context->doc_cp);
 	if (table->border == -1) {
 		table->border =
-		              has_attr(attr, "border", html_context->doc_cp)
-			      || has_attr(attr, "rules", html_context->doc_cp)
-			      || has_attr(attr, "frame", html_context->doc_cp);
+		              has_attr(attr, (unsigned char *)"border", html_context->doc_cp)
+			      || has_attr(attr, (unsigned char *)"rules", html_context->doc_cp)
+			      || has_attr(attr, (unsigned char *)"frame", html_context->doc_cp);
 	}
 
 	if (table->border) {
 		int_upper_bound(&table->border, 2);
 
-		table->cellspacing = get_num(attr, "cellspacing", html_context->doc_cp);
+		table->cellspacing = get_num(attr, (unsigned char *)"cellspacing", html_context->doc_cp);
 		int_bounds(&table->cellspacing, 1, 2);
 	}
 
@@ -231,7 +231,7 @@ parse_table_attributes(struct table *table, unsigned char *attr, int real,
 
 	/* TODO: cellpadding may be expressed as a percentage, this is not
 	 * handled yet. */
-	table->cellpadding = get_num(attr, "cellpadding", html_context->doc_cp);
+	table->cellpadding = get_num(attr, (unsigned char *)"cellpadding", html_context->doc_cp);
 	if (table->cellpadding == -1) {
 		table->vcellpadding = 0;
 		table->cellpadding = !!table->border;
@@ -527,7 +527,7 @@ skip_table(unsigned char *html, unsigned char *eof)
 		}
 
 
-		if (!c_strlcasecmp(name, namelen, "TABLE", 5)) {
+		if (!c_strlcasecmp(name, namelen, (const unsigned char *)"TABLE", 5)) {
 			if (!closing_tag) {
 				level++;
 			} else {
@@ -608,7 +608,7 @@ see:
 		closing_tag = 0;
 	}
 
-	if (!c_strlcasecmp(name, namelen, "TABLE", 5)) {
+	if (!c_strlcasecmp(name, namelen, (const unsigned char *)"TABLE", 5)) {
 		if (!closing_tag) {
 			en = skip_table(en, eof);
 			goto see;
@@ -623,7 +623,7 @@ see:
 		}
 	}
 
-	if (!c_strlcasecmp(name, namelen, "CAPTION", 7)) {
+	if (!c_strlcasecmp(name, namelen, (const unsigned char *)"CAPTION", 7)) {
 		if (!closing_tag) {
 			add_table_bad_html_end(table, html);
 			if (!table->caption.start)
@@ -637,7 +637,7 @@ see:
 		goto see;
 	}
 
-	if (!c_strlcasecmp(name, namelen, "COLGROUP", 8)) {
+	if (!c_strlcasecmp(name, namelen, (const unsigned char *)"COLGROUP", 8)) {
 		if (c_span) new_columns(table, c_span, c_width, c_al, c_val, 1);
 
 		add_table_bad_html_end(table, html);
@@ -650,7 +650,7 @@ see:
 			get_align(html_context, t_attr, &c_al);
 			get_valign(html_context, t_attr, &c_val);
 			get_column_width(t_attr, &c_width, sh, html_context);
-			c_span = get_num(t_attr, "span", html_context->doc_cp);
+			c_span = get_num(t_attr, (unsigned char *)"span", html_context->doc_cp);
 			if (c_span == -1)
 				c_span = 1;
 			else if (c_span > HTML_MAX_COLSPAN)
@@ -663,12 +663,12 @@ see:
 		goto see;
 	}
 
-	if (!closing_tag && !c_strlcasecmp(name, namelen, "COL", 3)) {
+	if (!closing_tag && !c_strlcasecmp(name, namelen, (const unsigned char *)"COL", 3)) {
 		int sp, width, al, val;
 
 		add_table_bad_html_end(table, html);
 
-		sp = get_num(t_attr, "span", html_context->doc_cp);
+		sp = get_num(t_attr, (unsigned char *)"span", html_context->doc_cp);
 		if (sp == -1) sp = 1;
 		else if (sp > HTML_MAX_COLSPAN) sp = HTML_MAX_COLSPAN;
 
@@ -712,9 +712,9 @@ see:
 
 	/* THEAD TBODY TFOOT */
 	if (namelen == 4
-	    && ((!c_strlcasecmp(name, namelen, "HEAD", 4)) ||
-		(!c_strlcasecmp(name, namelen, "BODY", 4)) ||
-		(!c_strlcasecmp(name, namelen, "FOOT", 4)))) {
+	    && ((!c_strlcasecmp(name, namelen, (const unsigned char *)"HEAD", 4)) ||
+		(!c_strlcasecmp(name, namelen, (const unsigned char *)"BODY", 4)) ||
+		(!c_strlcasecmp(name, namelen, (const unsigned char *)"FOOT", 4)))) {
 		if (c_span) new_columns(table, c_span, c_width, c_al, c_val, 1);
 
 		add_table_bad_html_end(table, html);
@@ -745,7 +745,7 @@ see:
 		get_valign(html_context, t_attr, &l_val);
 		get_bgcolor(html_context, t_attr, &last_bgcolor);
 		mem_free_set(&l_fragment_id,
-		             get_attr_val(t_attr, "id", html_context->doc_cp));
+		             get_attr_val(t_attr, (unsigned char *)"id", html_context->doc_cp));
 		row++;
 		col = 0;
 		goto see;
@@ -788,7 +788,7 @@ see:
 
 	cell->align = l_al;
 	cell->valign = l_val;
-	cell->fragment_id = get_attr_val(t_attr, "id", html_context->doc_cp);
+	cell->fragment_id = get_attr_val(t_attr, (unsigned char *)"id", html_context->doc_cp);
 	if (!cell->fragment_id && l_fragment_id) {
 		cell->fragment_id = l_fragment_id;
 		l_fragment_id = NULL;
@@ -812,12 +812,12 @@ see:
 	get_valign(html_context, t_attr, &cell->valign);
 	get_bgcolor(html_context, t_attr, &cell->bgcolor);
 
-	colspan = get_num(t_attr, "colspan", html_context->doc_cp);
+	colspan = get_num(t_attr, (unsigned char *)"colspan", html_context->doc_cp);
 	if (colspan == -1) colspan = 1;
 	else if (!colspan) colspan = -1;
 	else if (colspan > HTML_MAX_COLSPAN) colspan = HTML_MAX_COLSPAN;
 
-	rowspan = get_num(t_attr, "rowspan", html_context->doc_cp);
+	rowspan = get_num(t_attr, (unsigned char *)"rowspan", html_context->doc_cp);
 	if (rowspan == -1) rowspan = 1;
 	else if (!rowspan) rowspan = -1;
 	else if (rowspan > HTML_MAX_ROWSPAN) rowspan = HTML_MAX_ROWSPAN;

@@ -89,7 +89,7 @@ kill_html_stack_item(struct html_context *html_context, struct html_element *e)
 	/* As our another tiny l33t extension, we allow the onLoad attribute for
 	 * any element, executing it when that element is fully loaded. */
 	if (e->options)
-		onload = get_attr_val(e->options, "onLoad",
+		onload = get_attr_val(e->options, (unsigned char *)"onLoad",
 		                     html_context->doc_cp);
 	if (html_context->part
 	    && html_context->part->document
@@ -240,7 +240,7 @@ kill_html_stack_until(struct html_context *html_context, int ls, ...)
 		va_end(arg);
 
 		if (e->type < ELEMENT_KILLABLE
-		    || (!c_strlcasecmp(e->name, e->namelen, "TABLE", 5)))
+		    || (!c_strlcasecmp(e->name, e->namelen, (const unsigned char *)"TABLE", 5)))
 			break;
 
 		if (e->namelen == 2 && c_toupper(e->name[0]) == 'T') {

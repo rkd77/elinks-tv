@@ -98,7 +98,9 @@ struct par_attrib {
 	int list_level;
 	unsigned list_number;
 	int dd_margin;
-	enum format_list_flag flags;
+	//enum format_list_flag flags;
+	int flags;
+
 	struct {
 		color_T background;
 	} color;
@@ -153,7 +155,8 @@ struct html_element {
 	struct frameset_desc *frameset;
 
 	/* For the needs of CSS engine. A wannabe bitmask. */
-	enum html_element_pseudo_class pseudo_class;
+	//enum html_element_pseudo_class pseudo_class;
+	int pseudo_class;
 };
 
 #define is_inline_element(e) ((e)->linebreak == 0)

@@ -83,7 +83,8 @@ struct form_control {
 
 	int type;
 	//enum form_type type;
-	enum form_mode mode;
+	//enum form_mode mode;
+	int mode;
 
 	unsigned char *id; /**< used by scripts */
 	unsigned char *name;

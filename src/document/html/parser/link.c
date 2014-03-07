@@ -47,7 +47,7 @@ html_a(struct html_context *html_context, unsigned char *a,
 {
 	unsigned char *href;
 
-	href = get_url_val(a, "href", html_context->doc_cp);
+	href = get_url_val(a, (unsigned char *)"href", html_context->doc_cp);
 	if (href) {
 		unsigned char *target;
 
@@ -86,7 +86,7 @@ html_a(struct html_context *html_context, unsigned char *a,
 		}
 
 		mem_free_set(&format.title,
-		             get_attr_val(a, "title", html_context->doc_cp));
+		             get_attr_val(a, (unsigned char *)"title", html_context->doc_cp));
 
 		html_focusable(html_context, a);
 
@@ -94,7 +94,7 @@ html_a(struct html_context *html_context, unsigned char *a,
 		pop_html_element(html_context);
 	}
 
-	set_fragment_identifier(html_context, a, "name");
+	set_fragment_identifier(html_context, a, (unsigned char *)"name");
 }
 
 /* Returns an allocated string made after @label
@@ -153,7 +153,7 @@ get_image_filename_from_src(int max_len, unsigned char *src)
 	if (!src) return NULL;
 	/* We can display image as [foo.gif]. */
 
-	len = strcspn(src, "?");
+	len = strcspn((const char *)src, "?");
 
 	for (start = src + len; start > src; start--)
 		if (dir_sep(start[-1])) {
@@ -194,7 +194,7 @@ put_image_label(unsigned char *a, unsigned char *label,
                 struct html_context *html_context)
 {
 	color_T saved_foreground;
-	enum text_style_format saved_attr;
+	int saved_attr;
 
 	/* This is not 100% appropriate for <img>, but well, accepting
 	 * accesskey and tabindex near <img> is just our little
@@ -228,7 +228,7 @@ html_img_do(unsigned char *a, unsigned char *object_src,
 	 * 2     means display alt/title attribute if possible, IMG if not
 	 * 3     means display alt/title attribute if possible, filename if not */
 
-	usemap_attr = get_attr_val(a, "usemap", html_context->doc_cp);
+	usemap_attr = get_attr_val(a, (unsigned char *)"usemap", html_context->doc_cp);
 	if (usemap_attr) {
 		unsigned char *joined_urls = join_urls(html_context->base_href,
 						       usemap_attr);
@@ -236,7 +236,7 @@ html_img_do(unsigned char *a, unsigned char *object_src,
 
 		mem_free(usemap_attr);
 		if (!joined_urls) return;
-		map_url = straconcat("MAP@", joined_urls,
+		map_url = straconcat((unsigned char *)"MAP@", joined_urls,
 				     (unsigned char *) NULL);
 		mem_free(joined_urls);
 		if (!map_url) return;
@@ -249,13 +249,13 @@ html_img_do(unsigned char *a, unsigned char *object_src,
  	}
 
 	ismap = format.link
-	        && has_attr(a, "ismap", html_context->doc_cp)
+	        && has_attr(a, (unsigned char *)"ismap", html_context->doc_cp)
 	        && !usemap;
 
 	if (display_style == 2 || display_style == 3) {
-		label = get_attr_val(a, "alt", html_context->doc_cp);
+		label = get_attr_val(a, (unsigned char *)"alt", html_context->doc_cp);
 		if (!label)
-			label = get_attr_val(a, "title", html_context->doc_cp);
+			label = get_attr_val(a, (unsigned char *)"title", html_context->doc_cp);
 
 		/* Little hack to preserve rendering of [   ], in directory listings,
 		 * but we still want to drop extra spaces in alt or title attribute
@@ -264,8 +264,8 @@ html_img_do(unsigned char *a, unsigned char *object_src,
 	}
 
 	src = null_or_stracpy(object_src);
-	if (!src) src = get_url_val(a, "src", html_context->doc_cp);
-	if (!src) src = get_url_val(a, "dynsrc", html_context->doc_cp);
+	if (!src) src = get_url_val(a, (unsigned char *)"src", html_context->doc_cp);
+	if (!src) src = get_url_val(a, (unsigned char *)"dynsrc", html_context->doc_cp);
 
 	/* If we have no label yet (no title or alt), so
 	 * just use default ones, or image filename. */
@@ -283,9 +283,9 @@ html_img_do(unsigned char *a, unsigned char *object_src,
 		add_brackets = 1;
 
 		if (usemap) {
-			label = stracpy("USEMAP");
+			label = stracpy((const unsigned char *)"USEMAP");
 		} else if (ismap) {
-			label = stracpy("ISMAP");
+			label = stracpy((const unsigned char *)"ISMAP");
 		} else {
 			if (display_style == 3)
 				label = get_image_filename_from_src(options->image_link.filename_maxlen, src);
@@ -301,7 +301,7 @@ html_img_do(unsigned char *a, unsigned char *object_src,
 		if (display_style == 1)
 			label = get_image_filename_from_src(options->image_link.filename_maxlen, src);
 		if (!label || !*label)
-			mem_free_set(&label, stracpy("IMG"));
+			mem_free_set(&label, stracpy((const unsigned char *)"IMG"));
 	}
 
 	mem_free_set(&format.image, NULL);
@@ -326,13 +326,13 @@ html_img_do(unsigned char *a, unsigned char *object_src,
 				format.image = join_urls(html_context->base_href, src);
 			}
 
-			format.title = get_attr_val(a, "title", html_context->doc_cp);
+			format.title = get_attr_val(a, (unsigned char *)"title", html_context->doc_cp);
 
 			if (ismap) {
 				unsigned char *new_link;
 
 				html_stack_dup(html_context, ELEMENT_KILLABLE);
-				new_link = straconcat(format.link, "?0,0", (unsigned char *) NULL);
+				new_link = straconcat(format.link, (unsigned char *)"?0,0", (unsigned char *) NULL);
 				if (new_link)
 					mem_free_set(&format.link, new_link);
 			}
@@ -391,18 +391,18 @@ html_applet(struct html_context *html_context, unsigned char *a,
 {
 	unsigned char *code, *alt;
 
-	code = get_url_val(a, "code", html_context->doc_cp);
+	code = get_url_val(a, (unsigned char *)"code", html_context->doc_cp);
 	if (!code) return;
 
-	alt = get_attr_val(a, "alt", html_context->doc_cp);
+	alt = get_attr_val(a, (unsigned char *)"alt", html_context->doc_cp);
 
 	html_focusable(html_context, a);
 
 	if (alt && *alt) {
-		put_link_line("Applet: ", alt, code,
+		put_link_line((unsigned char *)"Applet: ", alt, code,
 			      html_context->options->framename, html_context);
 	} else {
-		put_link_line("", "Applet", code,
+		put_link_line((unsigned char *)"", (unsigned char *)"Applet", code,
 			      html_context->options->framename, html_context);
 	}
 
@@ -418,12 +418,12 @@ html_audio(struct html_context *html_context, unsigned char *a,
 
 	/* This just places a link where a audio element would be. */
 
-	url = get_url_val(a, "src", html_context->doc_cp);
+	url = get_url_val(a, (unsigned char *)"src", html_context->doc_cp);
 	if (!url) return;
 
 	html_focusable(html_context, a);
 
-	put_link_line("Audio: ", basename(url), url,
+	put_link_line((unsigned char *)"Audio: ", (unsigned char *)basename((char *)url), url,
               html_context->options->framename, html_context);
 
 	html_skip(html_context, a);
@@ -438,12 +438,12 @@ html_iframe_do(unsigned char *a, unsigned char *object_src,
 	unsigned char *name, *url = NULL;
 
 	url = null_or_stracpy(object_src);
-	if (!url) url = get_url_val(a, "src", html_context->doc_cp);
+	if (!url) url = get_url_val(a, (unsigned char *)"src", html_context->doc_cp);
 	if (!url) return;
 
-	name = get_attr_val(a, "name", html_context->doc_cp);
-	if (!name) name = get_attr_val(a, "id", html_context->doc_cp);
-	if (!name) name = stracpy("");
+	name = get_attr_val(a, (unsigned char *)"name", html_context->doc_cp);
+	if (!name) name = get_attr_val(a, (unsigned char *)"id", html_context->doc_cp);
+	if (!name) name = stracpy((const unsigned char *)"");
 	if (!name) {
 		mem_free(url);
 		return;
@@ -452,10 +452,10 @@ html_iframe_do(unsigned char *a, unsigned char *object_src,
 	html_focusable(html_context, a);
 
 	if (*name) {
-		put_link_line("IFrame: ", name, url,
+		put_link_line((unsigned char *)"IFrame: ", name, url,
 			      html_context->options->framename, html_context);
 	} else {
-		put_link_line("", "IFrame", url,
+		put_link_line((unsigned char *)"", (unsigned char *)"IFrame", url,
 			      html_context->options->framename, html_context);
 	}
 
@@ -480,35 +480,35 @@ html_object(struct html_context *html_context, unsigned char *a,
 	 * this, which is anyway in the spirit of <object> element, unifying
 	 * <img> and <iframe> etc. */
 
-	url = get_url_val(a, "data", html_context->doc_cp);
-	if (!url) url = get_url_val(a, "codebase", html_context->doc_cp);
+	url = get_url_val(a, (unsigned char *)"data", html_context->doc_cp);
+	if (!url) url = get_url_val(a, (unsigned char *)"codebase", html_context->doc_cp);
 	if (!url) return;
 
-	type = get_attr_val(a, "type", html_context->doc_cp);
+	type = get_attr_val(a, (unsigned char *)"type", html_context->doc_cp);
 	if (!type) { mem_free(url); return; }
 
-	if (!c_strncasecmp(type, "text/", 5)) {
+	if (!c_strncasecmp((const char *)type, "text/", 5)) {
 		/* We will just emulate <iframe>. */
 		html_iframe_do(a, url, html_context);
 		html_skip(html_context, a);
 
-	} else if (!c_strncasecmp(type, "image/", 6)) {
+	} else if (!c_strncasecmp((const char *)type, "image/", 6)) {
 		/* <img> emulation. */
 		/* TODO: Use the enclosed text as 'alt' attribute. */
 		html_img_do(a, url, html_context);
 	} else {
 		unsigned char *name;
 
-		name = get_attr_val(a, "standby", html_context->doc_cp);
+		name = get_attr_val(a, (unsigned char *)"standby", html_context->doc_cp);
 
 		html_focusable(html_context, a);
 
 		if (name && *name) {
-			put_link_line("Object: ", name, url,
+			put_link_line((unsigned char *)"Object: ", name, url,
 			              html_context->options->framename,
 				      html_context);
 		} else {
-			put_link_line("Object: ", type, url,
+			put_link_line((unsigned char *)"Object: ", type, url,
 			              html_context->options->framename,
 			              html_context);
 		}
@@ -531,7 +531,7 @@ html_embed(struct html_context *html_context, unsigned char *a,
 	 * this, which is anyway in the spirit of <object> element, unifying
 	 * <img> and <iframe> etc. */
 
-	object_src = get_url_val(a, "src", html_context->doc_cp);
+	object_src = get_url_val(a, (unsigned char *)"src", html_context->doc_cp);
 	if (!object_src || !*object_src) {
 		mem_free_set(&object_src, NULL);
 		return;
@@ -539,11 +539,11 @@ html_embed(struct html_context *html_context, unsigned char *a,
 
 	/* If there is no extension we want to get the default mime/type
 	 * anyway? */
-	extension = strrchr((char *)object_src, '.');
+	extension = (unsigned char *)strrchr((char *)object_src, '.');
 	if (!extension) extension = object_src;
 
 	type = get_extension_content_type(extension);
-	if (type && !c_strncasecmp(type, "image/", 6)) {
+	if (type && !c_strncasecmp((const char *)type, "image/", 6)) {
 		html_img_do(a, object_src, html_context);
 	} else {
 		/* We will just emulate <iframe>. */
@@ -562,12 +562,12 @@ html_video(struct html_context *html_context, unsigned char *a,
 
 	/* This just places a link where a video element would be. */
 
-	url = get_url_val(a, "src", html_context->doc_cp);
+	url = get_url_val(a, (unsigned char *)"src", html_context->doc_cp);
 	if (!url) return;
 
 	html_focusable(html_context, a);
 
-	put_link_line("Video: ", basename(url), url,
+	put_link_line((unsigned char *)"Video: ", (unsigned char *)basename((char *)url), url,
               html_context->options->framename, html_context);
 
 	html_skip(html_context, a);
@@ -702,37 +702,37 @@ struct lt_default_name {
 /* TODO: i18n */
 /* XXX: Keep the (really really ;) default name first */
 static struct lt_default_name lt_names[] = {
-	{ LT_START, "start" },
-	{ LT_START, "top" },
-	{ LT_START, "home" },
-	{ LT_PARENT, "parent" },
-	{ LT_PARENT, "up" },
-	{ LT_NEXT, "next" },
-	{ LT_PREV, "previous" },
-	{ LT_PREV, "prev" },
-	{ LT_CONTENTS, "contents" },
-	{ LT_CONTENTS, "toc" },
-	{ LT_INDEX, "index" },
-	{ LT_GLOSSARY, "glossary" },
-	{ LT_CHAPTER, "chapter" },
-	{ LT_SECTION, "section" },
-	{ LT_SUBSECTION, "subsection" },
-	{ LT_SUBSECTION, "child" },
-	{ LT_SUBSECTION, "sibling" },
-	{ LT_APPENDIX, "appendix" },
-	{ LT_HELP, "help" },
-	{ LT_SEARCH, "search" },
-	{ LT_BOOKMARK, "bookmark" },
-	{ LT_ALTERNATE_LANG, "alt. language" },
-	{ LT_ALTERNATE_MEDIA, "alt. media" },
-	{ LT_ALTERNATE_STYLESHEET, "alt. stylesheet" },
-	{ LT_STYLESHEET, "stylesheet" },
-	{ LT_ALTERNATE, "alternate" },
-	{ LT_COPYRIGHT, "copyright" },
-	{ LT_AUTHOR, "author" },
-	{ LT_AUTHOR, "made" },
-	{ LT_AUTHOR, "owner" },
-	{ LT_ICON, "icon" },
+	{ LT_START, (unsigned char *)"start" },
+	{ LT_START, (unsigned char *)"top" },
+	{ LT_START, (unsigned char *)"home" },
+	{ LT_PARENT, (unsigned char *)"parent" },
+	{ LT_PARENT, (unsigned char *)"up" },
+	{ LT_NEXT, (unsigned char *)"next" },
+	{ LT_PREV, (unsigned char *)"previous" },
+	{ LT_PREV, (unsigned char *)"prev" },
+	{ LT_CONTENTS, (unsigned char *)"contents" },
+	{ LT_CONTENTS, (unsigned char *)"toc" },
+	{ LT_INDEX, (unsigned char *)"index" },
+	{ LT_GLOSSARY, (unsigned char *)"glossary" },
+	{ LT_CHAPTER, (unsigned char *)"chapter" },
+	{ LT_SECTION, (unsigned char *)"section" },
+	{ LT_SUBSECTION, (unsigned char *)"subsection" },
+	{ LT_SUBSECTION, (unsigned char *)"child" },
+	{ LT_SUBSECTION, (unsigned char *)"sibling" },
+	{ LT_APPENDIX, (unsigned char *)"appendix" },
+	{ LT_HELP, (unsigned char *)"help" },
+	{ LT_SEARCH, (unsigned char *)"search" },
+	{ LT_BOOKMARK, (unsigned char *)"bookmark" },
+	{ LT_ALTERNATE_LANG, (unsigned char *)"alt. language" },
+	{ LT_ALTERNATE_MEDIA, (unsigned char *)"alt. media" },
+	{ LT_ALTERNATE_STYLESHEET, (unsigned char *)"alt. stylesheet" },
+	{ LT_STYLESHEET, (unsigned char *)"stylesheet" },
+	{ LT_ALTERNATE, (unsigned char *)"alternate" },
+	{ LT_COPYRIGHT, (unsigned char *)"copyright" },
+	{ LT_AUTHOR, (unsigned char *)"author" },
+	{ LT_AUTHOR, (unsigned char *)"made" },
+	{ LT_AUTHOR, (unsigned char *)"owner" },
+	{ LT_ICON, (unsigned char *)"icon" },
 	{ LT_UNKNOWN, NULL }
 };
 
@@ -749,7 +749,7 @@ get_lt_default_name(struct hlink *link)
 		entry++;
 	}
 
-	return "unknown";
+	return (unsigned char *)"unknown";
 }
 
 static void
@@ -779,20 +779,20 @@ html_link_parse(struct html_context *html_context, unsigned char *a,
 	assert(a && link);
 	memset(link, 0, sizeof(*link));
 
-	link->href = get_url_val(a, "href", html_context->doc_cp);
+	link->href = get_url_val(a, (unsigned char *)"href", html_context->doc_cp);
 	if (!link->href) return 0;
 
-	link->lang = get_attr_val(a, "lang", html_context->doc_cp);
-	link->hreflang = get_attr_val(a, "hreflang", html_context->doc_cp);
-	link->title = get_attr_val(a, "title", html_context->doc_cp);
-	link->content_type = get_attr_val(a, "type", html_context->doc_cp);
-	link->media = get_attr_val(a, "media", html_context->doc_cp);
+	link->lang = get_attr_val(a, (unsigned char *)"lang", html_context->doc_cp);
+	link->hreflang = get_attr_val(a, (unsigned char *)"hreflang", html_context->doc_cp);
+	link->title = get_attr_val(a, (unsigned char *)"title", html_context->doc_cp);
+	link->content_type = get_attr_val(a, (unsigned char *)"type", html_context->doc_cp);
+	link->media = get_attr_val(a, (unsigned char *)"media", html_context->doc_cp);
 
-	link->name = get_attr_val(a, "rel", html_context->doc_cp);
+	link->name = get_attr_val(a, (unsigned char *)"rel", html_context->doc_cp);
 	if (link->name) {
 		link->direction = LD_REL;
 	} else {
-		link->name = get_attr_val(a, "rev", html_context->doc_cp);
+		link->name = get_attr_val(a, (unsigned char *)"rev", html_context->doc_cp);
 		if (link->name) link->direction = LD_REV;
 	}
 
@@ -800,26 +800,26 @@ html_link_parse(struct html_context *html_context, unsigned char *a,
 
 	/* TODO: fastfind */
 	for (i = 0; lt_names[i].str; i++)
-		if (!c_strcasecmp(link->name, lt_names[i].str)) {
+		if (!c_strcasecmp((const char *)link->name, (const char *)lt_names[i].str)) {
 			link->type = lt_names[i].type;
 			return 1;
 		}
 
-	if (c_strcasestr(link->name, "icon") ||
-	   (link->content_type && c_strcasestr(link->content_type, "icon"))) {
+	if (c_strcasestr((const char *)link->name, "icon") ||
+	   (link->content_type && c_strcasestr((const char *)link->content_type, "icon"))) {
 		link->type = LT_ICON;
 
-	} else if (c_strcasestr(link->name, "alternate")) {
+	} else if (c_strcasestr((const char *)link->name, "alternate")) {
 		link->type = LT_ALTERNATE;
 		if (link->lang)
 			link->type = LT_ALTERNATE_LANG;
-		else if (c_strcasestr(link->name, "stylesheet") ||
-			 (link->content_type && c_strcasestr(link->content_type, "css")))
+		else if (c_strcasestr((const char *)link->name, "stylesheet") ||
+			 (link->content_type && c_strcasestr((const char *)link->content_type, "css")))
 			link->type = LT_ALTERNATE_STYLESHEET;
 		else if (link->media)
 			link->type = LT_ALTERNATE_MEDIA;
 
-	} else if (link->content_type && c_strcasestr(link->content_type, "css")) {
+	} else if (link->content_type && c_strcasestr((const char *)link->content_type, "css")) {
 		link->type = LT_STYLESHEET;
 	}
 
@@ -875,14 +875,14 @@ html_link(struct html_context *html_context, unsigned char *a,
 
 	if (link.title) {
 		add_to_string(&text, link.title);
-		name_neq_title = strcmp(link.title, name);
+		name_neq_title = strcmp((const char *)link.title, (const char *)name);
 	} else
 		add_to_string(&text, name);
 
 	if (link_display == 1) goto put_link_line;	/* Only title */
 
 #define APPEND(what) do { \
-		add_to_string(&text, first ? " (" : ", "); \
+		add_to_string(&text, first ? (const unsigned char *)" (" : (const unsigned char *)", "); \
 		add_to_string(&text, (what)); \
 		first = 0; \
 	} while (0)
@@ -901,7 +901,7 @@ html_link(struct html_context *html_context, unsigned char *a,
 
 	if (link.lang && link.type == LT_ALTERNATE_LANG &&
 	    (link_display < 3 || (link.hreflang &&
-				  c_strcasecmp(link.hreflang, link.lang)))) {
+				  c_strcasecmp((const char *)link.hreflang, (const char *)link.lang)))) {
 		APPEND(link.lang);
 	}
 
@@ -916,7 +916,7 @@ html_link(struct html_context *html_context, unsigned char *a,
 put_link_line:
 	{
 		unsigned char *prefix = (link.direction == LD_REL)
-					? "Link: " : "Reverse link: ";
+					? (unsigned char *)"Link: " : (unsigned char *)"Reverse link: ";
 		unsigned char *link_name = (text.length)
 					   ? text.source : name;
 
