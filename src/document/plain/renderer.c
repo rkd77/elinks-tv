@@ -125,7 +125,7 @@ check_link_word(struct document *document, unsigned char *uri, int length,
 	uri[length] = 0;
 
 	if (mailto && mailto > uri && mailto - uri < length - 1) {
-		where = straconcat("mailto:", uri, (unsigned char *) NULL);
+		where = straconcat((const unsigned char *)"mailto:", uri, (unsigned char *) NULL);
 
 	} else if (parse_uri(&test, uri) == URI_ERRNO_OK
 		   && test.protocol != PROTOCOL_UNKNOWN
@@ -230,7 +230,7 @@ print_document_link(struct plain_renderer *renderer, int lineno,
 
 static void
 decode_esc_color(unsigned char *text, int *line_pos, int width,
-		 struct screen_char *template_, enum color_mode mode,
+		 struct screen_char *template_, int mode,
 		 int *was_reversed)
 {
 	struct screen_char ch;
