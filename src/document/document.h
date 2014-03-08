@@ -54,7 +54,7 @@ struct tag {
 	LIST_HEAD(struct tag);
 
 	int x, y;
-	unsigned char name[1]; /* must be last of struct. --Zas */
+	char name[1]; /* must be last of struct. --Zas */
 };
 
 
@@ -82,7 +82,7 @@ struct script_event_hook {
 	LIST_HEAD(struct script_event_hook);
 
 	enum script_event_hook_type type;
-	unsigned char *src;
+	char *src;
 };
 
 struct link {
@@ -90,13 +90,13 @@ struct link {
 
 	enum link_type type;
 
-	unsigned char *where;
-	unsigned char *target;
-	unsigned char *where_img;
+	char *where;
+	char *target;
+	char *where_img;
 
 	/** The title of the link.  This is in the document charset,
 	 * and entities have already been decoded.  */
-	unsigned char *title;
+	char *title;
 
 	/** The set of characters belonging to this link (their coordinates
 	 * in the document) - each character has own struct point. */
@@ -115,7 +115,7 @@ struct link {
 	LIST_OF(struct script_event_hook) *event_hooks;
 
 	union {
-		unsigned char *name;
+		char *name;
 		struct form_control *form_control;
 	} data;
 };
@@ -215,10 +215,10 @@ struct document {
 
 	/* for obtaining IP */
 	void *querydns;
-	unsigned char *ip;
+	char *ip;
 	/** The title of the document.  The charset of this string is
 	 * document.options.cp.  */
-	unsigned char *title;
+	char *title;
 	struct cache_entry *cached;
 
 	struct frame_desc *frame;
@@ -306,6 +306,6 @@ extern struct module document_module;
  * For now, we only support simple printable character.  */
 #define accesskey_string_to_unicode(s) (((s)[0] && !(s)[1] && isprint((s)[0])) ? (s)[0] : 0)
 
-int find_tag(struct document *document, unsigned char *name, int namelen);
+int find_tag(struct document *document, char *name, int namelen);
 
 #endif

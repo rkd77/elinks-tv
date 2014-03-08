@@ -7,12 +7,12 @@
  * happen when this will be of other length, but it should still work ok.
  * --pasky */
 typedef unsigned long hash_value_T;
-typedef hash_value_T (* hash_func_T)(const unsigned char *key, unsigned int keylen, hash_value_T magic);
+typedef hash_value_T (* hash_func_T)(const char *key, unsigned int keylen, hash_value_T magic);
 
 struct hash_item {
 	LIST_HEAD(struct hash_item);
 
-	const unsigned char *key;
+	const char *key;
 	unsigned int keylen;
 	void *value;
 };
@@ -27,8 +27,8 @@ struct hash *init_hash8(void);
 
 void free_hash(struct hash **hashp);
 
-struct hash_item *add_hash_item(struct hash *hash, const unsigned char *key, unsigned int keylen, void *value);
-struct hash_item *get_hash_item(struct hash *hash, const unsigned char *key, unsigned int keylen);
+struct hash_item *add_hash_item(struct hash *hash, const char *key, unsigned int keylen, void *value);
+struct hash_item *get_hash_item(struct hash *hash, const char *key, unsigned int keylen);
 void del_hash_item(struct hash *hash, struct hash_item *item);
 
 /** @relates hash */

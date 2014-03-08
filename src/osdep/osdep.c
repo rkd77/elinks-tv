@@ -148,14 +148,14 @@ get_e(const char *env)
 	return (v ? atoi(v) : 0);
 }
 
-unsigned char *
+char *
 get_cwd(void)
 {
 	int bufsize = 128;
-	unsigned char *buf;
+	char *buf;
 
 	while (1) {
-		buf = (unsigned char *)mem_alloc(bufsize);
+		buf = (char *)mem_alloc(bufsize);
 		if (!buf) return NULL;
 		if (getcwd((char *)buf, bufsize)) return buf;
 		mem_free(buf);
@@ -169,18 +169,18 @@ get_cwd(void)
 }
 
 void
-set_cwd(unsigned char *path)
+set_cwd(char *path)
 {
 	if (path) while (chdir((const char *)path) && errno == EINTR);
 }
 
-unsigned char *
+char *
 get_shell(void)
 {
-	unsigned char *shell = (unsigned char *)GETSHELL;
+	char *shell = (char *)GETSHELL;
 
 	if (!shell || !*shell)
-		shell = (unsigned char *)DEFAULT_SHELL;
+		shell = (char *)DEFAULT_SHELL;
 
 	return shell;
 }
@@ -326,11 +326,11 @@ is_xterm(void)
 		 * In general, proper xterm detection is a nightmarish task...
 		 *
 		 * -- Adam Borowski <kilobyte@mimuw.edu.pl> */
-		unsigned char *display = (unsigned char *)getenv("DISPLAY");
-		unsigned char *windowid = (unsigned char *)getenv("WINDOWID");
+		char *display = (char *)getenv("DISPLAY");
+		char *windowid = (char *)getenv("WINDOWID");
 
 		if (!windowid || !*windowid)
-			windowid = (unsigned char *)getenv("KONSOLE_DCOP_SESSION");
+			windowid = (char *)getenv("KONSOLE_DCOP_SESSION");
 		xt = (display && *display && windowid && *windowid);
 	}
 
@@ -346,16 +346,16 @@ unsigned int resize_count = 0;
 #if !(defined(CONFIG_OS_BEOS) && defined(HAVE_SETPGID)) && !defined(CONFIG_OS_WIN32)
 
 int
-exe(unsigned char *path)
+exe(char *path)
 {
 	return system((const char *)path);
 }
 
 #endif
 
-static unsigned char *clipboard;
+static char *clipboard;
 
-unsigned char *
+char *
 get_clipboard_text(void)
 {
 	/* The following support for GNU Screen's clipboard is
@@ -384,7 +384,7 @@ get_clipboard_text(void)
 
 		if (!init_string(&str)) return NULL;
 
-		add_to_string(&str, (const unsigned char *)"screen -X paste .");
+		add_to_string(&str, (const char *)"screen -X paste .");
 		if (str.length) exe(str.source);
 		if (str.source) done_string(&str);
 	}
@@ -394,7 +394,7 @@ get_clipboard_text(void)
 }
 
 void
-set_clipboard_text(unsigned char *data)
+set_clipboard_text(char *data)
 {
 	/* GNU Screen's clipboard */
 	if (is_gnuscreen()) {
@@ -402,7 +402,7 @@ set_clipboard_text(unsigned char *data)
 
 		if (!init_string(&str)) return;
 
-		add_to_string(&str, (const unsigned char *)"screen -X register . ");
+		add_to_string(&str, (const char *)"screen -X register . ");
 		add_shell_quoted_to_string(&str, data, strlen((const char *)data));
 
 		if (str.length) exe(str.source);
@@ -411,12 +411,12 @@ set_clipboard_text(unsigned char *data)
 
 	/* Shouldn't complain about leaks. */
 	if (clipboard) free(clipboard);
-	clipboard = (unsigned char *)strdup((const char *)data);
+	clipboard = (char *)strdup((const char *)data);
 }
 
 /* Set xterm-like term window's title. */
 void
-set_window_title(unsigned char *title, int codepage)
+set_window_title(char *title, int codepage)
 {
 	struct string filtered;
 
@@ -429,8 +429,8 @@ set_window_title(unsigned char *title, int codepage)
 
 	/* Copy title to filtered if different from NULL */
 	if (title) {
-		unsigned char *scan = title;
-		unsigned char *end = title + strlen((const char *)title);
+		char *scan = title;
+		char *end = title + strlen((const char *)title);
 
 		/* Remove control characters, so that they cannot
 		 * interfere with the command we send to the terminal.
@@ -441,7 +441,7 @@ set_window_title(unsigned char *title, int codepage)
 		 * potential alternative set_window_title() routines might
 		 * want to take different precautions. */
 		for (;;) {
-			unsigned char *charbegin = scan;
+			char *charbegin = scan;
 			unicode_val_T unicode
 				= cp_to_unicode(codepage, &scan, end);
 			int charlen = scan - charbegin;
@@ -466,7 +466,7 @@ set_window_title(unsigned char *title, int codepage)
 			 * title and other stuff together exceed 766
 			 * bytes.  So set the limit quite a bit lower.  */
 			if (filtered.length + charlen >= 600 - 3) {
-				add_to_string(&filtered, (const unsigned char *)"...");
+				add_to_string(&filtered, (const char *)"...");
 				break;
 			}
 
@@ -506,14 +506,14 @@ catch_x_error(void)
  *
  * @return the string that the caller must free with mem_free(),
  * or NULL on error.  */
-static unsigned char *
+static char *
 xprop_to_string(Display *display, const XTextProperty *text_prop, int to_cp)
 {
 	int from_cp;
 	char **list = NULL;
 	int count = 0;
 	struct conv_table *convert_table;
-	unsigned char *ret = NULL;
+	char *ret = NULL;
 
 	/* <X11/Xlib.h> defines X_HAVE_UTF8_STRING if
 	 * Xutf8TextPropertyToTextList is available.
@@ -527,14 +527,14 @@ xprop_to_string(Display *display, const XTextProperty *text_prop, int to_cp)
 	 * entirely different.  */
 #if defined(CONFIG_UTF8) && defined(X_HAVE_UTF8_STRING)
 
-	from_cp = get_cp_index((const unsigned char *)"UTF-8");
+	from_cp = get_cp_index((const char *)"UTF-8");
 	if (Xutf8TextPropertyToTextList(display, text_prop, &list,
 					&count) < 0)
 		return NULL;
 
 #else  /* !defined(X_HAVE_UTF8_STRING) || !defined(CONFIG_UTF8) */
 
-	from_cp = get_cp_index((const unsigned char *)"System");
+	from_cp = get_cp_index((const char *)"System");
 	if (XmbTextPropertyToTextList(display, text_prop, &list,
 				      &count) < 0)
 		return NULL;
@@ -543,7 +543,7 @@ xprop_to_string(Display *display, const XTextProperty *text_prop, int to_cp)
 
 	convert_table = get_translation_table(from_cp, to_cp);
 	if (count >= 1 && convert_table)
-		ret = convert_string(convert_table, (unsigned char *)list[0], strlen((const char *)list[0]),
+		ret = convert_string(convert_table, (char *)list[0], strlen((const char *)list[0]),
 				     to_cp, CSM_NONE, NULL, NULL, NULL);
 
 	XFreeStringList(list);
@@ -551,23 +551,23 @@ xprop_to_string(Display *display, const XTextProperty *text_prop, int to_cp)
 }
 #endif	/* HAVE_X11 */
 
-unsigned char *
+char *
 get_window_title(int codepage)
 {
 #ifdef HAVE_X11
 	/* Following code is stolen from our beloved vim. */
-	unsigned char *winid;
+	char *winid;
 	Display *display;
 	Window window, root, parent, *children;
 	XTextProperty text_prop;
 	Status status;
 	unsigned int num_children;
-	unsigned char *ret = NULL;
+	char *ret = NULL;
 
 	if (!is_xterm())
 		return NULL;
 
-	winid = (unsigned char *)getenv("WINDOWID");
+	winid = (char *)getenv("WINDOWID");
 	if (!winid)
 		return NULL;
 	window = (Window)atol((const char *)winid);
@@ -614,7 +614,7 @@ resize_window(int width, int height, int old_width, int old_height)
 {
 #ifdef HAVE_X11
 	/* Following code is stolen from our beloved vim. */
-	unsigned char *winid;
+	char *winid;
 	Display *display;
 	Window window;
 	Status status;
@@ -623,7 +623,7 @@ resize_window(int width, int height, int old_width, int old_height)
 	if (!is_xterm())
 		return -1;
 
-	winid = (unsigned char *)getenv("WINDOWID");
+	winid = (char *)getenv("WINDOWID");
 	if (!winid)
 		return -1;
 	window = (Window) atol((const char *)winid);
@@ -893,7 +893,7 @@ elinks_cfmakeraw(struct termios *t)
 #if !defined(CONFIG_MOUSE) || (!defined(CONFIG_GPM) && !defined(CONFIG_SYSMOUSE) && !defined(OS2_MOUSE))
 
 void *
-handle_mouse(int cons, void (*fn)(void *, unsigned char *, int),
+handle_mouse(int cons, void (*fn)(void *, char *, int),
 	     void *data)
 {
 	return NULL;
@@ -970,8 +970,8 @@ set_highpri(void)
 #endif
 
 
-unsigned char *
+char *
 get_system_str(int xwin)
 {
-	return (unsigned char *)(xwin ? SYSTEM_STR "-xwin" : SYSTEM_STR);
+	return (char *)(xwin ? SYSTEM_STR "-xwin" : SYSTEM_STR);
 }

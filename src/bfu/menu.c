@@ -54,7 +54,7 @@
 /* Types and structures */
 
 /* Submenu indicator, displayed at right. */
-static unsigned char m_submenu[] = ">>";
+static char m_submenu[] = ">>";
 static int m_submenu_len = sizeof(m_submenu) - 1;
 
 /* Prototypes */
@@ -190,7 +190,7 @@ select_menu(struct terminal *term, struct menu *menu)
 static int
 get_menuitem_text_width(struct terminal *term, struct menu_item *mi)
 {
-	unsigned char *text;
+	char *text;
 
 	if (!mi_has_left_text(mi)) return 0;
 
@@ -229,7 +229,7 @@ get_menuitem_rtext_width(struct terminal *term, struct menu_item *mi)
 		}
 
 	} else if (mi_has_right_text(mi)) {
-		unsigned char *rtext = mi->rtext;
+		char *rtext = mi->rtext;
 
 		if (mi_rtext_translate(mi))
 			rtext = _(rtext, term);
@@ -371,7 +371,7 @@ set_menu_selection(struct menu *menu, int pos)
  *         separators). For double-width glyph width == 2.
  * len - length of text in bytes */
 static inline void
-draw_menu_left_text(struct terminal *term, unsigned char *text, int len,
+draw_menu_left_text(struct terminal *term, char *text, int len,
 		    int x, int y, int width, struct color_pair *color)
 {
 	int w = width - (L_TEXT_SPACE + R_TEXT_SPACE);
@@ -398,20 +398,20 @@ draw_menu_left_text(struct terminal *term, unsigned char *text, int len,
 
 
 static inline void
-draw_menu_left_text_hk(struct terminal *term, unsigned char *text,
+draw_menu_left_text_hk(struct terminal *term, char *text,
 		       int hotkey_pos, int x, int y, int width,
 		       struct color_pair *color, int selected)
 {
-	struct color_pair *hk_color = get_bfu_color(term, (const unsigned char *)"menu.hotkey.normal");
-	struct color_pair *hk_color_sel = get_bfu_color(term, (const unsigned char *)"menu.hotkey.selected");
-	int hk_attr = get_opt_bool((const unsigned char *)"ui.dialogs.underline_hotkeys", NULL)
+	struct color_pair *hk_color = get_bfu_color(term, "menu.hotkey.normal");
+	struct color_pair *hk_color_sel = get_bfu_color(term, "menu.hotkey.selected");
+	int hk_attr = get_opt_bool("ui.dialogs.underline_hotkeys", NULL)
 				      ? SCREEN_ATTR_UNDERLINE : 0;
 	unsigned char c;
 	int xbase = x + L_TEXT_SPACE;
 	int w = width - (L_TEXT_SPACE + R_TEXT_SPACE);
 	int hk_state = 0;
 #ifdef CONFIG_UTF8
-	unsigned char *text2, *end;
+	char *text2, *end;
 #endif
 
 #ifdef CONFIG_DEBUG
@@ -521,7 +521,7 @@ utf8:
 }
 
 static inline void
-draw_menu_right_text(struct terminal *term, unsigned char *text, int len,
+draw_menu_right_text(struct terminal *term, char *text, int len,
 		     int x, int y, int width, struct color_pair *color)
 {
 	int w = width - (L_RTEXT_SPACE + R_RTEXT_SPACE);
@@ -540,9 +540,9 @@ draw_menu_right_text(struct terminal *term, unsigned char *text, int len,
 static void
 display_menu(struct terminal *term, struct menu *menu)
 {
-	struct color_pair *normal_color = get_bfu_color(term, (const unsigned char *)"menu.normal");
-	struct color_pair *selected_color = get_bfu_color(term, (const unsigned char *)"menu.selected");
-	struct color_pair *frame_color = get_bfu_color(term, (const unsigned char *)"menu.frame");
+	struct color_pair *normal_color = get_bfu_color(term, "menu.normal");
+	struct color_pair *selected_color = get_bfu_color(term, "menu.selected");
+	struct color_pair *frame_color = get_bfu_color(term, "menu.frame");
 	struct box box;
 	int p;
 	int menu_height;
@@ -556,10 +556,10 @@ display_menu(struct terminal *term, struct menu *menu)
 	draw_box(term, &box, ' ', 0, normal_color);
 	draw_border(term, &box, frame_color, 1);
 
-	if (get_opt_bool((const unsigned char *)"ui.dialogs.shadows", NULL)) {
+	if (get_opt_bool("ui.dialogs.shadows", NULL)) {
 		/* Draw shadow */
 		draw_shadow(term, &menu->box,
-			    get_bfu_color(term, (const unsigned char *)"dialog.shadow"), 2, 1);
+			    get_bfu_color(term, "dialog.shadow"), 2, 1);
 #ifdef CONFIG_UTF8
 		if (term->utf8_cp)
 			fix_dwchar_around_box(term, &box, 1, 2, 1);
@@ -611,7 +611,7 @@ display_menu(struct terminal *term, struct menu *menu)
 
 		if (mi_has_left_text(mi)) {
 			int l = mi->hotkey_pos;
-			unsigned char *text = mi->text;
+			char *text = mi->text;
 
 			if (mi_text_translate(mi))
 				text = _(text, term);
@@ -658,7 +658,7 @@ display_menu(struct terminal *term, struct menu *menu)
 			}
 
 		} else if (mi_has_right_text(mi)) {
-			unsigned char *rtext = mi->rtext;
+			char *rtext = mi->rtext;
 
 			if (mi_rtext_translate(mi))
 				rtext = _(rtext, term);
@@ -781,10 +781,10 @@ menu_page_down(struct menu *menu)
 #undef DIST
 
 static inline int
-search_menu_item(struct menu_item *item, unsigned char *buffer,
+search_menu_item(struct menu_item *item, char *buffer,
 		 struct terminal *term)
 {
-	unsigned char *text, *match;
+	char *text, *match;
 
 	/* set_menu_selection asserts selectability. */
 	if (!mi_has_left_text(item) || !mi_is_selectable(item)) return 0;
@@ -795,11 +795,11 @@ search_menu_item(struct menu_item *item, unsigned char *buffer,
 	text = stracpy(text);
 	if (!text) return 0;
 
-	match = (unsigned char *)strchr((char *)text, '~');
+	match = strchr(text, '~');
 	if (match)
 		memmove(match, match + 1, strlen((const char *)match));
 
-	match = (unsigned char *)strcasestr((char *)text, (char *)buffer);
+	match = strcasestr(text, buffer);
 	mem_free(text);
 
 	return !!match;
@@ -810,7 +810,7 @@ menu_search_handler(struct input_line *line, int action_id)
 {
 	struct menu *menu = (struct menu *)line->data;
 	struct terminal *term = menu->win->term;
-	unsigned char *buffer = line->buffer;
+	char *buffer = line->buffer;
 	struct window *win;
 	int pos = menu->selected;
 	int start;
@@ -871,7 +871,7 @@ search_menu(struct menu *menu)
 	struct terminal *term = menu->win->term;
 	struct window *current_tab = get_current_tab(term);
 	struct session *ses = current_tab ? current_tab->data : NULL;
-	unsigned char *prompt = _("Search menu/", term);
+	char *prompt = _("Search menu/", term);
 
 	if (menu->size < 1 || !ses) return;
 
@@ -1067,8 +1067,8 @@ do_mainmenu(struct terminal *term, struct menu_item *items,
 static void
 display_mainmenu(struct terminal *term, struct menu *menu)
 {
-	struct color_pair *normal_color = get_bfu_color(term, (const unsigned char *)"menu.normal");
-	struct color_pair *selected_color = get_bfu_color(term, (const unsigned char *)"menu.selected");
+	struct color_pair *normal_color = get_bfu_color(term, (const char *)"menu.normal");
+	struct color_pair *selected_color = get_bfu_color(term, (const char *)"menu.selected");
 	int p = 0;
 	int i;
 	struct box box;
@@ -1109,7 +1109,7 @@ display_mainmenu(struct terminal *term, struct menu *menu)
 	for (i = menu->first; i < menu->size; i++) {
 		struct menu_item *mi = &menu->items[i];
 		struct color_pair *color = normal_color;
-		unsigned char *text = mi->text;
+		char *text = mi->text;
 		int l = mi->hotkey_pos;
 		int textlen;
 		int selected = (i == menu->selected);
@@ -1230,7 +1230,7 @@ mainmenu_mouse_handler(struct menu *menu, struct term_event *ev)
 		/* We don't initialize to menu->first here, since it breaks
 		 * horizontal scrolling using mouse in some cases. --Zas */
 		foreach_menu_item (item, menu->items) {
-			unsigned char *text = item->text;
+			char *text = item->text;
 
 			if (!mi_has_left_text(item)) continue;
 
@@ -1368,7 +1368,7 @@ new_menu(menu_item_flags_T flags)
 }
 
 void
-add_to_menu(struct menu_item **mi, unsigned char *text, unsigned char *rtext,
+add_to_menu(struct menu_item **mi, char *text, char *rtext,
 	    action_id_T action_id, menu_func_T func, void *data,
 	    menu_item_flags_T flags)
 {

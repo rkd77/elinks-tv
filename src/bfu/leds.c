@@ -183,7 +183,7 @@ draw_show_ip(struct session *ses, int xpos, int ypos, struct color_pair *color)
 
 	if (ses->doc_view && ses->doc_view->document && ses->doc_view->document->ip) {
 		struct terminal *term = ses->tab->term;
-		unsigned char *s = ses->doc_view->document->ip;
+		char *s = ses->doc_view->document->ip;
 		int length = strlen((const char *)s);
 		int i;
 
@@ -242,8 +242,8 @@ draw_leds(struct session *ses)
 
 	/* This should be done elsewhere, but this is very nice place where we
 	 * could do that easily. */
-	if (get_opt_int((const unsigned char *)"ui.timer.enable", NULL) == 2) {
-		led_color = get_bfu_color(term, (const unsigned char *)"status.status-text");
+	if (get_opt_int((const char *)"ui.timer.enable", NULL) == 2) {
+		led_color = get_bfu_color(term, (const char *)"status.status-text");
 		if (!led_color) goto end;
 
 		term->leds_length += draw_timer(term, xpos, ypos, led_color);
@@ -252,7 +252,7 @@ draw_leds(struct session *ses)
 	if (!get_leds_panel_enable()) return;
 
 	if (!led_color) {
-		led_color = get_bfu_color(term, (const unsigned char *)"status.status-text");
+		led_color = get_bfu_color(term, (const char *)"status.status-text");
 		if (!led_color) goto end;
 	}
 
@@ -263,7 +263,7 @@ draw_leds(struct session *ses)
 #endif
 
 	if (get_leds_show_ip_enable()) {
-		struct color_pair *color = get_bfu_color(term, (const unsigned char *)"status.showip-text");
+		struct color_pair *color = get_bfu_color(term, (const char *)"status.showip-text");
 
 		if (color) term->leds_length += draw_show_ip(ses, xpos - term->leds_length, ypos, color);
 	}
@@ -359,7 +359,7 @@ redraw_leds(void *xxx)
 	redraw_timer = TIMER_ID_UNDEF;
 
 	if (!get_leds_panel_enable()
-	    && get_opt_int((const unsigned char *)"ui.timer.enable", NULL) != 2) {
+	    && get_opt_int((const char *)"ui.timer.enable", NULL) != 2) {
 		return;
 	}
 

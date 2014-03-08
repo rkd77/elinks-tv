@@ -9,7 +9,7 @@
 struct module {
 	/* The name of the module. It needs to be unique in its class (ie. in
 	 * the scope of root modules or submodules of one parent module). */
-	const unsigned char *name;
+	const char *name;
 
 	/* The options that should be registered for this module.
 	 * The table should end with NULL_OPTION_INFO. */
@@ -38,7 +38,7 @@ struct module {
 };
 
 #define struct_module(name, options, hooks, submods, data, init, done) \
-	{ (const unsigned char *)name, options, hooks, submods, data, init, done }
+	{ (const char *)name, options, hooks, submods, data, init, done }
 
 #define foreach_module(module, modules, i)			\
 	for (i = 0, module = modules ? modules[i] : NULL;	\

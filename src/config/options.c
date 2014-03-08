@@ -68,7 +68,7 @@ static struct option options_root = INIT_OPTION(
 struct option *config_options;
 struct option *cmdline_options;
 
-static void add_opt_rec(struct option *, const unsigned char *, struct option *);
+static void add_opt_rec(struct option *, const char *, struct option *);
 static void free_options_tree(LIST_OF(struct option) *, int recursive);
 
 #ifdef CONFIG_DEBUG
@@ -78,7 +78,7 @@ static void free_options_tree(LIST_OF(struct option) *, int recursive);
 #define bad_punct(c) (c != ')' && c != '>' && !isquote(c) && ispunct(c))
 
 static void
-check_caption(unsigned char *caption)
+check_caption(char *caption)
 {
 	int len;
 	unsigned char c;
@@ -106,7 +106,7 @@ check_caption(unsigned char *caption)
 #undef bad_punct
 
 static void
-check_description(unsigned char *desc)
+check_description(char *desc)
 {
 	int len;
 	unsigned char c;
@@ -170,18 +170,18 @@ static int no_autocreate = 0;
  *
  * @relates option */
 struct option *
-get_opt_rec(struct option *tree, const unsigned char *name_)
+get_opt_rec(struct option *tree, const char *name_)
 {
 	struct option *option;
-	unsigned char *aname = stracpy(name_);
-	unsigned char *name = aname;
-	unsigned char *sep;
+	char *aname = stracpy(name_);
+	char *name = aname;
+	char *sep;
 
 	if (!aname) return NULL;
 
 	/* We iteratively call get_opt_rec() each for path_elements-1, getting
 	 * appropriate tree for it and then resolving [path_elements]. */
-	if ((sep = (unsigned char *)strrchr((char *)name, '.'))) {
+	if ((sep = (char *)strrchr((char *)name, '.'))) {
 		*sep = '\0';
 
 		tree = get_opt_rec(tree, name);
@@ -206,7 +206,7 @@ get_opt_rec(struct option *tree, const unsigned char *name_)
 	}
 
 	if (tree && tree->flags & OPT_AUTOCREATE && !no_autocreate) {
-		struct option *template_ = get_opt_rec(tree, (const unsigned char *)"_template_");
+		struct option *template_ = get_opt_rec(tree, (const char *)"_template_");
 
 		assertm(template_ != NULL, "Requested %s should be autocreated but "
 			"%.*s._template_ is missing!", name_, sep - name_,
@@ -228,7 +228,7 @@ get_opt_rec(struct option *tree, const unsigned char *name_)
 		}
 		mem_free_set((void **)&option->name, stracpy(name));
 
-		add_opt_rec(tree, (const unsigned char *)"", option);
+		add_opt_rec(tree, (const char *)"", option);
 
 		mem_free(aname);
 		return option;
@@ -243,7 +243,7 @@ get_opt_rec(struct option *tree, const unsigned char *name_)
  * enabled.
  * @relates option */
 struct option *
-get_opt_rec_real(struct option *tree, const unsigned char *name)
+get_opt_rec_real(struct option *tree, const char *name)
 {
 	struct option *opt;
 
@@ -282,9 +282,9 @@ indirect_option(struct option *alias)
 union option_value *
 get_opt_(
 #ifdef CONFIG_DEBUG
-	 unsigned char *file, int line, int option_type,
+	 char *file, int line, int option_type,
 #endif
-	 struct option *tree, const unsigned char *name, struct session *ses)
+	 struct option *tree, const char *name, struct session *ses)
 {
 	struct option *opt = NULL;
 
@@ -297,7 +297,7 @@ get_opt_(
 	 * option has a shadow in the domain tree that matches the current
 	 * document in that session, return that shadow. */
 	if (!opt && ses)
-		opt = get_domain_option_from_session((unsigned char *)name, ses);
+		opt = get_domain_option_from_session((char *)name, ses);
 
 	/* Else, return the real option. */
 	if (!opt)
@@ -437,7 +437,7 @@ append:
 /** Add option to tree.
  * @relates option */
 static void
-add_opt_rec(struct option *tree, const unsigned char *path, struct option *option)
+add_opt_rec(struct option *tree, const char *path, struct option *option)
 {
 	int abi = 0;
 
@@ -450,10 +450,10 @@ add_opt_rec(struct option *tree, const unsigned char *path, struct option *optio
 	object_nolock(option, "option");
 
 	if (option->box_item && option->name && !strcmp((const char *)option->name, "_template_"))
-		option->box_item->visible = get_opt_bool((const unsigned char *)"config.show_template", NULL);
+		option->box_item->visible = get_opt_bool((const char *)"config.show_template", NULL);
 
 	if (tree->flags & OPT_AUTOCREATE && !option->desc) {
-		struct option *template_ = get_opt_rec(tree, (const unsigned char *)"_template_");
+		struct option *template_ = get_opt_rec(tree, (const char *)"_template_");
 
 		assert(template_);
 		option->desc = template_->desc;
@@ -502,9 +502,9 @@ init_option_listbox_item(struct option *option)
 
 /*! @relates option */
 struct option *
-add_opt(struct option *tree, unsigned char *path, unsigned char *capt,
-	unsigned char *name, option_flags_T flags, int type,
-	long min, long max, longptr_T value, unsigned char *desc)
+add_opt(struct option *tree, char *path, char *capt,
+	char *name, option_flags_T flags, int type,
+	long min, long max, longptr_T value, char *desc)
 {
 	struct option *option = (struct option *)mem_calloc(1, sizeof(*option));
 
@@ -539,10 +539,10 @@ add_opt(struct option *tree, unsigned char *path, unsigned char *capt,
 				mem_free(option);
 				return NULL;
 			}
-			option->value.string = (unsigned char *) value;
+			option->value.string = (char *) value;
 			break;
 		case OPT_ALIAS:
-			option->value.string = (unsigned char *) value;
+			option->value.string = (char *) value;
 			break;
 		case OPT_BOOL:
 		case OPT_INT:
@@ -553,7 +553,7 @@ add_opt(struct option *tree, unsigned char *path, unsigned char *capt,
 			option->value.big_number = (long) value; /* FIXME: cast from void * */
 			break;
 		case OPT_COLOR:
-			decode_color((unsigned char *) value, strlen((const char *) value),
+			decode_color((char *) value, strlen((const char *) value),
 					&option->value.color);
 			break;
 		case OPT_COMMAND:
@@ -764,36 +764,36 @@ static inline void
 register_autocreated_options(void)
 {
 	/* TODO: Use table-driven initialization. --jonas */
-	get_opt_int((const unsigned char *)"terminal.linux.type", NULL) = TERM_LINUX;
-	get_opt_int((const unsigned char *)"terminal.linux.colors", NULL) = COLOR_MODE_16;
-	get_opt_bool((const unsigned char *)"terminal.linux.m11_hack", NULL) = 1;
-	get_opt_int((const unsigned char *)"terminal.vt100.type", NULL) = TERM_VT100;
-	get_opt_int((const unsigned char *)"terminal.vt110.type", NULL) = TERM_VT100;
-	get_opt_int((const unsigned char *)"terminal.xterm.type", NULL) = TERM_VT100;
-	get_opt_bool((const unsigned char *)"terminal.xterm.underline", NULL) = 1;
-	get_opt_int((const unsigned char *)"terminal.xterm-color.type", NULL) = TERM_VT100;
-	get_opt_int((const unsigned char *)"terminal.xterm-color.colors", NULL) = COLOR_MODE_16;
-	get_opt_bool((const unsigned char *)"terminal.xterm-color.underline", NULL) = 1;
+	get_opt_int((const char *)"terminal.linux.type", NULL) = TERM_LINUX;
+	get_opt_int((const char *)"terminal.linux.colors", NULL) = COLOR_MODE_16;
+	get_opt_bool((const char *)"terminal.linux.m11_hack", NULL) = 1;
+	get_opt_int((const char *)"terminal.vt100.type", NULL) = TERM_VT100;
+	get_opt_int((const char *)"terminal.vt110.type", NULL) = TERM_VT100;
+	get_opt_int((const char *)"terminal.xterm.type", NULL) = TERM_VT100;
+	get_opt_bool((const char *)"terminal.xterm.underline", NULL) = 1;
+	get_opt_int((const char *)"terminal.xterm-color.type", NULL) = TERM_VT100;
+	get_opt_int((const char *)"terminal.xterm-color.colors", NULL) = COLOR_MODE_16;
+	get_opt_bool((const char *)"terminal.xterm-color.underline", NULL) = 1;
 #ifdef CONFIG_88_COLORS
-	get_opt_int((const unsigned char *)"terminal.xterm-88color.type", NULL) = TERM_VT100;
-	get_opt_int((const unsigned char *)"terminal.xterm-88color.colors", NULL) = COLOR_MODE_88;
-	get_opt_bool((const unsigned char *)"terminal.xterm-88color.underline", NULL) = 1;
+	get_opt_int((const char *)"terminal.xterm-88color.type", NULL) = TERM_VT100;
+	get_opt_int((const char *)"terminal.xterm-88color.colors", NULL) = COLOR_MODE_88;
+	get_opt_bool((const char *)"terminal.xterm-88color.underline", NULL) = 1;
 #endif
-	get_opt_int((const unsigned char *)"terminal.rxvt-unicode.type", NULL) = 1;
+	get_opt_int((const char *)"terminal.rxvt-unicode.type", NULL) = 1;
 #ifdef CONFIG_88_COLORS
-	get_opt_int((const unsigned char *)"terminal.rxvt-unicode.colors", NULL) = COLOR_MODE_88;
+	get_opt_int((const char *)"terminal.rxvt-unicode.colors", NULL) = COLOR_MODE_88;
 #else
-	get_opt_int((const unsigned char *)"terminal.rxvt-unicode.colors", NULL) = COLOR_MODE_16;
+	get_opt_int((const char *)"terminal.rxvt-unicode.colors", NULL) = COLOR_MODE_16;
 #endif
-	get_opt_bool((const unsigned char *)"terminal.rxvt-unicode.italic", NULL) = 1;
-	get_opt_bool((const unsigned char *)"terminal.rxvt-unicode.underline", NULL) = 1;
+	get_opt_bool((const char *)"terminal.rxvt-unicode.italic", NULL) = 1;
+	get_opt_bool((const char *)"terminal.rxvt-unicode.underline", NULL) = 1;
 #ifdef CONFIG_256_COLORS
-	get_opt_int((const unsigned char *)"terminal.xterm-256color.type", NULL) = TERM_VT100;
-	get_opt_int((const unsigned char *)"terminal.xterm-256color.colors", NULL) = COLOR_MODE_256;
-	get_opt_bool((const unsigned char *)"terminal.xterm-256color.underline", NULL) = 1;
-	get_opt_int((const unsigned char *)"terminal.fbterm.type", NULL) = TERM_FBTERM;
-	get_opt_int((const unsigned char *)"terminal.fbterm.colors", NULL) = COLOR_MODE_256;
-	get_opt_bool((const unsigned char *)"terminal.fbterm.underline", NULL) = 0;
+	get_opt_int((const char *)"terminal.xterm-256color.type", NULL) = TERM_VT100;
+	get_opt_int((const char *)"terminal.xterm-256color.colors", NULL) = COLOR_MODE_256;
+	get_opt_bool((const char *)"terminal.xterm-256color.underline", NULL) = 1;
+	get_opt_int((const char *)"terminal.fbterm.type", NULL) = TERM_FBTERM;
+	get_opt_int((const char *)"terminal.fbterm.colors", NULL) = COLOR_MODE_256;
+	get_opt_bool((const char *)"terminal.fbterm.underline", NULL) = 0;
 #endif
 }
 
@@ -915,21 +915,21 @@ change_hook_language(struct session *ses, struct option *current, struct option 
 
 
 static const struct change_hook_info change_hooks[] = {
-	{ (const unsigned char *)"config.show_template",	change_hook_stemplate },
-	{ (const unsigned char *)"connection",			change_hook_connection },
-	{ (const unsigned char *)"document.browse",		change_hook_html },
-	{ (const unsigned char *)"document.browse.forms.insert_mode",
+	{ (const char *)"config.show_template",	change_hook_stemplate },
+	{ (const char *)"connection",			change_hook_connection },
+	{ (const char *)"document.browse",		change_hook_html },
+	{ (const char *)"document.browse.forms.insert_mode",
 					change_hook_insert_mode },
-	{ (const unsigned char *)"document.browse.links.active_link",
+	{ (const char *)"document.browse.links.active_link",
 					change_hook_active_link },
-	{ (const unsigned char *)"document.cache",		change_hook_cache },
-	{ (const unsigned char *)"document.codepage",		change_hook_html },
-	{ (const unsigned char *)"document.colors",		change_hook_html },
-	{ (const unsigned char *)"document.html",		change_hook_html },
-	{ (const unsigned char *)"document.plain",		change_hook_html },
-	{ (const unsigned char *)"terminal",			change_hook_terminal },
-	{ (const unsigned char *)"ui.language",		change_hook_language },
-	{ (const unsigned char *)"ui",				change_hook_ui },
+	{ (const char *)"document.cache",		change_hook_cache },
+	{ (const char *)"document.codepage",		change_hook_html },
+	{ (const char *)"document.colors",		change_hook_html },
+	{ (const char *)"document.html",		change_hook_html },
+	{ (const char *)"document.plain",		change_hook_html },
+	{ (const char *)"terminal",			change_hook_terminal },
+	{ (const char *)"ui.language",		change_hook_language },
+	{ (const char *)"ui",				change_hook_ui },
 	{ NULL,				NULL },
 };
 
@@ -938,12 +938,12 @@ static const struct change_hook_info change_hooks[] = {
 void
 init_options(void)
 {
-	cmdline_options = add_opt_tree_tree(&options_root, (unsigned char *)"", (unsigned char *)"",
-					    (unsigned char *)"cmdline", 0, (unsigned char *)"");
+	cmdline_options = add_opt_tree_tree(&options_root, (char *)"", (char *)"",
+					    (char *)"cmdline", 0, (char *)"");
 	register_options(cmdline_options_info, cmdline_options);
 
-	config_options = add_opt_tree_tree(&options_root, (unsigned char *)"", (unsigned char *)"",
-					 (unsigned char *)"config", OPT_SORT, (unsigned char *)"");
+	config_options = add_opt_tree_tree(&options_root, (char *)"", (char *)"",
+					 (char *)"config", OPT_SORT, (char *)"");
 	config_options->flags |= OPT_LISTBOX;
 	config_options->box_item = &option_browser.root;
 	register_options(config_options_info, config_options);
@@ -1053,9 +1053,9 @@ check_nonempty_tree(LIST_OF(struct option) *options)
 void
 smart_config_string(struct string *str, int print_comment, int i18n,
 		    LIST_OF(struct option) *options,
-		    unsigned char *path, int depth,
+		    char *path, int depth,
 		    void (*fn)(struct string *, struct option *,
-			       unsigned char *, int, int, int, int))
+			       char *, int, int, int, int))
 {
 	struct option *option;
 
@@ -1146,7 +1146,7 @@ void
 update_options_visibility(void)
 {
 	update_visibility(config_options->value.tree,
-			  get_opt_bool((const unsigned char *)"config.show_template", NULL));
+			  get_opt_bool((const char *)"config.show_template", NULL));
 }
 
 void
@@ -1197,7 +1197,7 @@ commit_option_values(struct option_resolver *resolvers,
 	assert(resolvers && root && values && size);
 
 	for (i = 0; i < size; i++) {
-		unsigned char *name = resolvers[i].name;
+		char *name = resolvers[i].name;
 		struct option *option = get_opt_rec(root, name);
 		int id = resolvers[i].id;
 
@@ -1234,7 +1234,7 @@ checkout_option_values(struct option_resolver *resolvers,
 	int i;
 
 	for (i = 0; i < size; i++) {
-		unsigned char *name = resolvers[i].name;
+		char *name = resolvers[i].name;
 		struct option *option = get_opt_rec(root, name);
 		int id = resolvers[i].id;
 
@@ -1268,7 +1268,7 @@ register_options(union option_info info[], struct option *tree)
 		const struct option_init init = info[i].init;
 
 		struct option *option = &info[i].option;
-		unsigned char *string;
+		char *string;
 
 		*option = zero;
 		option->name = init.name;
@@ -1302,22 +1302,22 @@ register_options(union option_info info[], struct option *tree)
 				}
 				break;
 			case OPT_STRING:
-				string = (unsigned char *)mem_alloc(MAX_STR_LEN);
+				string = (char *)mem_alloc(MAX_STR_LEN);
 				if (!string) {
 					delete_option(option);
 					continue;
 				}
-				safe_strncpy(string, (const unsigned char *)init.value_dataptr, MAX_STR_LEN);
+				safe_strncpy(string, (const char *)init.value_dataptr, MAX_STR_LEN);
 				option->value.string = string;
 				break;
 			case OPT_COLOR:
-				string = (unsigned char *)init.value_dataptr;
+				string = (char *)init.value_dataptr;
 				assert(string);
 				decode_color(string, strlen((const char *)string),
 						&option->value.color);
 				break;
 			case OPT_CODEPAGE:
-				string = (unsigned char *)init.value_dataptr;
+				string = (char *)init.value_dataptr;
 				assert(string);
 				option->value.number = get_cp_index(string);
 				break;
@@ -1336,7 +1336,7 @@ register_options(union option_info info[], struct option *tree)
 				option->value.command = init.value_funcptr;
 				break;
 			case OPT_ALIAS:
-				option->value.string = (unsigned char *)init.value_dataptr;
+				option->value.string = (char *)init.value_dataptr;
 				break;
 		}
 

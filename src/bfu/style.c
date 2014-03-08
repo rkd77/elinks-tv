@@ -28,7 +28,7 @@ struct bfu_color_entry {
 static struct hash *bfu_colors = NULL;
 
 struct color_pair *
-get_bfu_color(struct terminal *term, const unsigned char *stylename)
+get_bfu_color(struct terminal *term, const char *stylename)
 {
 	static int last_color_mode;
 	struct bfu_color_entry *entry;
@@ -38,7 +38,7 @@ get_bfu_color(struct terminal *term, const unsigned char *stylename)
 
 	if (!term) return NULL;
 
-	color_mode = get_opt_int_tree(term->spec, (const unsigned char *)"colors", NULL);
+	color_mode = get_opt_int_tree(term->spec, "colors", NULL);
 
 	if (!bfu_colors) {
 		/* Initialize the style hash. */
@@ -61,7 +61,7 @@ get_bfu_color(struct terminal *term, const unsigned char *stylename)
 		last_color_mode = color_mode;
 	}
 
-	stylenamelen = strlen((const char *)stylename);
+	stylenamelen = strlen(stylename);
 	item = get_hash_item(bfu_colors, stylename, stylenamelen);
 	entry = (struct bfu_color_entry *)(item ? item->value : NULL);
 
@@ -71,7 +71,7 @@ get_bfu_color(struct terminal *term, const unsigned char *stylename)
 		/* Construct the color entry. */
 		opt = get_opt_rec_real(config_options,
 				       color_mode != COLOR_MODE_MONO
-				       ? (const unsigned char *)"ui.colors.color" : (const unsigned char *)"ui.colors.mono");
+				       ? "ui.colors.color" : "ui.colors.mono");
 		if (!opt) return NULL;
 
 		opt = get_opt_rec_real(opt, stylename);
@@ -86,8 +86,8 @@ get_bfu_color(struct terminal *term, const unsigned char *stylename)
 			return NULL;
 		}
 
-		entry->foreground = &get_opt_color_tree(opt, (const unsigned char *)"text", NULL);
-		entry->background = &get_opt_color_tree(opt, (const unsigned char *)"background", NULL);
+		entry->foreground = &get_opt_color_tree(opt, "text", NULL);
+		entry->background = &get_opt_color_tree(opt, "background", NULL);
 	}
 
 	/* Always update the color pair. */

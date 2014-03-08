@@ -71,7 +71,7 @@ enum secsave_errno secsave_errno = SS_ERR_NONE;
 /** Open a file for writing in a secure way. @returns a pointer to a
  * structure secure_save_info on success, or NULL on failure. */
 static struct secure_save_info *
-secure_open_umask(unsigned char *file_name)
+secure_open_umask(char *file_name)
 {
 	struct stat st;
 	struct secure_save_info *ssi;
@@ -81,9 +81,9 @@ secure_open_umask(unsigned char *file_name)
 	/* XXX: This is inherently evil and has no place in util/, which
 	 * should be independent on such stuff. What do we do, except blaming
 	 * Jonas for noticing it? --pasky */
-	if ((get_cmd_opt_bool((const unsigned char *)"no-connect")
-	     || get_cmd_opt_int((const unsigned char *)"session-ring"))
-	    && !get_cmd_opt_bool((const unsigned char *)"touch-files")) {
+	if ((get_cmd_opt_bool((const char *)"no-connect")
+	     || get_cmd_opt_int((const char *)"session-ring"))
+	    && !get_cmd_opt_bool((const char *)"touch-files")) {
 		secsave_errno = SS_ERR_DISABLED;
 		return NULL;
 	}
@@ -94,7 +94,7 @@ secure_open_umask(unsigned char *file_name)
 		goto end;
 	}
 
-	ssi->secure_save = get_opt_bool((const unsigned char *)"infofiles.secure_save", NULL);
+	ssi->secure_save = get_opt_bool((const char *)"infofiles.secure_save", NULL);
 
 	ssi->file_name = stracpy(file_name);
 	if (!ssi->file_name) {
@@ -151,9 +151,9 @@ secure_open_umask(unsigned char *file_name)
 		 * then converted to FILE * using fdopen().
 		 */
 		int fd;
-		unsigned char *randname = straconcat(ssi->file_name,
+		char *randname = straconcat(ssi->file_name,
 						     ".tmp_XXXXXX",
-						     (unsigned char *) NULL);
+						     (char *) NULL);
 
 		if (!randname) {
 			secsave_errno = SS_ERR_OUT_OF_MEM;
@@ -203,7 +203,7 @@ end:
 
 /* @relates secure_save_info */
 struct secure_save_info *
-secure_open(unsigned char *file_name)
+secure_open(char *file_name)
 {
 	struct secure_save_info *ssi;
 	mode_t saved_mask;
@@ -252,7 +252,7 @@ secure_close(struct secure_save_info *ssi)
 #endif
 
 #ifdef HAVE_FSYNC
-		if (!fail && get_opt_bool((const unsigned char *)"infofiles.secure_save_fsync", NULL))
+		if (!fail && get_opt_bool((const char *)"infofiles.secure_save_fsync", NULL))
 			fail = fsync(fileno(ssi->fp));
 #endif
 
@@ -359,7 +359,7 @@ secure_fprintf(struct secure_save_info *ssi, const char *format, ...)
 	return ret;
 }
 
-unsigned char *
+char *
 secsave_strerror(int secsave_error, struct terminal *term)
 {
 	switch (secsave_error) {

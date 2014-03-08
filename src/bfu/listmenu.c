@@ -57,7 +57,7 @@ do_select_submenu(struct terminal *term, void *menu_, void *ses_)
 }
 
 void
-new_menu_item(struct list_menu *menu, unsigned char *name, int data, int fullname)
+new_menu_item(struct list_menu *menu, char *name, int data, int fullname)
 	/* name == NULL - up;	data == -1 - down */
 {
 	struct menu_item *new_menu_item = NULL; /* no uninitialized warnings */
@@ -76,7 +76,7 @@ new_menu_item(struct list_menu *menu, unsigned char *name, int data, int fullnam
 	clr_spaces(name);
 	if (!name[0]) {
 		mem_free(name);
-		name = stracpy((const unsigned char *)" ");
+		name = stracpy((const char *)" ");
 		if (!name) return;
 	}
 
@@ -129,7 +129,7 @@ init_menu(struct list_menu *menu)
 {
 	menu->stack_size = 0;
 	menu->stack = NULL;
-	new_menu_item(menu, stracpy((const unsigned char *)""), -1, 0);
+	new_menu_item(menu, stracpy((const char *)""), -1, 0);
 }
 
 /* TODO: merge with free_menu_items() in bfu/menu.h --Zas */
@@ -169,19 +169,19 @@ destroy_menu(struct list_menu *menu)
 }
 
 void
-menu_labels(struct menu_item *items, unsigned char *base, unsigned char **lbls)
+menu_labels(struct menu_item *items, char *base, char **lbls)
 {
 	struct menu_item *item;
-	unsigned char *bs;
+	char *bs;
 
 	foreach_menu_item (item, items) {
-		bs = (item->flags & MENU_FULLNAME) ? (unsigned char *) ""
+		bs = (item->flags & MENU_FULLNAME) ? (char *) ""
 						   : base;
-		bs = straconcat(bs, item->text, (unsigned char *) NULL);
+		bs = straconcat(bs, item->text, (char *) NULL);
 		if (!bs) continue;
 
 		if (item->func == do_select_submenu) {
-			add_to_strn(&bs, (const unsigned char *)" ");
+			add_to_strn(&bs, (const char *)" ");
 			menu_labels((struct menu_item *)item->data, bs, lbls);
 			mem_free(bs);
 		} else {
@@ -193,7 +193,7 @@ menu_labels(struct menu_item *items, unsigned char *base, unsigned char **lbls)
 
 void
 add_select_item(struct list_menu *menu, struct string *string,
-		struct string *orig_string, unsigned char **value,
+		struct string *orig_string, char **value,
 		int order, int dont_add)
 {
 	int pos = order - 1;

@@ -46,7 +46,7 @@ struct dialog_refresh {
 };
 
 struct dialog {
-	unsigned char *title;
+	char *title;
 	void *udata;
 	void *udata2;
 	struct dialog_refresh *refresh;
@@ -120,7 +120,7 @@ struct dialog {
  * @return
  *  The address of the additional data.  */
 #define get_dialog_offset(dlg, n) \
-	(((unsigned char *) dlg) + sizeof_dialog(n, 0))
+	(((char *) dlg) + sizeof_dialog(n, 0))
 
 #define dialog_has_refresh(dlg_data) \
 	((dlg_data)->dlg->refresh && (dlg_data)->dlg->refresh->timer != TIMER_ID_UNDEF)

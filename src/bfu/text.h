@@ -42,12 +42,12 @@ struct widget_data_info_text {
 #endif
 };
 
-void add_dlg_text(struct dialog *dlg, const unsigned char *text,
+void add_dlg_text(struct dialog *dlg, const char *text,
 		  enum format_align align, int bottom_pad);
 
 extern const struct widget_ops text_ops;
 void dlg_format_text_do(struct dialog_data *dlg_data,
-		    const unsigned char *text, int x, int *y, int w, int *rw,
+		    const char *text, int x, int *y, int w, int *rw,
 		    struct color_pair *scolor, enum format_align align, int format_only);
 
 void
