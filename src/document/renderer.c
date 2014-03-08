@@ -207,7 +207,7 @@ static void
 render_encoded_document(struct cache_entry *cached, struct document *document)
 {
 	struct uri *uri = cached->uri;
-	enum stream_encoding encoding = ENCODING_NONE;
+	int encoding = ENCODING_NONE;
 	struct fragment *fragment = get_cache_fragment(cached);
 	struct string buffer = INIT_STRING("", 0);
 
@@ -605,11 +605,11 @@ get_convert_table(unsigned char *head, int to_cp,
 		 * HTTP Content-Type header has precedence, so the HTTP header
 		 * will be used if it exists and the meta header is only used
 		 * as a fallback.  See bug 983.  */
-		unsigned char *a = parse_header(part, "Content-Type", &part);
+		unsigned char *a = parse_header(part, (const unsigned char *)"Content-Type", &part);
 
 		if (!a) break;
 
-		parse_header_param(a, "charset", &ct_charset);
+		parse_header_param(a, (unsigned char *)"charset", &ct_charset);
 		if (ct_charset) {
 			cp_index = get_cp_index(ct_charset);
 			mem_free(ct_charset);
@@ -618,7 +618,7 @@ get_convert_table(unsigned char *head, int to_cp,
 	}
 
 	if (cp_index == -1) {
-		unsigned char *a = parse_header(head, "Content-Charset", NULL);
+		unsigned char *a = parse_header(head, (const unsigned char *)"Content-Charset", NULL);
 
 		if (a) {
 			cp_index = get_cp_index(a);
@@ -627,7 +627,7 @@ get_convert_table(unsigned char *head, int to_cp,
 	}
 
 	if (cp_index == -1) {
-		unsigned char *a = parse_header(head, "Charset", NULL);
+		unsigned char *a = parse_header(head, (const unsigned char *)"Charset", NULL);
 
 		if (a) {
 			cp_index = get_cp_index(a);

@@ -81,10 +81,10 @@ init_document_options(struct session *ses, struct document_options *doo)
 	doo->display_subs = get_opt_bool((const unsigned char *)"document.html.display_subs", ses);
 	doo->display_sups = get_opt_bool((const unsigned char *)"document.html.display_sups", ses);
 
-	doo->framename = "";
+	doo->framename = (unsigned char *)"";
 
-	doo->image_link.prefix = "";
-	doo->image_link.suffix = "";
+	doo->image_link.prefix = (unsigned char *)"";
+	doo->image_link.suffix = (unsigned char *)"";
 	doo->image_link.filename_maxlen = get_opt_int((const unsigned char *)"document.browse.images.filename_maxlen", ses);
 	doo->image_link.label_maxlen = get_opt_int((const unsigned char *)"document.browse.images.label_maxlen", ses);
 	doo->image_link.display_style = get_opt_int((const unsigned char *)"document.browse.images.display_style", ses);
@@ -96,7 +96,7 @@ int
 compare_opt(struct document_options *o1, struct document_options *o2)
 {
 	return memcmp(o1, o2, offsetof(struct document_options, framename))
-		|| c_strcasecmp(o1->framename, o2->framename)
+		|| c_strcasecmp((const char *)o1->framename, (const char *)o2->framename)
 		|| (o1->box.x != o2->box.x)
 		|| (o1->box.y != o2->box.y)
 		|| ((o1->needs_height || o2->needs_height)

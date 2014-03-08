@@ -87,7 +87,7 @@ found_dns(void *data, struct sockaddr_storage *addr, int addrlen)
 	} else {
 		src = &(((struct sockaddr_in *)s)->sin_addr.s_addr);
 	}
-	res = inet_ntop(s->sa_family, src, buf, 64);
+	res = (const unsigned char *)inet_ntop(s->sa_family, src, (char *)buf, 64);
 	if (res) {
 		*ip = stracpy(res);
 	}

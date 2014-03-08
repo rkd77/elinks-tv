@@ -28,16 +28,16 @@ struct form_type_name {
 };
 
 static struct form_type_name form_type2name[] = {
-	{ FC_TEXT,	"text"		},
-	{ FC_PASSWORD,	"password"	},
-	{ FC_FILE,	"file"		},
-	{ FC_TEXTAREA,	"textarea"	},
-	{ FC_CHECKBOX,	"checkbox"	},
-	{ FC_RADIO,	"radio"		},
-	{ FC_SELECT,	"select"	},
-	{ FC_SUBMIT,	"submit"	},
-	{ FC_IMAGE,	"image"		},
-	{ FC_HIDDEN,	"hidden"	},
+	{ FC_TEXT,	(unsigned char *)"text"		},
+	{ FC_PASSWORD,	(unsigned char *)"password"	},
+	{ FC_FILE,	(unsigned char *)"file"		},
+	{ FC_TEXTAREA,	(unsigned char *)"textarea"	},
+	{ FC_CHECKBOX,	(unsigned char *)"checkbox"	},
+	{ FC_RADIO,	(unsigned char *)"radio"		},
+	{ FC_SELECT,	(unsigned char *)"select"	},
+	{ FC_SUBMIT,	(unsigned char *)"submit"	},
+	{ FC_IMAGE,	(unsigned char *)"image"		},
+	{ FC_HIDDEN,	(unsigned char *)"hidden"	},
 };
 
 #define FORM_TYPE_COUNT (sizeof(form_type2name)/sizeof(struct form_type_name))
@@ -48,7 +48,7 @@ str2form_type(unsigned char *s)
 	int n;
 
 	for (n = 0; n < FORM_TYPE_COUNT; n++)
-		if (!strcmp(form_type2name[n].name, s))
+		if (!strcmp((const char *)form_type2name[n].name, (const char *)s))
 			return form_type2name[n].num;
 
 	return -1;
