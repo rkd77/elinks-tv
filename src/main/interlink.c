@@ -123,7 +123,7 @@ get_sun_path(struct string *sun_path)
 	if (!init_string(sun_path)) return 0;
 
 	add_to_string(sun_path, elinks_home);
-	add_to_string(sun_path, ELINKS_SOCK_NAME);
+	add_to_string(sun_path, (const unsigned char *)ELINKS_SOCK_NAME);
 	add_long_to_string(sun_path,
 			   get_cmd_opt_int((const unsigned char *)"session-ring"));
 
@@ -326,7 +326,7 @@ setsock_reuse_addr(int fd)
 #define CONNECT_TRIES_DELAY		50000
 
 static void
-report_af_unix_error(unsigned char *function, int error)
+report_af_unix_error(const char *function, int error)
 {
 	ERROR(gettext("The call to %s failed: %d (%s)"),
 	      function, error, (unsigned char *) strerror(error));
@@ -345,7 +345,7 @@ af_unix_connection(struct socket_info *info)
 	l = info->size;
 
 	memset(info->addr, 0, l);
-	ns = accept(info->fd, info->addr, &l);
+	ns = accept(info->fd, info->addr, (socklen_t *)&l);
 	if (ns < 0) {
 		report_af_unix_error("accept()", errno);
 		return;

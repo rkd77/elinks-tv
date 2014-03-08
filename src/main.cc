@@ -446,7 +446,7 @@ void TFelinks::aboutDlgBox()
 
 void *currentFWindow;
 
-static const char *getKeySequence(TEvent &event)
+static char *getKeySequence(TEvent &event)
 {
 	const char *buffer = NULL;
 
@@ -468,7 +468,7 @@ static const char *getKeySequence(TEvent &event)
 			buf[1] = 0;
 			buffer = buf;
 		}
-		return buffer;
+		return (char *)buffer;
 	}
 
 	switch (event.keyDown.keyCode)
@@ -656,7 +656,7 @@ static const char *getKeySequence(TEvent &event)
 	default:
 		break;
 	}
-	return buffer;
+	return (char *)buffer;
 }
 
 void TFelinks::createNewWindow()
@@ -754,7 +754,7 @@ static char *tylda(const char *msgid)
 	static char bufor[1024];
 	int i;
 
-	char *text = _(msgid);
+	char *text = (char *)_(msgid);
 
 	for (i = 0; *text && (i < 1023); ++i)
 	{
@@ -883,7 +883,7 @@ static unsigned short decode_color(unsigned short c)
 	return bold | color_values[fg] | (color_values[bg] << 4);
 }
 
-static const unsigned char frame_vt100[48] =	"aaaxuuukkuxkjjjkmvwtqnttmlvwtqnvvwwmmllnnjla    ";
+static const unsigned char frame_vt100[] =	"aaaxuuukkuxkjjjkmvwtqnttmlvwtqnvvwwmmllnnjla    ";
 
 #if 0
 
@@ -1229,21 +1229,21 @@ void TTermView::handleEvent(TEvent &event)
 		case cmToggleImages:
 			if (ses)
 			{
-				toggle_document_option(ses, "document.browse.images.show_as_links");
+				toggle_document_option(ses, (unsigned char *)"document.browse.images.show_as_links");
 			}
 			clearEvent(event);
 			break;
 		case cmToggleLinkNumbering:
 			if (ses)
 			{
-				toggle_document_option(ses, "document.browse.links.numbering");
+				toggle_document_option(ses, (unsigned char *)"document.browse.links.numbering");
 			}
 			clearEvent(event);
 			break;
 		case cmToggleDocumentColors:
 			if (ses)
 			{
-				toggle_document_option(ses, "document.colors.use_document_colors");
+				toggle_document_option(ses, (unsigned char *)"document.colors.use_document_colors");
 			}
 			clearEvent(event);
 			break;
@@ -1383,14 +1383,14 @@ void TTermView::handleEvent(TEvent &event)
 		case cmHomePage:
 			if (ses && term)
 			{
-				menu_url_shortcut(term, ELINKS_WEBSITE_URL, ses);
+				menu_url_shortcut(term, (void *)ELINKS_WEBSITE_URL, ses);
 			}
 			clearEvent(event);
 			break;
 		case cmDocumentation:
 			if (ses && term)
 			{
-				menu_url_shortcut(term, ELINKS_DOC_URL, ses);
+				menu_url_shortcut(term, (void *)ELINKS_DOC_URL, ses);
 			}
 			clearEvent(event);
 			break;
@@ -1411,7 +1411,7 @@ void TTermView::handleEvent(TEvent &event)
 		case cmBugs:
 			if (ses && term)
 			{
-				menu_url_shortcut(term, ELINKS_BUGS_URL, ses);
+				menu_url_shortcut(term, (void *)ELINKS_BUGS_URL, ses);
 			}
 			clearEvent(event);
 			break;
@@ -1425,7 +1425,7 @@ void TTermView::handleEvent(TEvent &event)
 		case cmAuthors:
 			if (ses && term)
 			{
-				menu_url_shortcut(term, ELINKS_AUTHORS_URL, ses);
+				menu_url_shortcut(term, (void *)ELINKS_AUTHORS_URL, ses);
 			}
 			clearEvent(event);
 			break;
@@ -1457,14 +1457,14 @@ static void init_next(void)
 		update_options_visibility();
 		/* Parse commandline options again, in order to override any
 		 * config file options. */
-		parse_options(ac - 1, av + 1, NULL);
+		parse_options(ac - 1, (unsigned char **)(av + 1), NULL);
 		/* ... and re-check stdio, in order to override any command
 		 * line options! >;) */
 
 		//init_b = 1;
 		init_modules(builtin_modules);
 
-		struct terminal *term = attach_terminal(-1, -1, -1, "", 0);
+		struct terminal *term = attach_terminal(-1, -1, -1, (void *)"", 0);
 
 		if (!term)
 		{
@@ -1475,7 +1475,7 @@ static void init_next(void)
 		return;
 	}
 
-	itrm = handle_trm(-1, -1, fd, fd, -1, "", 0, 0);
+	itrm = handle_trm(-1, -1, fd, fd, -1, (void *)"", 0, 0);
 	TTermView *tv = (TTermView *)currentFWindow;
 	if (!tv) return;
 	tv->itrm = itrm;

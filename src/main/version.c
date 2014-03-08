@@ -34,14 +34,14 @@ add_module_to_string(struct string *string, struct module *module,
 
 	if (!module->submodules) return;
 
-	add_to_string(string, " (");
+	add_to_string(string, (const unsigned char *)" (");
 
 	foreach_module (submodule, module->submodules, i) {
-		if (i > 0) add_to_string(string, ", ");
+		if (i > 0) add_to_string(string, (const unsigned char *)", ");
 		add_module_to_string(string, submodule, term);
 	}
 
-	add_to_string(string, ")");
+	add_to_string(string, (const unsigned char *)")");
 }
 
 static void
@@ -51,7 +51,7 @@ add_modules_to_string(struct string *string, struct terminal *term)
 	int i;
 
 	foreach_module (module, builtin_modules, i) {
-		if (i > 0) add_to_string(string, ", ");
+		if (i > 0) add_to_string(string, (const unsigned char *)", ");
 		add_module_to_string(string, module, term);
 	}
 }
@@ -70,7 +70,7 @@ wrap_string(struct string *string, int start_at, int maxlen)
 	if (maxlen <= 0) return;
 
 	pos = start_pos = &string->source[start_at];
-	while ((pos = strchr((char *)pos, ' '))) {
+	while ((pos = (unsigned char *)strchr((char *)pos, ' '))) {
 		int len = pos - start_pos;
 
 		if (len < maxlen) {
@@ -100,11 +100,11 @@ get_dyn_full_version(struct terminal *term, int more)
 	}
 
 	add_char_to_string(&string, '\n');
-	add_format_to_string(&string, _("Built on %s %s", term),
+	add_format_to_string(&string, (const char *)_("Built on %s %s", term),
 			     build_date, build_time);
 
 	if (more) {
-		add_to_string(&string, "\n\n");
+		add_to_string(&string, (const unsigned char *)"\n\n");
 		add_to_string(&string, _("Text WWW browser", term));
 	}
 
@@ -154,7 +154,7 @@ get_dyn_full_version(struct terminal *term, int more)
 
 	if (!more) {
 		int start_at = 0;
-		unsigned char *last_newline = strrchr((char *)string.source, '\n');
+		unsigned char *last_newline = (unsigned char *)strrchr((char *)string.source, '\n');
 
 		if (last_newline) {
 			start_at = last_newline - string.source + 1;

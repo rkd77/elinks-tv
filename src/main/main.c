@@ -74,7 +74,7 @@ check_stdio(LIST_OF(struct string_list_item) *url_list)
 		if (url_list && list_empty(*url_list)) {
 			get_opt_bool((const unsigned char *)"protocol.file.allow_special_files",
 			             NULL) = 1;
-			add_to_string_list(url_list, "file:///dev/stdin", 17);
+			add_to_string_list(url_list, (const unsigned char *)"file:///dev/stdin", 17);
 		}
 		get_cmd_opt_bool((const unsigned char *)"no-connect") = 1;
 	}
@@ -95,10 +95,10 @@ check_cwd(void)
 	unsigned char *cwd = get_cwd();
 
 	if (!cwd || !file_is_dir(cwd)) {
-		unsigned char *home = getenv("HOME");
+		unsigned char *home = (unsigned char *)getenv("HOME");
 
 		if (home && file_is_dir(home))
-			chdir(home);
+			chdir((const char *)home);
 	}
 
 	mem_free_if(cwd);
@@ -201,7 +201,7 @@ init(void)
 			dump_next(&url_list);
 		} else {
 			unsigned char *arg = get_cmd_opt_bool((const unsigned char *)"dump")
-					   ? "dump" : "source";
+					   ? (unsigned char *)"dump" : (unsigned char *)"source";
 
 			usrerror(gettext("URL expected after -%s"), arg);
 			program.retval = RET_SYNTAX;
@@ -398,7 +398,7 @@ main2(int argc, char *argv[])
 
 	program.terminate = 0;
 	program.retval = RET_OK;
-	program.path = argv[0];
+	program.path = (unsigned char *)argv[0];
 	ac = argc;
 	av = (unsigned char **) argv;
 

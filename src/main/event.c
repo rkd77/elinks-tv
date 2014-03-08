@@ -284,7 +284,7 @@ register_event_hooks(struct event_hook_info *hooks)
 	int i;
 
 	for (i = 0; hooks[i].name; i++) {
-		int id = register_event(hooks[i].name);
+		int id = register_event((unsigned char *)hooks[i].name);
 
 		if (id == EVENT_NONE) continue;
 
@@ -299,7 +299,7 @@ unregister_event_hooks(struct event_hook_info *hooks)
 	int i;
 
 	for (i = 0; hooks[i].name; i++) {
-		int id = get_event_id(hooks[i].name);
+		int id = get_event_id((unsigned char *)hooks[i].name);
 
 		if (id == EVENT_NONE) continue;
 
