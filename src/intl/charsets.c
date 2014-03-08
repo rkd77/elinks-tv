@@ -51,8 +51,8 @@ struct table_entry {
 };
 
 struct codepage_desc {
-	unsigned char *name;
-	unsigned char *const *aliases;
+	const char *name;
+	const char *const *aliases;
 
  	/* The Unicode mappings of codepage bytes 0x80...0xFF.
  	 * (0x00...0x7F are assumed to be ASCII in all codepages.)
@@ -160,7 +160,7 @@ new_translation_table(struct conv_table *p)
 			free_translation_table(p[i].u.tbl);
 	for (i = 0; i < 128; i++) {
 		p[i].t = 0;
-		p[i].u.str = strings[i];
+		p[i].u.str = (const unsigned char *)strings[i];
 	}
 	for (; i < 256; i++) {
 		p[i].t = 0;
@@ -201,7 +201,7 @@ u2cp_(unicode_val_T u, int to, enum nbsp_mode nbsp_mode)
 	int j;
 	int s;
 
-	if (u < 128) return strings[u];
+	if (u < 128) return (const unsigned char *)strings[u];
 
 	if (u < 0xa0) {
 		u = strange_chars[u - 0x80];
@@ -216,21 +216,21 @@ u2cp_(unicode_val_T u, int to, enum nbsp_mode nbsp_mode)
 	/* To mark non breaking spaces in non-UTF-8 strings, we use a
 	 * special char NBSP_CHAR. */
 	if (u == UCS_NO_BREAK_SPACE) {
-		if (nbsp_mode == NBSP_MODE_HACK) return NBSP_CHAR_STRING;
-		else /* NBSP_MODE_ASCII */ return " ";
+		if (nbsp_mode == NBSP_MODE_HACK) return (const unsigned char *)NBSP_CHAR_STRING;
+		else /* NBSP_MODE_ASCII */ return (const unsigned char *)" ";
 	}
-	if (u == UCS_SOFT_HYPHEN) return "";
+	if (u == UCS_SOFT_HYPHEN) return (const unsigned char *)"";
 
 	if (u < 0xFFFF)
 		for (j = 0; j < 0x80; j++)
 			if (codepages[to].highhalf[j] == u)
-				return strings[0x80 + j];
+				return (const unsigned char *)strings[0x80 + j];
 	for (j = 0; codepages[to].table[j].c; j++)
 		if (codepages[to].table[j].u == u)
-			return strings[codepages[to].table[j].c];
+			return (const unsigned char *)strings[codepages[to].table[j].c];
 
 	BIN_SEARCH(unicode_7b, x, N_UNICODE_7B, u, s);
-	if (s != -1) return unicode_7b[s].s;
+	if (s != -1) return (const unsigned char *)unicode_7b[s].s;
 
 	return no_str;
 }
@@ -767,7 +767,7 @@ cp2utf8(int from, int c)
 	from &= ~SYSTEM_CHARSET_FLAG;
 
 	if (is_cp_ptr_utf8(&codepages[from]) || c < 128)
-		return strings[c];
+		return (const unsigned char *)strings[c];
 
 	return encode_utf8(cp2u_shared(&codepages[from], c));
 }
@@ -915,11 +915,11 @@ get_translation_table_to_utf8(int from)
 		free_utf_table();
 
 	for (i = 0; i < 128; i++)
-		utf_table[i].u.str = strings[i];
+		utf_table[i].u.str = (const unsigned char *)strings[i];
 
 	if (is_cp_ptr_utf8(&codepages[from])) {
 		for (i = 128; i < 256; i++)
-			utf_table[i].u.str = stracpy(strings[i]);
+			utf_table[i].u.str = stracpy((const unsigned char *)strings[i]);
 		return utf_table;
 	}
 
@@ -1007,23 +1007,23 @@ get_translation_table(int from, int to)
 		int i;
 
 		/* Map U+00A0 and U+00AD the same way as u2cp() would.  */
-		add_utf8(table, UCS_NO_BREAK_SPACE, strings[NBSP_CHAR]);
-		add_utf8(table, UCS_SOFT_HYPHEN, "");
+		add_utf8(table, UCS_NO_BREAK_SPACE, (const unsigned char *)strings[NBSP_CHAR]);
+		add_utf8(table, UCS_SOFT_HYPHEN, (const unsigned char *)"");
 
 		for (i = 0x80; i <= 0xFF; i++)
 			if (codepages[to].highhalf[i - 0x80] != 0xFFFF)
 				add_utf8(table,
 					 codepages[to].highhalf[i - 0x80],
-					 strings[i]);
+					 (const unsigned char *)strings[i]);
 
 		for (i = 0; codepages[to].table[i].c; i++)
 			add_utf8(table, codepages[to].table[i].u,
-				 strings[codepages[to].table[i].c]);
+				 (const unsigned char *)strings[codepages[to].table[i].c]);
 
 		for (i = 0; unicode_7b[i].x != -1; i++)
 			if (unicode_7b[i].x >= 0x80)
 				add_utf8(table, unicode_7b[i].x,
-					 unicode_7b[i].s);
+					 (const unsigned char *)unicode_7b[i].s);
 
 	} else {
 		int i;
@@ -1088,7 +1088,7 @@ compare_entities(const void *key_, const void *element_)
 	struct entity *element = (struct entity *) element_;
 	int length = key->length;
 	unsigned char *first = key->source;
-	unsigned char *second = element->s;
+	unsigned char *second = (unsigned char *)element->s;
 
 	return xxstrcmp(first, second, length);
 }
@@ -1380,7 +1380,7 @@ out:
 
 #define PUTC do { \
 		buffer[bufferpos++] = chars[charspos++]; \
-		translit = ""; \
+		translit = (const unsigned char *)""; \
 		goto flush; \
 	} while (0)
 
@@ -1440,7 +1440,7 @@ out:
 
 		if (!translit[1]) {
 			buffer[bufferpos++] = translit[0];
-			translit = "";
+			translit = (const unsigned char *)"";
 			goto flush;
 		}
 
@@ -1549,7 +1549,7 @@ charsets_list_next(void)
 
 	if (!codepages[i_name].name) return NULL;
 
-	kv.key = codepages[i_name].aliases[i_alias];
+	kv.key = (unsigned char *)codepages[i_name].aliases[i_alias];
 	kv.data = (void *) &codepages[i_name]; /* cast away const */
 
 	if (codepages[i_name].aliases[i_alias + 1])
@@ -1563,7 +1563,7 @@ charsets_list_next(void)
 }
 
 static struct fastfind_index ff_charsets_index
-	= INIT_FASTFIND_INDEX("charsets_lookup", charsets_list_reset, charsets_list_next);
+	= INIT_FASTFIND_INDEX((unsigned char *)"charsets_lookup", charsets_list_reset, charsets_list_next);
 
 /* It searchs for a charset named @name or one of its aliases and
  * returns index for it or -1 if not found. */
@@ -1573,12 +1573,12 @@ get_cp_index(const unsigned char *name)
 	const struct codepage_desc *codepage;
 	int syscp = 0;
 
-	if (!c_strcasecmp(name, "System")) {
+	if (!c_strcasecmp((const char *)name, "System")) {
 #if HAVE_LANGINFO_CODESET
-		name = nl_langinfo(CODESET);
+		name = (const unsigned char *)nl_langinfo(CODESET);
 		syscp = SYSTEM_CHARSET_FLAG;
 #else
-		name = "us-ascii";
+		name = (const unsigned char *)"us-ascii";
 #endif
 	}
 
@@ -1588,7 +1588,7 @@ get_cp_index(const unsigned char *name)
 		return (codepage - codepages) | syscp;
 
 	} else if (syscp) {
-		return get_cp_index("us-ascii") | syscp;
+		return get_cp_index((const unsigned char *)"us-ascii") | syscp;
 
 	} else {
 		return -1;
@@ -1621,10 +1621,10 @@ free_charsets_lookup(void)
 unsigned char *
 get_cp_name(int cp_index)
 {
-	if (cp_index < 0) return "none";
-	if (cp_index & SYSTEM_CHARSET_FLAG) return "System";
+	if (cp_index < 0) return (unsigned char *)"none";
+	if (cp_index & SYSTEM_CHARSET_FLAG) return (unsigned char *)"System";
 
-	return codepages[cp_index].name;
+	return (unsigned char *)codepages[cp_index].name;
 }
 
 /* Get the codepage's name for saving to a configuration file.  These
@@ -1633,11 +1633,11 @@ get_cp_name(int cp_index)
 unsigned char *
 get_cp_config_name(int cp_index)
 {
-	if (cp_index < 0) return "none";
-	if (cp_index & SYSTEM_CHARSET_FLAG) return "System";
+	if (cp_index < 0) return (unsigned char *)"none";
+	if (cp_index & SYSTEM_CHARSET_FLAG) return (unsigned char *)"System";
 	if (!codepages[cp_index].aliases) return NULL;
 
-	return codepages[cp_index].aliases[0];
+	return (unsigned char *)codepages[cp_index].aliases[0];
 }
 
 /* Get the codepage's name for sending to a library or server that
@@ -1646,11 +1646,11 @@ get_cp_config_name(int cp_index)
 unsigned char *
 get_cp_mime_name(int cp_index)
 {
-	if (cp_index < 0) return "none";
+	if (cp_index < 0) return (unsigned char *)"none";
 	cp_index &= ~SYSTEM_CHARSET_FLAG;
 	if (!codepages[cp_index].aliases) return NULL;
 
-	return codepages[cp_index].aliases[0];
+	return (unsigned char *)codepages[cp_index].aliases[0];
 }
 
 int
