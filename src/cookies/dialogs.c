@@ -42,7 +42,7 @@ add_cookie_info_to_string(struct string *string, struct cookie *cookie,
 #ifdef HAVE_STRFTIME
 	} else {
 		add_format_to_string(string, "\n%s: ", _("Expires", term));
-		add_date_to_string(string, get_opt_str((const unsigned char *)"ui.date_format", NULL), &cookie->expires);
+		add_date_to_string(string, get_opt_str((const char *)"ui.date_format", NULL), &cookie->expires);
 #endif
 	}
 
@@ -82,7 +82,7 @@ accept_cookie_dialog(struct session *ses, void *data)
 		(const char *)_("Do you want to accept a cookie from %s?", ses->tab->term),
 		cookie->server->host);
 
-	add_to_string(&string, (const unsigned char *)"\n\n");
+	add_to_string(&string, (const char *)"\n\n");
 
 	add_cookie_info_to_string(&string, cookie, ses->tab->term);
 
@@ -129,7 +129,7 @@ is_cookie_used(struct listbox_item *item)
 	return is_object_used((struct cookie *) item->udata);
 }
 
-static unsigned char *
+static char *
 get_cookie_text(struct listbox_item *item, struct terminal *term)
 {
 	/* Are we dealing with a folder? */
@@ -145,7 +145,7 @@ get_cookie_text(struct listbox_item *item, struct terminal *term)
 	}
 }
 
-static unsigned char *
+static char *
 get_cookie_info(struct listbox_item *item, struct terminal *term)
 {
 	struct cookie *cookie = (struct cookie *)item->udata;
@@ -250,7 +250,7 @@ static widget_handler_status_T
 set_cookie_name(struct dialog_data *dlg_data, struct widget_data *widget_data)
 {
 	struct cookie *cookie = (struct cookie *)dlg_data->dlg->udata;
-	unsigned char *value = widget_data->cdata;
+	char *value = widget_data->cdata;
 
 	if (!value || !cookie) return EVENT_NOT_PROCESSED;
 	mem_free_set(&cookie->name, stracpy(value));
@@ -262,7 +262,7 @@ static widget_handler_status_T
 set_cookie_value(struct dialog_data *dlg_data, struct widget_data *widget_data)
 {
 	struct cookie *cookie = (struct cookie *)dlg_data->dlg->udata;
-	unsigned char *value = widget_data->cdata;
+	char *value = widget_data->cdata;
 
 	if (!value || !cookie) return EVENT_NOT_PROCESSED;
 	mem_free_set(&cookie->value, stracpy(value));
@@ -274,7 +274,7 @@ static widget_handler_status_T
 set_cookie_domain(struct dialog_data *dlg_data, struct widget_data *widget_data)
 {
 	struct cookie *cookie = (struct cookie *)dlg_data->dlg->udata;
-	unsigned char *value = widget_data->cdata;
+	char *value = widget_data->cdata;
 
 	if (!value || !cookie) return EVENT_NOT_PROCESSED;
 	mem_free_set(&cookie->domain, stracpy(value));
@@ -286,8 +286,8 @@ static widget_handler_status_T
 set_cookie_expires(struct dialog_data *dlg_data, struct widget_data *widget_data)
 {
 	struct cookie *cookie = (struct cookie *)dlg_data->dlg->udata;
-	unsigned char *value = widget_data->cdata;
-	unsigned char *end;
+	char *value = widget_data->cdata;
+	char *end;
 	long number;
 
 	if (!value || !cookie) return EVENT_NOT_PROCESSED;
@@ -306,8 +306,8 @@ static widget_handler_status_T
 set_cookie_secure(struct dialog_data *dlg_data, struct widget_data *widget_data)
 {
 	struct cookie *cookie = (struct cookie *)dlg_data->dlg->udata;
-	unsigned char *value = widget_data->cdata;
-	unsigned char *end;
+	char *value = widget_data->cdata;
+	char *end;
 	long number;
 
 	if (!value || !cookie) return EVENT_NOT_PROCESSED;
@@ -327,8 +327,8 @@ build_edit_dialog(struct terminal *term, struct cookie *cookie)
 #define EDIT_WIDGETS_COUNT 8
 	/* [gettext_accelerator_context(.build_edit_dialog)] */
 	struct dialog *dlg;
-	unsigned char *name, *value, *domain, *expires, *secure;
-	unsigned char *dlg_server;
+	char *name, *value, *domain, *expires, *secure;
+	char *dlg_server;
 	int length = 0;
 
 	dlg = calloc_dialog(EDIT_WIDGETS_COUNT, MAX_STR_LEN * 5);
@@ -355,7 +355,7 @@ build_edit_dialog(struct terminal *term, struct cookie *cookie)
 
 	dlg_server = cookie->server->host;
 	dlg_server = straconcat(_("Server", term), ": ", dlg_server, "\n",
-				(unsigned char *) NULL);
+				(char *) NULL);
 
 	if (!dlg_server) {
 		mem_free(dlg);
@@ -414,9 +414,9 @@ push_add_button(struct dialog_data *dlg_data, struct widget_data *button)
 
 	object_lock(server);	/* ref consumed by init_cookie */
 
-	new_cookie = init_cookie(stracpy((const unsigned char *)"") /* name */,
-				 stracpy((const unsigned char *)"") /* value */,
-				 stracpy((const unsigned char *)"/") /* path */,
+	new_cookie = init_cookie(stracpy((const char *)"") /* name */,
+				 stracpy((const char *)"") /* value */,
+				 stracpy((const char *)"/") /* path */,
 				 stracpy(server->host) /* domain */,
 				 server);
 	if (!new_cookie) return EVENT_PROCESSED;
@@ -432,14 +432,14 @@ push_add_button(struct dialog_data *dlg_data, struct widget_data *button)
 static void
 add_server_do(void *data)
 {
-	unsigned char *value = (unsigned char *)data;
+	char *value = (char *)data;
 	struct cookie *dummy_cookie;
 
 	if (!value) return;
 
-	dummy_cookie = init_cookie(stracpy((const unsigned char *)"empty") /* name */,
-				   stracpy((const unsigned char *)"1") /* value */,
-				   stracpy((const unsigned char *)"/") /* path */,
+	dummy_cookie = init_cookie(stracpy((const char *)"empty") /* name */,
+				   stracpy((const char *)"1") /* value */,
+				   stracpy((const char *)"/") /* path */,
 				   stracpy(value) /* domain */,
 				   get_cookie_server(value, strlen((const char *)value)));
 	if (!dummy_cookie) return;
@@ -454,8 +454,8 @@ push_add_server_button(struct dialog_data *dlg_data, struct widget_data *button)
 #define SERVER_WIDGETS_COUNT 3
 	struct terminal *term = dlg_data->win->term;
 	struct dialog *dlg;
-	unsigned char *name;
-	unsigned char *text;
+	char *name;
+	char *text;
 
 	dlg = calloc_dialog(SERVER_WIDGETS_COUNT, MAX_STR_LEN);
 	if (!dlg) return EVENT_NOT_PROCESSED;
