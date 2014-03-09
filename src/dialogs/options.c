@@ -29,8 +29,8 @@
 static void
 display_codepage(struct terminal *term, void *name_, void *xxx)
 {
-	unsigned char *name = (unsigned char *)name_;
-	struct option *opt = get_opt_rec(term->spec, (const unsigned char *)"charset");
+	char *name = (char *)name_;
+	struct option *opt = get_opt_rec(term->spec, (const char *)"charset");
 	int index = get_cp_index(name);
 
 	assertm(index != -1, "%s", name);
@@ -49,14 +49,14 @@ charset_list(struct terminal *term, void *xxx, void *ses_)
 	struct session *ses = (struct session *)ses_;
 	int i, items;
 	int sel = 0;
-	const unsigned char *const sel_mime = get_cp_mime_name(
+	const char *const sel_mime = get_cp_mime_name(
 		get_terminal_codepage(term));
 	struct menu_item *mi = new_menu(FREE_LIST);
 
 	if (!mi) return;
 
 	for (i = 0, items = 0; ; i++) {
-		unsigned char *name = get_cp_name(i);
+		char *name = get_cp_name(i);
 
 		if (!name) break;
 
@@ -100,17 +100,17 @@ enum termopt {
 };
 
 static struct option_resolver resolvers[] = {
-	{ TERM_OPT_TYPE,	 (unsigned char *)"type"		},
-	{ TERM_OPT_M11_HACK,	 (unsigned char *)"m11_hack"	},
-	{ TERM_OPT_RESTRICT_852, (unsigned char *)"restrict_852"	},
-	{ TERM_OPT_BLOCK_CURSOR, (unsigned char *)"block_cursor"	},
-	{ TERM_OPT_COLORS,	 (unsigned char *)"colors"	},
-	{ TERM_OPT_TRANSPARENCY, (unsigned char *)"transparency"	},
-	{ TERM_OPT_UTF_8_IO,	 (unsigned char *)"utf_8_io"	},
-	{ TERM_OPT_UNDERLINE,	 (unsigned char *)"underline"	},
-	{ TERM_OPT_ITALIC,	 (unsigned char *)"italic"	},
+	{ TERM_OPT_TYPE,	 (char *)"type"		},
+	{ TERM_OPT_M11_HACK,	 (char *)"m11_hack"	},
+	{ TERM_OPT_RESTRICT_852, (char *)"restrict_852"	},
+	{ TERM_OPT_BLOCK_CURSOR, (char *)"block_cursor"	},
+	{ TERM_OPT_COLORS,	 (char *)"colors"	},
+	{ TERM_OPT_TRANSPARENCY, (char *)"transparency"	},
+	{ TERM_OPT_UTF_8_IO,	 (char *)"utf_8_io"	},
+	{ TERM_OPT_UNDERLINE,	 (char *)"underline"	},
+	{ TERM_OPT_ITALIC,	 (char *)"italic"	},
 #ifdef CONFIG_COMBINE
-	{ TERM_OPT_COMBINE,	 (unsigned char *)"combine"	},
+	{ TERM_OPT_COMBINE,	 (char *)"combine"	},
 #endif
 };
 
@@ -167,8 +167,8 @@ terminal_options(struct terminal *term, void *xxx, struct session *ses)
 	/* [gettext_accelerator_context(terminal_options)] */
 	struct dialog *dlg;
 	union option_value *values;
-	int anonymous = get_cmd_opt_bool((const unsigned char *)"anonymous");
-	unsigned char help_text[MAX_STR_LEN], *text;
+	int anonymous = get_cmd_opt_bool((const char *)"anonymous");
+	char help_text[MAX_STR_LEN], *text;
 	size_t help_textlen = 0;
 	size_t add_size = TERM_OPTION_VALUE_SIZE;
 
@@ -203,7 +203,7 @@ terminal_options(struct terminal *term, void *xxx, struct session *ses)
 	dlg->layout.padding_top = 1;
 	dlg->udata = values;
 
-	text = ((unsigned char *) values) + TERM_OPTION_VALUE_SIZE;
+	text = ((char *) values) + TERM_OPTION_VALUE_SIZE;
 	memcpy(text, help_text, help_textlen);
 	add_dlg_text(dlg, text, ALIGN_LEFT, 1);
 
@@ -286,7 +286,7 @@ static void
 push_resize_button(void *data)
 {
 	struct terminal *term = (struct terminal *)data;
-	unsigned char str[MAX_STR_LEN];
+	char str[MAX_STR_LEN];
 
 	snprintf((char *)str, sizeof(str), "%s,%s,%d,%d",
 		 width_str, height_str, term->width, term->height);

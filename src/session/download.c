@@ -91,7 +91,7 @@ static void download_data(struct download *download, struct file_download *file_
 /*! @note If this fails, the caller is responsible of freeing @a file
  * and closing @a fd.  */
 struct file_download *
-init_file_download(struct uri *uri, struct session *ses, unsigned char *file, int fd)
+init_file_download(struct uri *uri, struct session *ses, char *file, int fd)
 {
 	struct file_download *file_download;
 
@@ -162,7 +162,7 @@ abort_download(struct file_download *file_download)
 
 
 static void
-kill_downloads_to_file(unsigned char *file)
+kill_downloads_to_file(char *file)
 {
 	struct file_download *file_download;
 
@@ -248,7 +248,7 @@ detach_downloads_from_terminal(struct terminal *term)
 static void
 download_error_dialog(struct file_download *file_download, int saved_errno)
 {
-	unsigned char *emsg = (unsigned char *) strerror(saved_errno);
+	char *emsg = (char *) strerror(saved_errno);
 	struct session *ses = file_download->ses;
 	struct terminal *term = file_download->term;
 
@@ -318,7 +318,7 @@ write_cache_entry_to_file(struct cache_entry *cached, struct file_download *file
 static void
 abort_download_and_beep(struct file_download *file_download, struct terminal *term)
 {
-	if (term && get_opt_int((const unsigned char *)"document.download.notify_bell",
+	if (term && get_opt_int((const char *)"document.download.notify_bell",
 	                        file_download->ses)
 		    + file_download->notify >= 2) {
 		beep_terminal(term);
@@ -329,8 +329,8 @@ abort_download_and_beep(struct file_download *file_download, struct terminal *te
 
 struct exec_mailcap {
 	struct session *ses;
-	unsigned char *command;
-	unsigned char *file;
+	char *command;
+	char *file;
 };
 
 static void
@@ -366,14 +366,14 @@ exec_mailcap_command(void *data)
 			struct string string;
 
 			if (init_string(&string)) {
-				struct uri *ref = get_uri((unsigned char *)"mailcap:elmailcap", 0);
+				struct uri *ref = get_uri((char *)"mailcap:elmailcap", 0);
 				struct uri *uri;
 				struct session *ses = exec_mailcap->ses;
 
-				add_to_string(&string, (const unsigned char *)"mailcap:");
+				add_to_string(&string, (const char *)"mailcap:");
 				add_to_string(&string, exec_mailcap->command);
 				if (exec_mailcap->file) {
-					add_to_string(&string, (const unsigned char *)" && /bin/rm -f ");
+					add_to_string(&string, (const char *)" && /bin/rm -f ");
 					add_to_string(&string, exec_mailcap->file);
 				}
 
@@ -393,7 +393,7 @@ exec_mailcap_command(void *data)
 }
 
 static void
-exec_later(struct session *ses, unsigned char *handler, unsigned char *file)
+exec_later(struct session *ses, char *handler, char *file)
 {
 	struct exec_mailcap *exec_mailcap = (struct exec_mailcap *)mem_calloc(1, sizeof(*exec_mailcap));
 
@@ -425,7 +425,7 @@ download_data_store(struct download *download, struct file_download *file_downlo
 		term = get_default_terminal(); /* may be NULL too */
 
 	if (!is_in_state(download->state, S_OK)) {
-		unsigned char *url = get_uri_string(file_download->uri, URI_PUBLIC);
+		char *url = get_uri_string(file_download->uri, URI_PUBLIC);
 		struct connection_state state = download->state;
 
 		/* abort_download_and_beep allows term==NULL.  */
@@ -473,7 +473,7 @@ download_data_store(struct download *download, struct file_download *file_downlo
 	}
 
 	if (file_download->notify && term) {
-		unsigned char *url = get_uri_string(file_download->uri, URI_PUBLIC);
+		char *url = get_uri_string(file_download->uri, URI_PUBLIC);
 
 		/* This is apparently a little racy. Deleting the box item will
 		 * update the download browser _after_ the notification dialog
@@ -491,7 +491,7 @@ download_data_store(struct download *download, struct file_download *file_downlo
 	}
 
 	if (file_download->remotetime
-	    && get_opt_bool((const unsigned char *)"document.download.set_original_time",
+	    && get_opt_bool((const char *)"document.download.set_original_time",
 	                    file_download->ses)) {
 		struct utimbuf foo;
 
@@ -569,7 +569,7 @@ download_data(struct download *download, struct file_download *file_download)
  * what the user chose.
  *
  * @relates lun_hop */
-typedef void lun_callback_T(struct terminal *term, unsigned char *file,
+typedef void lun_callback_T(struct terminal *term, char *file,
 			    void *data, download_flags_T flags);
 
 /** The user is being asked what to do when the local file for
@@ -586,11 +586,11 @@ struct lun_hop {
 	 * exists.  In this string, "~" has already been expanded
 	 * to the home directory.  The string must be freed with
 	 * mem_free().  */
-	unsigned char *ofile;
+	char *ofile;
 
 	/** An alternative file name that the user may choose instead
 	 * of #ofile.  The string must be freed with mem_free().  */
-	unsigned char *file;
+	char *file;
 
 	/** This function will be called when the user answers.  */
 	lun_callback_T *callback;
@@ -621,7 +621,7 @@ struct cmdw_hop {
 	 * given to create_download_file(), which arranges for the
 	 * pointer to be set before common_download_do() is called.
 	 * The string must be freed with mem_free().  */
-	unsigned char *real_file;
+	char *real_file;
 };
 
 /** Data saved by continue_download() for the continue_download_do()
@@ -634,9 +634,9 @@ struct codw_hop {
 	 * given to create_download_file(), which arranges for the
 	 * pointer to be set before continue_download_do() is called.
 	 * The string must be freed with mem_free().  */
-	unsigned char *real_file;
+	char *real_file;
 
-	unsigned char *file;
+	char *file;
 };
 
 /** Data saved by create_download_file() for the create_download_file_do()
@@ -646,7 +646,7 @@ struct cdf_hop {
 	 * opened.  One of the arguments of #callback is a file
 	 * descriptor for this file.  @c real_file can be NULL if
 	 * #callback does not care about the name.  */
-	unsigned char **real_file;
+	char **real_file;
 
 	/** This function will be called when the file has been opened,
 	 * or when it is known that the file will not be opened.  */
@@ -760,13 +760,13 @@ lun_resume(void *lun_hop_)
  *
  * @relates lun_hop */
 static void
-lookup_unique_name(struct terminal *term, unsigned char *ofile,
+lookup_unique_name(struct terminal *term, char *ofile,
 		   download_flags_T flags,
 		   lun_callback_T *callback, void *data)
 {
 	/* [gettext_accelerator_context(.lookup_unique_name)] */
 	struct lun_hop *lun_hop = NULL;
-	unsigned char *file = NULL;
+	char *file = NULL;
 	struct dialog_data *dialog_data;
 	int overwrite;
 
@@ -782,7 +782,7 @@ lookup_unique_name(struct terminal *term, unsigned char *ofile,
 
 	/* !overwrite means always silently overwrite, which may be admitelly
 	 * indeed a little confusing ;-) */
-	overwrite = get_opt_int((const unsigned char *)"document.download.overwrite", NULL);
+	overwrite = get_opt_int((const char *)"document.download.overwrite", NULL);
 	if (!overwrite) {
 		/* Nothing special to do... */
 		callback(term, ofile, data, flags);
@@ -859,11 +859,11 @@ error:
  *
  * @relates cdf_hop */
 static void
-create_download_file_do(struct terminal *term, unsigned char *file,
+create_download_file_do(struct terminal *term, char *file,
 			void *data, download_flags_T flags)
 {
 	struct cdf_hop *cdf_hop = (struct cdf_hop *)data;
-	unsigned char *wd;
+	char *wd;
 	int h = -1;
 	int saved_errno;
 #ifdef NO_FILE_SECURITY
@@ -907,7 +907,7 @@ create_download_file_do(struct terminal *term, unsigned char *file,
 		set_bin(h);
 
 		if (!(flags & DOWNLOAD_EXTERNAL)) {
-			unsigned char *download_dir = get_opt_str((const unsigned char *)"document.download.directory", NULL);
+			char *download_dir = get_opt_str((const char *)"document.download.directory", NULL);
 			int i;
 
 			safe_strncpy(download_dir, file, MAX_STR_LEN);
@@ -965,13 +965,13 @@ finish:
  *
  * @relates cdf_hop */
 void
-create_download_file(struct terminal *term, unsigned char *fi,
-		     unsigned char **real_file,
+create_download_file(struct terminal *term, char *fi,
+		     char **real_file,
 		     download_flags_T flags,
 		     cdf_callback_T *callback, void *data)
 {
 	struct cdf_hop *cdf_hop = (struct cdf_hop *)mem_calloc(1, sizeof(*cdf_hop));
-	unsigned char *wd;
+	char *wd;
 
 	if (!cdf_hop) {
 		callback(term, -1, data, flags & ~DOWNLOAD_RESUME_SELECTED);
@@ -996,16 +996,16 @@ create_download_file(struct terminal *term, unsigned char *fi,
 }
 
 
-static unsigned char *
+static char *
 get_temp_name(struct uri *uri)
 {
 	struct string name;
-	unsigned char *extension;
+	char *extension;
 	/* FIXME
 	 * We use tempnam() here, which is unsafe (race condition), for now.
 	 * This should be changed at some time, but it needs an in-depth work
 	 * of whole download code. --Zas */
-	unsigned char *nm = (unsigned char *)tempnam(NULL, ELINKS_TEMPNAME_PREFIX);
+	char *nm = (char *)tempnam(NULL, ELINKS_TEMPNAME_PREFIX);
 
 	if (!nm) return NULL;
 
@@ -1027,8 +1027,8 @@ get_temp_name(struct uri *uri)
 }
 
 
-static unsigned char *
-subst_file(unsigned char *prog, unsigned char *file)
+static char *
+subst_file(char *prog, char *file)
 {
 	struct string name;
 	/* When there is no %s in the mailcap entry, the handler program reads
@@ -1067,9 +1067,9 @@ subst_file(unsigned char *prog, unsigned char *file)
 		struct string s;
 
 		if (init_string(&s)) {
-			add_to_string(&s, (const unsigned char *)"/bin/cat ");
+			add_to_string(&s, (const char *)"/bin/cat ");
 			add_shell_quoted_to_string(&s, file, strlen((const char *)file));
-			add_to_string(&s, (const unsigned char *)" | ");
+			add_to_string(&s, (const char *)" | ");
 			add_string_to_string(&s, &name);
 			done_string(&name);
 			return s.source;
@@ -1091,7 +1091,7 @@ common_download_do(struct terminal *term, int fd, void *data,
 	struct file_download *file_download;
 	struct cmdw_hop *cmdw_hop = (struct cmdw_hop *)data;
 	struct uri *download_uri = cmdw_hop->download_uri;
-	unsigned char *file = cmdw_hop->real_file;
+	char *file = cmdw_hop->real_file;
 	struct session *ses = cmdw_hop->ses;
 	struct stat buf;
 
@@ -1128,7 +1128,7 @@ finish:
  *
  * @relates cmdw_hop */
 static void
-common_download(struct session *ses, unsigned char *file,
+common_download(struct session *ses, char *file,
 		download_flags_T flags)
 {
 	struct cmdw_hop *cmdw_hop;
@@ -1156,7 +1156,7 @@ common_download(struct session *ses, unsigned char *file,
  *
  * @relates cmdw_hop */
 void
-start_download(void *ses, unsigned char *file)
+start_download(void *ses, char *file)
 {
 	common_download((struct session *)ses, file,
 			DOWNLOAD_RESUME_ALLOWED);
@@ -1171,7 +1171,7 @@ start_download(void *ses, unsigned char *file)
  *
  * @relates cmdw_hop */
 void
-resume_download(void *ses, unsigned char *file)
+resume_download(void *ses, char *file)
 {
 	common_download((struct session *)ses, file,
 			DOWNLOAD_RESUME_ALLOWED | DOWNLOAD_RESUME_SELECTED);
@@ -1279,7 +1279,7 @@ cancel:
  *
  * @relates codw_hop */
 static void
-continue_download(void *data, unsigned char *file)
+continue_download(void *data, char *file)
 {
 	struct type_query *type_query = (struct type_query *)data;
 	struct codw_hop *codw_hop = (struct codw_hop *)mem_calloc(1, sizeof(*codw_hop));
@@ -1445,7 +1445,7 @@ tp_display(struct type_query *type_query)
 	struct view_state *vs;
 	struct session *ses = type_query->ses;
 	struct uri *loading_uri = ses->loading_uri;
-	unsigned char *target_frame = null_or_stracpy(ses->task.target.frame);
+	char *target_frame = null_or_stracpy(ses->task.target.frame);
 
 	ses->loading_uri = type_query->uri;
 	mem_free_set(&ses->task.target.frame, null_or_stracpy(type_query->target_frame));
@@ -1485,8 +1485,8 @@ tp_open(struct type_query *type_query)
 	}
 
 	if (type_query->uri->protocol == PROTOCOL_FILE && !type_query->cgi) {
-		unsigned char *file = get_uri_string(type_query->uri, URI_PATH);
-		unsigned char *handler = NULL;
+		char *file = get_uri_string(type_query->uri, URI_PATH);
+		char *handler = NULL;
 
 		if (file) {
 			decode_uri(file);
@@ -1499,7 +1499,7 @@ tp_open(struct type_query *type_query)
 				exec_later(type_query->ses, handler, NULL);
 			} else {
 				exec_on_terminal(type_query->ses->tab->term,
-						 handler, (unsigned char *)"", type_query->block ?
+						 handler, (char *)"", type_query->block ?
 						 TERM_EXEC_FG : TERM_EXEC_BG);
 			}
 			mem_free(handler);
@@ -1509,7 +1509,7 @@ tp_open(struct type_query *type_query)
 		return;
 	}
 
-	continue_download(type_query, (unsigned char *)"");
+	continue_download(type_query, (char *)"");
 }
 
 
@@ -1521,13 +1521,13 @@ tp_open(struct type_query *type_query)
  *
  * @relates type_query */
 static void
-do_type_query(struct type_query *type_query, unsigned char *ct, struct mime_handler *handler)
+do_type_query(struct type_query *type_query, char *ct, struct mime_handler *handler)
 {
 	/* [gettext_accelerator_context(.do_type_query)] */
 	struct string filename;
-	unsigned char *description;
-	unsigned char *desc_sep;
-	unsigned char *format, *text, *title;
+	char *description;
+	char *desc_sep;
+	char *format, *text, *title;
 	struct dialog *dlg;
 #define TYPE_QUERY_WIDGETS_COUNT 8
 	int widgets = TYPE_QUERY_WIDGETS_COUNT;
@@ -1549,13 +1549,13 @@ do_type_query(struct type_query *type_query, unsigned char *ct, struct mime_hand
 
 		/* Start preparing for the type query dialog. */
 		description = handler->description;
-		desc_sep = *description ? (unsigned char *)"; " : (unsigned char *)"";
+		desc_sep = *description ? (char *)"; " : (char *)"";
 		title = N_("What to do?");
 
 	} else {
 		title = N_("Unknown type");
-		description = (unsigned char *)"";
-		desc_sep = (unsigned char *)"";
+		description = (char *)"";
+		desc_sep = (char *)"";
 	}
 
 	dlg = calloc_dialog(TYPE_QUERY_WIDGETS_COUNT, MAX_STR_LEN * 2);
@@ -1596,8 +1596,8 @@ do_type_query(struct type_query *type_query, unsigned char *ct, struct mime_hand
 	add_dlg_text(dlg, text, ALIGN_LEFT, 0);
 
 	/* Add input field or text widget with info about the program handler. */
-	if (!get_cmd_opt_bool((const unsigned char *)"anonymous")) {
-		unsigned char *field = (unsigned char *)mem_calloc(1, MAX_STR_LEN);
+	if (!get_cmd_opt_bool((const char *)"anonymous")) {
+		char *field = (char *)mem_calloc(1, MAX_STR_LEN);
 
 		if (!field) {
 			mem_free(dlg);
@@ -1617,7 +1617,7 @@ do_type_query(struct type_query *type_query, unsigned char *ct, struct mime_hand
 		selected_widget = 3;
 
 	} else if (handler) {
-		unsigned char *field = text + MAX_STR_LEN;
+		char *field = text + MAX_STR_LEN;
 
 		format = _("The file will be opened with the program '%s'.", term);
 		snprintf((char *)field, MAX_STR_LEN, (const char *)format, handler->program);
@@ -1639,14 +1639,14 @@ do_type_query(struct type_query *type_query, unsigned char *ct, struct mime_hand
 
 	/* Add buttons if they are both usable and allowed. */
 
-	if (!get_cmd_opt_bool((const unsigned char *)"anonymous") || handler) {
+	if (!get_cmd_opt_bool((const char *)"anonymous") || handler) {
 		add_dlg_ok_button(dlg, _("~Open", term), B_ENTER,
 				  (done_handler_T *) tp_open, type_query);
 	} else {
 		widgets--;
 	}
 
-	if (!get_cmd_opt_bool((const unsigned char *)"anonymous")) {
+	if (!get_cmd_opt_bool((const char *)"anonymous")) {
 		add_dlg_ok_button(dlg, _("Sa~ve", term), B_ENTER,
 				  (done_handler_T *) tp_save, type_query);
 	} else {
@@ -1710,7 +1710,7 @@ setup_download_handler(struct session *ses, struct download *loading,
 	struct mime_handler *handler;
 	struct view_state *vs;
 	struct type_query *type_query;
-	unsigned char *ctype = get_content_type(cached);
+	char *ctype = get_content_type(cached);
 	int plaintext = 1;
 	int ret = 0;
 	int xwin, i;
@@ -1744,7 +1744,7 @@ setup_download_handler(struct session *ses, struct download *loading,
 			 * to use the type_query this is easier. */
 			if ((!c_strcasecmp((const char *)ctype, "application/x-bittorrent")
 				|| !c_strcasecmp((const char *)ctype, "application/x-torrent"))
-			    && !get_cmd_opt_bool((const unsigned char *)"anonymous"))
+			    && !get_cmd_opt_bool((const char *)"anonymous"))
 				query_bittorrent_dialog(type_query);
 			else
 #endif

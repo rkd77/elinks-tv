@@ -111,7 +111,7 @@ menu_keys(struct terminal *term, void *d_, void *xxx)
 		for (keymap_id = 0; keymap_id < KEYMAP_MAX; keymap_id++) {
 			add_actions_to_string(&keys, action_ids, keymap_id, term);
 			if (keymap_id + 1 < KEYMAP_MAX)
-				add_to_string(&keys, (const unsigned char *)"\n\n");
+				add_to_string(&keys, (const char *)"\n\n");
 
 			/* Just a little reminder that the following code takes
 			 * the easy way. */
@@ -154,7 +154,7 @@ menu_copying(struct terminal *term, void *xxx, void *xxxx)
 }
 
 
-static unsigned char *
+static char *
 get_resource_info(struct terminal *term, void *data)
 {
 	struct string info;
@@ -168,106 +168,106 @@ get_resource_info(struct terminal *term, void *data)
 	add_format_to_string(&info, (const char *)text, val);
 
 	add_to_string(&info, _("Resources", term));
-	add_to_string(&info, (const unsigned char *)": ");
+	add_to_string(&info, (const char *)": ");
 
 	val = get_file_handles_count();
-	val_add(n_((unsigned char *)"%ld handle", (unsigned char *)"%ld handles", val, term));
-	add_to_string(&info, (const unsigned char *)", ");
+	val_add(n_((char *)"%ld handle", (char *)"%ld handles", val, term));
+	add_to_string(&info, (const char *)", ");
 
 	val = get_timers_count();
-	val_add(n_((unsigned char *)"%ld timer", (unsigned char *)"%ld timers", val, term));
-	add_to_string(&info, (const unsigned char *)".\n");
+	val_add(n_((char *)"%ld timer", (char *)"%ld timers", val, term));
+	add_to_string(&info, (const char *)".\n");
 
 	add_to_string(&info, _("Connections", term));
-	add_to_string(&info, (const unsigned char *)": ");
+	add_to_string(&info, (const char *)": ");
 
 	val = get_connections_count();
-	val_add(n_((unsigned char *)"%ld connection", (unsigned char *)"%ld connections", val, term));
-	add_to_string(&info, (const unsigned char *)", ");
+	val_add(n_((char *)"%ld connection", (char *)"%ld connections", val, term));
+	add_to_string(&info, (const char *)", ");
 
 	val = get_connections_connecting_count();
-	val_add(n_((unsigned char *)"%ld connecting", (unsigned char *)"%ld connecting", val, term));
-	add_to_string(&info, (const unsigned char *)", ");
+	val_add(n_((char *)"%ld connecting", (char *)"%ld connecting", val, term));
+	add_to_string(&info, (const char *)", ");
 
 	val = get_connections_transfering_count();
-	val_add(n_((unsigned char *)"%ld transferring", (unsigned char *)"%ld transferring", val, term));
-	add_to_string(&info, (const unsigned char *)", ");
+	val_add(n_((char *)"%ld transferring", (char *)"%ld transferring", val, term));
+	add_to_string(&info, (const char *)", ");
 
 	val = get_keepalive_connections_count();
-	val_add(n_((unsigned char *)"%ld keepalive", (unsigned char *)"%ld keepalive", val, term));
-	add_to_string(&info, (const unsigned char *)".\n");
+	val_add(n_((char *)"%ld keepalive", (char *)"%ld keepalive", val, term));
+	add_to_string(&info, (const char *)".\n");
 
 	add_to_string(&info, _("Memory cache", term));
-	add_to_string(&info, (const unsigned char *)": ");
+	add_to_string(&info, (const char *)": ");
 
 	/* What about just using Kibi/Mebi representation here? --jonas */
 	bigval = get_cache_size();
-	add_format_to_string(&info, (const char *)n_((unsigned char *)"%ld byte", (unsigned char *)"%ld bytes", bigval, term), bigval);
-	add_to_string(&info, (const unsigned char *)", ");
+	add_format_to_string(&info, (const char *)n_((char *)"%ld byte", (char *)"%ld bytes", bigval, term), bigval);
+	add_to_string(&info, (const char *)", ");
 
 	val = get_cache_entry_count();
-	val_add(n_((unsigned char *)"%ld file", (unsigned char *)"%ld files", val, term));
-	add_to_string(&info, (const unsigned char *)", ");
+	val_add(n_((char *)"%ld file", (char *)"%ld files", val, term));
+	add_to_string(&info, (const char *)", ");
 
 	val = get_cache_entry_used_count();
-	val_add(n_((unsigned char *)"%ld in use", (unsigned char *)"%ld in use", val, term));
-	add_to_string(&info, (const unsigned char *)", ");
+	val_add(n_((char *)"%ld in use", (char *)"%ld in use", val, term));
+	add_to_string(&info, (const char *)", ");
 
 	val = get_cache_entry_loading_count();
-	val_add(n_((unsigned char *)"%ld loading", (unsigned char *)"%ld loading", val, term));
-	add_to_string(&info, (const unsigned char *)".\n");
+	val_add(n_((char *)"%ld loading", (char *)"%ld loading", val, term));
+	add_to_string(&info, (const char *)".\n");
 
 	add_to_string(&info, _("Document cache", term));
-	add_to_string(&info, (const unsigned char *)": ");
+	add_to_string(&info, (const char *)": ");
 
 	val = get_format_cache_size();
-	val_add(n_((unsigned char *)"%ld formatted", (unsigned char *)"%ld formatted", val, term));
-	add_to_string(&info, (const unsigned char *)", ");
+	val_add(n_((char *)"%ld formatted", (char *)"%ld formatted", val, term));
+	add_to_string(&info, (const char *)", ");
 
 	val = get_format_cache_used_count();
-	val_add(n_((unsigned char *)"%ld in use", (unsigned char *)"%ld in use", val, term));
-	add_to_string(&info, (const unsigned char *)", ");
+	val_add(n_((char *)"%ld in use", (char *)"%ld in use", val, term));
+	add_to_string(&info, (const char *)", ");
 
 	val = get_format_cache_refresh_count();
-	val_add(n_((unsigned char *)"%ld refreshing", (unsigned char *)"%ld refreshing", val, term));
-	add_to_string(&info, (const unsigned char *)".\n");
+	val_add(n_((char *)"%ld refreshing", (char *)"%ld refreshing", val, term));
+	add_to_string(&info, (const char *)".\n");
 
 #ifdef CONFIG_ECMASCRIPT
 	add_to_string(&info, _("ECMAScript", term));
-	add_to_string(&info, (const unsigned char *)": ");
+	add_to_string(&info, (const char *)": ");
 
 	val = ecmascript_get_interpreter_count();
-	val_add(n_((unsigned char *)"%ld interpreter", (unsigned char *)"%ld interpreters", val, term));
-	add_to_string(&info, (const unsigned char *)".\n");
+	val_add(n_((char *)"%ld interpreter", (char *)"%ld interpreters", val, term));
+	add_to_string(&info, (const char *)".\n");
 #endif
 
 	add_to_string(&info, _("Interlinking", term));
-	add_to_string(&info, (const unsigned char *)": ");
+	add_to_string(&info, (const char *)": ");
 	if (term->master)
 		add_to_string(&info, _("master terminal", term));
 	else
 		add_to_string(&info, _("slave terminal", term));
-	add_to_string(&info, (const unsigned char *)", ");
+	add_to_string(&info, (const char *)", ");
 
 	val = list_size(&terminals);
-	val_add(n_((unsigned char *)"%ld terminal", (unsigned char *)"%ld terminals", val, term));
-	add_to_string(&info, (const unsigned char *)", ");
+	val_add(n_((char *)"%ld terminal", (char *)"%ld terminals", val, term));
+	add_to_string(&info, (const char *)", ");
 
 	val = list_size(&sessions);
-	val_add(n_((unsigned char *)"%ld session", (unsigned char *)"%ld sessions", val, term));
+	val_add(n_((char *)"%ld session", (char *)"%ld sessions", val, term));
 	add_char_to_string(&info, '.');
 
 #ifdef DEBUG_MEMLEAK
 	add_char_to_string(&info, '\n');
 	add_to_string(&info, _("Memory allocated", term));
-	add_to_string(&info, (const unsigned char *)": ");
+	add_to_string(&info, (const char *)": ");
 
 	val = mem_stats.amount;
-	val_add(n_((unsigned char *)"%ld byte", (unsigned char *)"%ld bytes", val, term));
+	val_add(n_((char *)"%ld byte", (char *)"%ld bytes", val, term));
 	add_to_string(&info, ", ");
 
 	val = mem_stats.true_amount - mem_stats.amount;
-	val_add(n_((unsigned char *)"%ld byte overhead", (unsigned char *)"%ld bytes overhead", val, term));
+	val_add(n_((char *)"%ld byte overhead", (char *)"%ld bytes overhead", val, term));
 
 	add_format_to_string(&info, " (%0.2f%%).",
 		(double) (mem_stats.true_amount - mem_stats.amount) / (double) mem_stats.amount * 100);

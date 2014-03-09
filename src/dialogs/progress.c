@@ -15,9 +15,9 @@
 #include "util/memory.h"
 #include "util/string.h"
 
-static unsigned char *
+static char *
 get_progress_msg_2(struct progress *progress, struct terminal *term,
-		 int wide, int full, unsigned char *separator, unsigned char *type)
+		 int wide, int full, char *separator, char *type)
 {
 	struct string msg;
 	int newlines = separator[strlen((const char *)separator) - 1] == '\n';
@@ -50,14 +50,14 @@ get_progress_msg_2(struct progress *progress, struct terminal *term,
 				term));
 		add_char_to_string(&msg, ' ');
 		add_xnum_to_string(&msg, progress->average_speed);
-		add_to_string(&msg, (const unsigned char *)"/s");
+		add_to_string(&msg, (const char *)"/s");
 
-		add_to_string(&msg, (const unsigned char *)", ");
+		add_to_string(&msg, (const char *)", ");
 		add_to_string(&msg,
 			      _(full ? N_("current speed") : N_("cur"), term));
 		add_char_to_string(&msg, ' '),
 		add_xnum_to_string(&msg, progress->current_speed);
-		add_to_string(&msg, (const unsigned char *)"/s");
+		add_to_string(&msg, (const char *)"/s");
 
 		add_to_string(&msg, separator);
 
@@ -74,11 +74,11 @@ get_progress_msg_2(struct progress *progress, struct terminal *term,
 
 		add_char_to_string(&msg, ' ');
 		add_xnum_to_string(&msg, progress->average_speed);
-		add_to_string(&msg, (const unsigned char *)"/s");
+		add_to_string(&msg, (const char *)"/s");
 	}
 
 	if (progress->size >= 0 && progress->loaded > 0) {
-		add_to_string(&msg, (const unsigned char *)", ");
+		add_to_string(&msg, (const char *)", ");
 		add_to_string(&msg, _(full ? N_("estimated time")
 					   : N_("ETA"),
 				      term));
@@ -89,16 +89,16 @@ get_progress_msg_2(struct progress *progress, struct terminal *term,
 	return msg.source;
 }
 
-unsigned char *
+char *
 get_upload_progress_msg(struct progress *progress, struct terminal *term,
-			int wide, int full, unsigned char *separator)
+			int wide, int full, char *separator)
 {
 	return get_progress_msg_2(progress, term, wide, full, separator, _("Sent", term));
 }
 
-unsigned char *
+char *
 get_progress_msg(struct progress *progress, struct terminal *term,
-			int wide, int full, unsigned char *separator)
+			int wide, int full, char *separator)
 {
 	return get_progress_msg_2(progress, term, wide, full, separator, _("Received", term));
 }
@@ -106,7 +106,7 @@ get_progress_msg(struct progress *progress, struct terminal *term,
 void
 draw_progress_bar(struct progress *progress, struct terminal *term,
 		  int x, int y, int width,
-		  unsigned char *text, struct color_pair *meter_color)
+		  char *text, struct color_pair *meter_color)
 {
 	/* Note : values > 100% are theorically possible and were seen. */
 	int percent = 0;
@@ -118,11 +118,11 @@ draw_progress_bar(struct progress *progress, struct terminal *term,
 	/* Draw the progress meter part "[###    ]" */
 	if (!text && width > 2) {
 		width -= 2;
-		draw_text(term, x++, y, (const unsigned char *)"[", 1, 0, NULL);
-		draw_text(term, x + width, y, (const unsigned char *)"]", 1, 0, NULL);
+		draw_text(term, x++, y, (const char *)"[", 1, 0, NULL);
+		draw_text(term, x + width, y, (const char *)"]", 1, 0, NULL);
 	}
 
-	if (!meter_color) meter_color = get_bfu_color(term, (const unsigned char *)"dialog.meter");
+	if (!meter_color) meter_color = get_bfu_color(term, (const char *)"dialog.meter");
 	set_box(&barprogress,
 		x, y, int_min(width * percent / 100, width), 1);
 	draw_box(term, &barprogress, ' ', 0, meter_color);
@@ -132,7 +132,7 @@ draw_progress_bar(struct progress *progress, struct terminal *term,
 		width = int_min(width, strlen((const char *)text));
 
 	} else if (width > 1) {
-		static unsigned char s[] = "????"; /* Reduce or enlarge at will. */
+		static char s[] = "????"; /* Reduce or enlarge at will. */
 		unsigned int slen = 0;
 		int max = int_min(sizeof(s), width) - 1;
 

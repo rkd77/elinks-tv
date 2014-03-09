@@ -143,7 +143,7 @@ init_term(int fdin, int fdout)
 int
 get_terminal_codepage(const struct terminal *term)
 {
-	return get_opt_codepage_tree(term->spec, (const unsigned char *)"charset", NULL);
+	return get_opt_codepage_tree(term->spec, (const char *)"charset", NULL);
 }
 
 void
@@ -220,11 +220,11 @@ static void
 check_if_no_terminal(void)
 {
 	program.terminate = list_empty(terminals) && 0
-			    && !get_opt_bool((const unsigned char *)"ui.sessions.keep_session_active", NULL);
+			    && !get_opt_bool((const char *)"ui.sessions.keep_session_active", NULL);
 }
 
 void
-exec_thread(unsigned char *path, int p)
+exec_thread(char *path, int p)
 {
 	int plen = strlen((const char *)(path + 1)) + 2;
 
@@ -275,13 +275,13 @@ assert_terminal_ptr_not_dangling(const struct terminal *suspect)
 
 static void
 exec_on_master_terminal(struct terminal *term,
-			unsigned char *path, int plen,
-		 	unsigned char *delete_, int dlen,
+			char *path, int plen,
+		 	char *delete_, int dlen,
 			enum term_exec fg)
 {
 	int blockh;
 	int param_size = plen + dlen + 2 /* 2 null char */ + 1 /* fg */;
-	unsigned char *param = (unsigned char *)fmem_alloc(param_size);
+	char *param = (char *)fmem_alloc(param_size);
 
 	if (!param) return;
 
@@ -318,12 +318,12 @@ exec_on_master_terminal(struct terminal *term,
 
 static void
 exec_on_slave_terminal( struct terminal *term,
-		 	unsigned char *path, int plen,
-		 	unsigned char *delete_, int dlen,
+		 	char *path, int plen,
+		 	char *delete_, int dlen,
 			enum term_exec fg)
 {
 	int data_size = plen + dlen + 1 /* 0 */ + 1 /* fg */ + 2 /* 2 null char */;
-	unsigned char *data = (unsigned char *)fmem_alloc(data_size);
+	char *data = (char *)fmem_alloc(data_size);
 
 	if (!data) return;
 
@@ -336,13 +336,13 @@ exec_on_slave_terminal( struct terminal *term,
 }
 
 void
-exec_on_terminal(struct terminal *term, unsigned char *path,
-		 unsigned char *delete_, enum term_exec fg)
+exec_on_terminal(struct terminal *term, char *path,
+		 char *delete_, enum term_exec fg)
 {
 	if (path) {
 		if (!*path) return;
 	} else {
-		path = (unsigned char *)"";
+		path = (char *)"";
 	}
 
 #ifdef NO_FG_EXEC
@@ -378,22 +378,22 @@ exec_on_terminal(struct terminal *term, unsigned char *path,
 void
 exec_shell(struct terminal *term)
 {
-	unsigned char *sh;
+	char *sh;
 
 	if (!can_open_os_shell(term->environment)) return;
 
 	sh = get_shell();
 	if (sh && *sh)
-		exec_on_terminal(term, sh, (unsigned char *)"", TERM_EXEC_FG);
+		exec_on_terminal(term, sh, (char *)"", TERM_EXEC_FG);
 }
 
 
 void
 do_terminal_function(struct terminal *term, unsigned char code,
-		     unsigned char *data)
+		     char *data)
 {
 	int data_len = strlen((const char *)data);
-	unsigned char *x_data = (unsigned char *)fmem_alloc(data_len + 1 /* code */ + 1 /* null char */);
+	char *x_data = (char *)fmem_alloc(data_len + 1 /* code */ + 1 /* null char */);
 
 	if (!x_data) return;
 	x_data[0] = code;
@@ -402,15 +402,15 @@ do_terminal_function(struct terminal *term, unsigned char code,
 	fmem_free(x_data);
 }
 
-extern void setTerminalTitle(struct terminal *term, unsigned char *title);
+extern void setTerminalTitle(struct terminal *term, char *title);
 
 /** @return negative on error; zero or positive on success.  */
 int
-set_terminal_title(struct terminal *term, unsigned char *title)
+set_terminal_title(struct terminal *term, char *title)
 {
 	int from_cp;
 	int to_cp;
-	unsigned char *converted = NULL;
+	char *converted = NULL;
 
 	if (term->title && !strcmp((const char *)title, (const char *)term->title)) return 0;
 
@@ -418,10 +418,10 @@ set_terminal_title(struct terminal *term, unsigned char *title)
 	from_cp = get_terminal_codepage(term);
 
 	/* In which codepage does the terminal want the title?  */
-	if (get_opt_bool_tree(term->spec, (const unsigned char *)"latin1_title", NULL))
-		to_cp = get_cp_index((const unsigned char *)"ISO-8859-1");
-	else if (get_opt_bool_tree(term->spec, (const unsigned char *)"utf_8_io", NULL))
-		to_cp = get_cp_index((const unsigned char *)"UTF-8");
+	if (get_opt_bool_tree(term->spec, (const char *)"latin1_title", NULL))
+		to_cp = get_cp_index((const char *)"ISO-8859-1");
+	else if (get_opt_bool_tree(term->spec, (const char *)"utf_8_io", NULL))
+		to_cp = get_cp_index((const char *)"UTF-8");
 	else
 		to_cp = from_cp;
 

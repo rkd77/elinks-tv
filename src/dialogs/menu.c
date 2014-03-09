@@ -1090,7 +1090,7 @@ auto_complete_file(struct terminal *term, int no_elevator, char *path,
 
 	/* Make sure the dirname has an ending slash */
 	if (!dir_sep(path[-1])) {
-		unsigned char separator = *dirname;
+		char separator = *dirname;
 		int dirnamelen = path - dirname;
 
 		insert_in_string(&dirname, dirnamelen, &separator, 1);

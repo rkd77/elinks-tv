@@ -33,7 +33,7 @@
 #include "viewer/text/view.h"
 
 void
-nowhere_box(struct terminal *term, unsigned char *title)
+nowhere_box(struct terminal *term, char *title)
 {
 	assert(term);
 	if_assert_failed return;
@@ -50,7 +50,7 @@ add_link_info_to_string(struct string *msg, struct session *ses)
 {
 	struct document_view *doc_view = current_frame(ses);
 	struct terminal *term = ses->tab->term;
-	unsigned char *a;
+	char *a;
 	struct link *link;
 
 	if (!doc_view) return;
@@ -92,9 +92,9 @@ add_link_info_to_string(struct string *msg, struct session *ses)
 #ifdef CONFIG_GLOBHIST
 		historyitem = get_global_history_item(link->where);
 		if (historyitem) {
-			unsigned char *last_visit;
+			char *last_visit;
 
-			last_visit = (unsigned char *)ctime(&historyitem->last_visit);
+			last_visit = (char *)ctime(&historyitem->last_visit);
 
 			if (last_visit)
 				add_format_to_string(msg,
@@ -154,7 +154,7 @@ document_info_dialog(struct session *ses)
 	if (!init_string(&msg)) return;
 
 	add_to_string(&msg, _("URL", term));
-	add_to_string(&msg, (const unsigned char *)": ");
+	add_to_string(&msg, (const char *)": ");
 
 	/* Add the uri with password and post info stripped */
 	add_uri_to_string(&msg, location->vs.uri, URI_PUBLIC);
@@ -170,7 +170,7 @@ document_info_dialog(struct session *ses)
 
 	if (doc_view && doc_view->document->cached) {
 		struct cache_entry *cached = doc_view->document->cached;
-		unsigned char *a;
+		char *a;
 
 		add_format_to_string(&msg, "\n%s: %" OFF_PRINT_FORMAT,
 				     _("Size", term),
@@ -192,7 +192,7 @@ document_info_dialog(struct session *ses)
 			}
 		}
 
-		a = parse_header(cached->head, (const unsigned char *)"Server", NULL);
+		a = parse_header(cached->head, (const char *)"Server", NULL);
 		if (a) {
 			add_format_to_string(&msg, "\n%s: %s",
 					     _("Server", term), a);
@@ -210,7 +210,7 @@ document_info_dialog(struct session *ses)
 					     cached->encoding_info);
 		}
 
-		a = parse_header(cached->head, (const unsigned char *)"Date", NULL);
+		a = parse_header(cached->head, (const char *)"Date", NULL);
 		if (a) {
 			add_format_to_string(&msg, "\n%s: %s",
 					     _("Date", term), a);
@@ -234,7 +234,7 @@ document_info_dialog(struct session *ses)
 
 #ifdef CONFIG_GLOBHIST
 	{
-		unsigned char *last_visit = NULL;
+		char *last_visit = NULL;
 		struct global_history_item *historyitem;
 
 		add_format_to_string(&msg, "\n%s: ",
@@ -242,7 +242,7 @@ document_info_dialog(struct session *ses)
 
 		historyitem = get_global_history_item(struri(location->vs.uri));
 
-		if (historyitem) last_visit = (unsigned char *)ctime(&historyitem->last_visit);
+		if (historyitem) last_visit = (char *)ctime(&historyitem->last_visit);
 
 		/* GNU's documentation says that ctime() can return NULL.
 		 * The Open Group Base Specifications Issue 6 implies
@@ -272,8 +272,8 @@ void
 cached_header_dialog(struct session *ses, struct cache_entry *cached)
 {
 	int msgbox_flags = 0;
-	unsigned char *title = N_("Header info");
-	unsigned char *headers = NULL;
+	char *title = N_("Header info");
+	char *headers = NULL;
 	int i = 0, j = 0;
 
 	if (!cached || !cached->head || !*cached->head)
@@ -288,7 +288,7 @@ cached_header_dialog(struct session *ses, struct cache_entry *cached)
 		title = N_("Internal header info");
 #endif
 
-	headers = (unsigned char *)mem_alloc(strlen((const char *)cached->head) + 1);
+	headers = (char *)mem_alloc(strlen((const char *)cached->head) + 1);
 	if (!headers) return;
 
 	/* Sanitize headers string. */

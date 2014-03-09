@@ -89,14 +89,14 @@ struct type_query {
 	/** The name of the frame in which the user navigated to #uri.
 	 * If the user chooses to display the resource, it goes into
 	 * this frame.  This string must be freed with mem_free().  */
-	unsigned char *target_frame;
+	char *target_frame;
 
 	/** Command line for an external handler, to be run when the
 	 * download finishes.  When ELinks displays the type query,
 	 * it copies this from mime_handler.program of the default
 	 * handler of the type.  The user can then edit the string.
 	 * This string must be freed with mem_free().  */
-	unsigned char *external_handler;
+	char *external_handler;
 
 	/** Whether the external handler is going to use the terminal.
 	 * When ELinks displays the type query, it copies this from
@@ -122,8 +122,8 @@ struct file_download {
 	OBJECT_HEAD(struct file_download);
 
 	struct uri *uri;
-	unsigned char *file;
-	unsigned char *external_handler;
+	char *file;
+	char *external_handler;
 	struct session *ses;
 
 	/** The terminal in which message boxes about the download
@@ -205,9 +205,9 @@ int are_there_downloads(void);
 typedef void cdf_callback_T(struct terminal *term, int fd,
 			    void *data, download_flags_T flags);
 
-void start_download(void *, unsigned char *);
-void resume_download(void *, unsigned char *);
-void create_download_file(struct terminal *, unsigned char *, unsigned char **,
+void start_download(void *, char *);
+void resume_download(void *, char *);
+void create_download_file(struct terminal *, char *, char **,
 			  download_flags_T, cdf_callback_T *, void *);
 
 void abort_all_downloads(void);
@@ -222,6 +222,6 @@ void done_type_query(struct type_query *type_query);
 void tp_display(struct type_query *type_query);
 void tp_save(struct type_query *type_query);
 void tp_cancel(void *data);
-struct file_download *init_file_download(struct uri *uri, struct session *ses, unsigned char *file, int fd);
+struct file_download *init_file_download(struct uri *uri, struct session *ses, char *file, int fd);
 
 #endif
