@@ -193,7 +193,7 @@ get_validated_cache_entry(struct uri *uri, int cache_mode)
 	 * remove the redirect or the entry expired. Please enlighten me.
 	 * --jonas */
 	if ((cached->cache_mode == CACHE_MODE_NEVER && cache_mode != CACHE_MODE_ALWAYS)
-	    || (cached->redirect && !get_opt_bool((const unsigned char *)"document.cache.cache_redirects", NULL))
+	    || (cached->redirect && !get_opt_bool((const char *)"document.cache.cache_redirects", NULL))
 	    || (cached->expire && cache_entry_has_expired(cached))) {
 		if (!is_object_used(cached)) delete_cache_entry(cached);
 		return NULL;
@@ -202,8 +202,8 @@ get_validated_cache_entry(struct uri *uri, int cache_mode)
 	if (cached->cache_mode <= CACHE_MODE_CHECK_IF_MODIFIED
 	    && cache_mode <= CACHE_MODE_CHECK_IF_MODIFIED
 	    && (cached->last_modified || cached->etag)
-	    && get_opt_int((const unsigned char *)"document.cache.revalidation_interval", NULL) >= 0) {
-		if (cached->seconds + get_opt_int((const unsigned char *)"document.cache.revalidation_interval", NULL) < time(NULL))
+	    && get_opt_int((const char *)"document.cache.revalidation_interval", NULL) >= 0) {
+		if (cached->seconds + get_opt_int((const char *)"document.cache.revalidation_interval", NULL) < time(NULL))
 			return NULL;
 	}
 
@@ -374,7 +374,7 @@ remove_overlaps(struct cache_entry *cached, struct fragment *f, int *trunc)
  * unhappy from that. */
 int
 add_fragment(struct cache_entry *cached, off_t offset,
-	     const unsigned char *data, ssize_t length)
+	     const char *data, ssize_t length)
 {
 	struct fragment *f, *nf;
 	int trunc = 0;
@@ -700,10 +700,10 @@ normalize_cache_entry(struct cache_entry *cached, off_t truncate_length)
 
 
 struct uri *
-redirect_cache(struct cache_entry *cached, unsigned char *location,
+redirect_cache(struct cache_entry *cached, char *location,
 	       int get, int incomplete)
 {
-	unsigned char *uristring;
+	char *uristring;
 
 	/* XXX: I am a little puzzled whether we should only use the cache
 	 * entry's URI if it is valid. Hopefully always using it won't hurt.
@@ -780,7 +780,7 @@ garbage_collection(int whole)
 	/* The maximal cache size tolerated by user. Note that this is only
 	 * size of the "just stored" unused cache entries, used cache entries
 	 * are not counted to that. */
-	unsigned longlong opt_cache_size = get_opt_long((const unsigned char *)"document.cache.memory.size", NULL);
+	unsigned longlong opt_cache_size = get_opt_long((const char *)"document.cache.memory.size", NULL);
 	/* The low-treshold cache size. Basically, when the cache size is
 	 * higher than opt_cache_size, we free the cache so that there is no
 	 * more than this value in the cache anymore. This is to make sure we
@@ -922,7 +922,7 @@ shrinked_enough:
 		DBG("garbage collection doesn't work, cache size %ld > %ld, "
 		      "document.cache.memory.size set to: %ld bytes",
 		      cache_size, gc_cache_size,
-		      get_opt_long((const unsigned char *)"document.cache.memory.size", NULL));
+		      get_opt_long((const char *)"document.cache.memory.size", NULL));
 	}
 #endif
 }

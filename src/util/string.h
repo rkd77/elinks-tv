@@ -95,18 +95,18 @@ char *safe_strncpy(char *dst, const char *src, size_t len);
  * @returns zero if the strings match or undefined non-zero value if they
  * differ.  (The non-zero return value is _not_ same as for the standard
  * strcmp() family.) */
-#define strlcmp(a,b,c,d) (errfile = (const char *)__FILE__, errline = __LINE__, elinks_strlcmp(a,b,c,d))
+#define strlcmp(a,b,c,d) (errfile = __FILE__, errline = __LINE__, elinks_strlcmp(a,b,c,d))
 int elinks_strlcmp(const char *s1, size_t n1,
 		   const char *s2, size_t n2);
 
 /** Acts identically to strlcmp(), except for being case insensitive. */
-#define strlcasecmp(a,b,c,d) (errfile = (const char *)__FILE__, errline = __LINE__, elinks_strlcasecmp(a,b,c,d,0))
-#define c_strlcasecmp(a,b,c,d) (errfile = (const char *)__FILE__, errline = __LINE__, elinks_strlcasecmp(a,b,c,d,1))
+#define strlcasecmp(a,b,c,d) (errfile = __FILE__, errline = __LINE__, elinks_strlcasecmp(a,b,c,d,0))
+#define c_strlcasecmp(a,b,c,d) (errfile = __FILE__, errline = __LINE__, elinks_strlcasecmp(a,b,c,d,1))
 int elinks_strlcasecmp(const char *s1, size_t n1,
 		       const char *s2, size_t n2,
 		       const int locale_indep);
 
-#define strlcasestr(a,b,c,d) (errfile = (const char *)__FILE__, errline = __LINE__, elinks_strlcasestr(a,b,c,d))
+#define strlcasestr(a,b,c,d) (errfile = __FILE__, errline = __LINE__, elinks_strlcasestr(a,b,c,d))
 char *elinks_strlcasestr(const char *haystack, const int haystackl,
                          const char *needle, const int needlel);
 

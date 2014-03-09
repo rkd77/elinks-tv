@@ -45,7 +45,7 @@ is_cache_entry_used(struct listbox_item *item)
 	return is_object_used((struct cache_entry *) item->udata);
 }
 
-static unsigned char *
+static char *
 get_cache_entry_text(struct listbox_item *item, struct terminal *term)
 {
 	struct cache_entry *cached = (struct cache_entry *)item->udata;
@@ -53,7 +53,7 @@ get_cache_entry_text(struct listbox_item *item, struct terminal *term)
 	return get_uri_string(cached->uri, URI_PUBLIC);
 }
 
-static unsigned char *
+static char *
 get_cache_entry_info(struct listbox_item *item, struct terminal *term)
 {
 	struct cache_entry *cached = (struct cache_entry *)item->udata;
@@ -63,7 +63,7 @@ get_cache_entry_info(struct listbox_item *item, struct terminal *term)
 	if (!init_string(&msg)) return NULL;
 
 	add_to_string(&msg, _("URL", term));
-	add_to_string(&msg, (const unsigned char *)": ");
+	add_to_string(&msg, (const char *)": ");
 	add_uri_to_string(&msg, cached->uri, URI_PUBLIC);
 
 	/* No need to use compare_uri() here we only want to check whether they
@@ -78,7 +78,7 @@ get_cache_entry_info(struct listbox_item *item, struct terminal *term)
 		add_uri_to_string(&msg, cached->redirect, URI_PUBLIC);
 
 		if (cached->redirect_get) {
-			add_to_string(&msg, (const unsigned char *)" (GET)");
+			add_to_string(&msg, (const char *)" (GET)");
 		}
 	}
 
@@ -110,7 +110,7 @@ get_cache_entry_info(struct listbox_item *item, struct terminal *term)
 	if (cached->incomplete || !cached->valid) {
 		add_char_to_string(&msg, '\n');
 		add_to_string(&msg, _("Flags", term));
-		add_to_string(&msg, (const unsigned char *)": ");
+		add_to_string(&msg, (const char *)": ");
 		if (cached->incomplete) {
 			add_to_string(&msg, _("incomplete", term));
 			add_char_to_string(&msg, ' ');
@@ -123,7 +123,7 @@ get_cache_entry_info(struct listbox_item *item, struct terminal *term)
 		time_t expires = timeval_to_seconds(&cached->max_age);
 
 		add_format_to_string(&msg, "\n%s: ", _("Expires", term));
-		add_date_to_string(&msg, get_opt_str((const unsigned char *)"ui.date_format", NULL), &expires);
+		add_date_to_string(&msg, get_opt_str((const char *)"ui.date_format", NULL), &expires);
 	}
 #endif
 
@@ -189,7 +189,7 @@ delete_cache_entry_item(struct listbox_item *item, int last)
 
 static enum listbox_match
 match_cache_entry(struct listbox_item *item, struct terminal *term,
-		  unsigned char *text)
+		  char *text)
 {
 	struct cache_entry *cached = (struct cache_entry *)item->udata;
 
@@ -202,12 +202,12 @@ match_cache_entry(struct listbox_item *item, struct terminal *term,
 
 static enum listbox_match
 match_cache_entry_contents(struct listbox_item *item, struct terminal *term,
-		  unsigned char *text)
+		  char *text)
 {
 	struct cache_entry *cached = (struct cache_entry *)item->udata;
 	struct fragment *fragment = get_cache_fragment(cached);
 
-	if (fragment && strlcasestr((const char *)fragment->data, fragment->length, (const char *)text, -1))
+	if (fragment && strlcasestr(fragment->data, fragment->length, text, -1))
 		return LISTBOX_MATCH_OK;
 
 	return LISTBOX_MATCH_NO;
