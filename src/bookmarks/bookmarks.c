@@ -87,10 +87,10 @@ static enum evhook_status bookmark_change_hook(va_list ap, void *data);
 static enum evhook_status bookmark_write_hook(va_list ap, void *data);
 
 struct event_hook_info bookmark_hooks[] = {
-	{ (const unsigned char *)"bookmark-delete", 0, bookmark_change_hook, NULL },
-	{ (const unsigned char *)"bookmark-move",   0, bookmark_change_hook, NULL },
-	{ (const unsigned char *)"bookmark-update", 0, bookmark_change_hook, NULL },
-	{ (const unsigned char *)"periodic-saving", 0, bookmark_write_hook,  NULL },
+	{ (const char *)"bookmark-delete", 0, bookmark_change_hook, NULL },
+	{ (const char *)"bookmark-move",   0, bookmark_change_hook, NULL },
+	{ (const char *)"bookmark-update", 0, bookmark_change_hook, NULL },
+	{ (const char *)"periodic-saving", 0, bookmark_write_hook,  NULL },
 
 	NULL_EVENT_HOOK_INFO,
 };
@@ -111,8 +111,8 @@ static void bookmark_snapshot();
 static enum evhook_status
 bookmark_write_hook(va_list ap, void *data)
 {
-	if (get_opt_bool((const unsigned char *)"ui.sessions.snapshot", NULL)
-	    && !get_cmd_opt_bool((const unsigned char *)"anonymous"))
+	if (get_opt_bool((const char *)"ui.sessions.snapshot", NULL)
+	    && !get_cmd_opt_bool((const char *)"anonymous"))
 		bookmark_snapshot();
 
 	write_bookmarks();
@@ -138,7 +138,7 @@ static void
 init_bookmarks(struct module *module)
 {
 	static const struct change_hook_info bookmarks_change_hooks[] = {
-		{ (const unsigned char *)"bookmarks.folder_state", change_hook_folder_state },
+		{ (const char *)"bookmarks.folder_state", change_hook_folder_state },
 		{ NULL,			    NULL },
 	};
 
@@ -203,7 +203,7 @@ read_bookmarks(void)
 void
 write_bookmarks(void)
 {
-	if (get_cmd_opt_bool((const unsigned char *)"anonymous")) {
+	if (get_cmd_opt_bool((const char *)"anonymous")) {
 		bookmarks_unset_dirty();
 		return;
 	}
@@ -261,7 +261,7 @@ delete_bookmark(struct bookmark *bm)
 		if (item) del_hash_item(bookmark_cache, item);
 	}
 
-	set_event_id(delete_bookmark_event_id, (unsigned char *)"bookmark-delete");
+	set_event_id(delete_bookmark_event_id, (char *)"bookmark-delete");
 	trigger_event(delete_bookmark_event_id, bm);
 
 	del_from_list(bm);
@@ -276,7 +276,7 @@ delete_bookmark(struct bookmark *bm)
  * @param foldername
  *  The title of the folder, in UTF-8.  */
 static void
-delete_folder_by_name(const unsigned char *foldername)
+delete_folder_by_name(const char *foldername)
 {
 	struct bookmark *bookmark, *next;
 
@@ -305,7 +305,7 @@ delete_folder_by_name(const unsigned char *foldername)
  *
  * @return the new bookmark, or NULL on error.  */
 static struct bookmark *
-init_bookmark(struct bookmark *root, unsigned char *title, unsigned char *url)
+init_bookmark(struct bookmark *root, char *title, char *url)
 {
 	struct bookmark *bm;
 
@@ -379,8 +379,8 @@ add_bookmark_item_to_bookmarks(struct bookmark *bm, struct bookmark *root, int p
  *
  * @see add_bookmark_cp() */
 struct bookmark *
-add_bookmark(struct bookmark *root, int place, unsigned char *title,
-	     unsigned char *url)
+add_bookmark(struct bookmark *root, int place, char *title,
+	     char *url)
 {
 	enum listbox_item_type type;
 	struct bookmark *bm;
@@ -435,16 +435,16 @@ add_bookmark(struct bookmark *root, int place, unsigned char *title,
  * @see add_bookmark() */
 struct bookmark *
 add_bookmark_cp(struct bookmark *root, int place, int codepage,
-		unsigned char *title, unsigned char *url)
+		char *title, char *url)
 {
-	const int utf8_cp = get_cp_index((const unsigned char *)"UTF-8");
+	const int utf8_cp = get_cp_index((const char *)"UTF-8");
 	struct conv_table *table;
-	unsigned char *utf8_title = NULL;
-	unsigned char *utf8_url = NULL;
+	char *utf8_title = NULL;
+	char *utf8_url = NULL;
 	struct bookmark *bookmark = NULL;
 
 	if (!url)
-		url = (unsigned char *)"";
+		url = (char *)"";
 
 	table = get_translation_table(codepage, utf8_cp);
 	if (!table)
@@ -471,13 +471,13 @@ add_bookmark_cp(struct bookmark *root, int place, int codepage,
  * If any of the fields are NULL, the value is left unchanged. */
 int
 update_bookmark(struct bookmark *bm, int codepage,
-		unsigned char *title, unsigned char *url)
+		char *title, char *url)
 {
 	static int update_bookmark_event_id = EVENT_NONE;
-	const int utf8_cp = get_cp_index((const unsigned char *)"UTF-8");
+	const int utf8_cp = get_cp_index((const char *)"UTF-8");
 	struct conv_table *table;
-	unsigned char *title2 = NULL;
-	unsigned char *url2 = NULL;
+	char *title2 = NULL;
+	char *url2 = NULL;
 
 	table = get_translation_table(codepage, utf8_cp);
 	if (!table)
@@ -502,7 +502,7 @@ update_bookmark(struct bookmark *bm, int codepage,
 		sanitize_title(title2);
 	}
 
-	set_event_id(update_bookmark_event_id, (unsigned char *)"bookmark-update");
+	set_event_id(update_bookmark_event_id, (char *)"bookmark-update");
 	trigger_event(update_bookmark_event_id, bm, title2, url2);
 
 	if (title2) {
@@ -541,7 +541,7 @@ update_bookmark(struct bookmark *bm, int codepage,
  *
  * @return The bookmark, or NULL if not found.  */
 struct bookmark *
-get_bookmark_by_name(struct bookmark *folder, unsigned char *title)
+get_bookmark_by_name(struct bookmark *folder, char *title)
 {
 	struct bookmark *bookmark;
 	LIST_OF(struct bookmark) *lh;
@@ -556,7 +556,7 @@ get_bookmark_by_name(struct bookmark *folder, unsigned char *title)
 
 /* Search bookmark cache for item matching url. */
 struct bookmark *
-get_bookmark(unsigned char *url)
+get_bookmark(char *url)
 {
 	struct hash_item *item;
 
@@ -574,7 +574,7 @@ get_bookmark(unsigned char *url)
 static void
 bookmark_terminal(struct terminal *term, struct bookmark *folder)
 {
-	unsigned char title[MAX_STR_LEN], url[MAX_STR_LEN];
+	char title[MAX_STR_LEN], url[MAX_STR_LEN];
 	struct window *tab;
 	int term_cp = get_terminal_codepage(term);
 
@@ -600,7 +600,7 @@ bookmark_terminal(struct terminal *term, struct bookmark *folder)
  * @param foldername
  *   The name of the new bookmark folder, in UTF-8.  */
 void
-bookmark_terminal_tabs(struct terminal *term, unsigned char *foldername)
+bookmark_terminal_tabs(struct terminal *term, char *foldername)
 {
 	struct bookmark *folder = add_bookmark(NULL, 1, foldername, NULL);
 
@@ -615,7 +615,7 @@ bookmark_all_terminals(struct bookmark *folder)
 	unsigned int n = 0;
 	struct terminal *term;
 
-	if (get_cmd_opt_bool((const unsigned char *)"anonymous"))
+	if (get_cmd_opt_bool((const char *)"anonymous"))
 		return;
 
 	if (list_is_singleton(terminals)) {
@@ -624,7 +624,7 @@ bookmark_all_terminals(struct bookmark *folder)
 	}
 
 	foreach (term, terminals) {
-		unsigned char subfoldername[4];
+		char subfoldername[4];
 		struct bookmark *subfolder;
 
 		if (ulongcat(subfoldername, NULL, n, sizeof(subfoldername), 0)
@@ -643,21 +643,21 @@ bookmark_all_terminals(struct bookmark *folder)
 }
 
 
-unsigned char *
+char *
 get_auto_save_bookmark_foldername_utf8(void)
 {
-	unsigned char *foldername;
+	char *foldername;
 	int from_cp, to_cp;
 	struct conv_table *convert_table;
 
-	foldername = get_opt_str((const unsigned char *)"ui.sessions.auto_save_foldername", NULL);
+	foldername = get_opt_str((const char *)"ui.sessions.auto_save_foldername", NULL);
 	if (!*foldername) return NULL;
 
 	/* The charset of the string returned by get_opt_str()
 	 * seems to be documented nowhere.  Let's assume it is
 	 * the system charset.  */
-	from_cp = get_cp_index((const unsigned char *)"System");
-	to_cp = get_cp_index((const unsigned char *)"UTF-8");
+	from_cp = get_cp_index((const char *)"System");
+	to_cp = get_cp_index((const char *)"UTF-8");
 	convert_table = get_translation_table(from_cp, to_cp);
 	if (!convert_table) return NULL;
 
@@ -670,10 +670,10 @@ get_auto_save_bookmark_foldername_utf8(void)
 void
 bookmark_auto_save_tabs(struct terminal *term)
 {
-	unsigned char *foldername; /* UTF-8 */
+	char *foldername; /* UTF-8 */
 
-	if (get_cmd_opt_bool((const unsigned char *)"anonymous")
-	    || !get_opt_bool((const unsigned char *)"ui.sessions.auto_save", NULL))
+	if (get_cmd_opt_bool((const char *)"anonymous")
+	    || !get_opt_bool((const char *)"ui.sessions.auto_save", NULL))
 		return;
 
 	foldername = get_auto_save_bookmark_foldername_utf8();
@@ -695,17 +695,17 @@ bookmark_snapshot(void)
 
 	if (!init_string(&folderstring)) return;
 
-	add_to_string(&folderstring, (const unsigned char *)"Session snapshot");
+	add_to_string(&folderstring, (const char *)"Session snapshot");
 
 #ifdef HAVE_STRFTIME
-	add_to_string(&folderstring, (const unsigned char *)" - ");
-	add_date_to_string(&folderstring, get_opt_str((const unsigned char *)"ui.date_format", NULL),
+	add_to_string(&folderstring, (const char *)" - ");
+	add_date_to_string(&folderstring, get_opt_str((const char *)"ui.date_format", NULL),
 	                   NULL);
 #endif
 
 	/* folderstring must be in the system codepage because
 	 * add_date_to_string() uses strftime().  */
-	folder = add_bookmark_cp(NULL, 1, get_cp_index((const unsigned char *)"System"),
+	folder = add_bookmark_cp(NULL, 1, get_cp_index((const char *)"System"),
 				 folderstring.source, NULL);
 	done_string(&folderstring);
 	if (!folder) return;
@@ -726,7 +726,7 @@ bookmark_snapshot(void)
  * @param foldername
  *   The name of the bookmark folder, in UTF-8.  */
 void
-open_bookmark_folder(struct session *ses, unsigned char *foldername)
+open_bookmark_folder(struct session *ses, char *foldername)
 {
 	struct bookmark *bookmark;
 	struct bookmark *folder = NULL;

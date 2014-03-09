@@ -63,7 +63,7 @@ struct file_to_load {
 	unsigned int req_sent:1;
 	int pri;
 	struct cache_entry *cached;
-	unsigned char *target_frame;
+	char *target_frame;
 	struct uri *uri;
 	struct download download;
 };
@@ -94,7 +94,7 @@ remote_session_flags_T remote_session_flags;
 
 
 static struct file_to_load *request_additional_file(struct session *,
-						    unsigned char *,
+						    char *,
 						    struct uri *, int);
 
 static window_handler_T tabwin_func;
@@ -262,7 +262,7 @@ print_error_dialog(struct session *ses, struct connection_state state,
 		   struct uri *uri, int priority)
 {
 	struct string msg;
-	unsigned char *uristring;
+	char *uristring;
 
 	/* Don't show error dialogs for missing CSS stylesheets */
 	if (priority == PRI_CSS
@@ -281,7 +281,7 @@ print_error_dialog(struct session *ses, struct connection_state state,
 			(const char *)_("Unable to retrieve %s", ses->tab->term),
 			uristring);
 		mem_free(uristring);
-		add_to_string(&msg, (const unsigned char *)":\n\n");
+		add_to_string(&msg, (const char *)":\n\n");
 	}
 
 	add_to_string(&msg, get_state_message(state, ses->tab->term));
@@ -332,7 +332,7 @@ free_files(struct session *ses)
 static void request_frameset(struct session *, struct frameset_desc *, int);
 
 static void
-request_frame(struct session *ses, unsigned char *name,
+request_frame(struct session *ses, char *name,
 	      struct uri *uri, int depth)
 {
 	struct location *loc = cur_loc(ses);
@@ -406,7 +406,7 @@ load_css_imports(struct session *ses, struct document_view *doc_view)
 	if (!document) return;
 
 	foreach_uri (uri, index, &document->css_imports) {
-		request_additional_file(ses, (unsigned char *)"", uri, PRI_CSS);
+		request_additional_file(ses, (char *)"", uri, PRI_CSS);
 	}
 }
 #else
@@ -424,7 +424,7 @@ load_ecmascript_imports(struct session *ses, struct document_view *doc_view)
 	if (!document) return;
 
 	foreach_uri (uri, index, &document->ecmascript_imports) {
-		request_additional_file(ses, (unsigned char *)"", uri, /* XXX */ PRI_CSS);
+		request_additional_file(ses, (char *)"", uri, /* XXX */ PRI_CSS);
 	}
 }
 #else
@@ -600,9 +600,9 @@ doc_loading_callback(struct download *download, struct session *ses)
 
 		draw_formatted(ses, 1);
 
-		if (get_cmd_opt_bool((const unsigned char *)"auto-submit")) {
+		if (get_cmd_opt_bool((const char *)"auto-submit")) {
 			if (!list_empty(ses->doc_view->document->forms)) {
-				get_cmd_opt_bool((const unsigned char *)"auto-submit") = 0;
+				get_cmd_opt_bool((const char *)"auto-submit") = 0;
 				submit = 1;
 			}
 		}
@@ -630,7 +630,7 @@ doc_loading_callback(struct download *download, struct session *ses)
 
 #ifdef CONFIG_GLOBHIST
 	if (download->pri != PRI_CSS) {
-		unsigned char *title = ses->doc_view->document->title;
+		char *title = ses->doc_view->document->title;
 		struct uri *uri;
 
 		if (download->conn)
@@ -662,7 +662,7 @@ file_loading_callback(struct download *download, struct file_to_load *ftl)
 	if (ftl->cached && !ftl->cached->redirect_get && download->pri != PRI_CSS) {
 		struct session *ses = ftl->ses;
 		struct uri *loading_uri = ses->loading_uri;
-		unsigned char *target_frame = null_or_stracpy(ses->task.target.frame);
+		char *target_frame = null_or_stracpy(ses->task.target.frame);
 
 		ses->loading_uri = ftl->uri;
 		mem_free_set(&ses->task.target.frame, null_or_stracpy(ftl->target_frame));
@@ -675,7 +675,7 @@ file_loading_callback(struct download *download, struct file_to_load *ftl)
 }
 
 static struct file_to_load *
-request_additional_file(struct session *ses, unsigned char *name, struct uri *uri, int pri)
+request_additional_file(struct session *ses, char *name, struct uri *uri, int pri)
 {
 	struct file_to_load *ftl;
 
@@ -768,7 +768,7 @@ setup_first_session(struct session *ses, struct uri *uri)
 	/* [gettext_accelerator_context(setup_first_session)] */
 	struct terminal *term = ses->tab->term;
 
-	if (!*get_opt_str((const unsigned char *)"protocol.http.user_agent", NULL)) {
+	if (!*get_opt_str((const char *)"protocol.http.user_agent", NULL)) {
 		info_box(term, 0,
 			 N_("Warning"), ALIGN_CENTER,
 			 N_("You have an empty string in protocol.http.user_agent - "
@@ -783,11 +783,11 @@ setup_first_session(struct session *ses, struct uri *uri)
 			 "any inconvience caused."));
 	}
 
-	if (!get_opt_bool((const unsigned char *)"config.saving_style_w", NULL)) {
-		struct option *opt = get_opt_rec(config_options, (const unsigned char *)"config.saving_style_w");
+	if (!get_opt_bool((const char *)"config.saving_style_w", NULL)) {
+		struct option *opt = get_opt_rec(config_options, (const char *)"config.saving_style_w");
 		opt->value.number = 1;
 		option_changed(ses, opt);
-		if (get_opt_int((const unsigned char *)"config.saving_style", NULL) != 3) {
+		if (get_opt_int((const char *)"config.saving_style", NULL) != 3) {
 			info_box(term, 0,
 				 N_("Warning"), ALIGN_CENTER,
 				 N_("You have option config.saving_style set to "
@@ -827,8 +827,8 @@ setup_first_session(struct session *ses, struct uri *uri)
 		if (!uri) return 1;
 
 #ifdef CONFIG_BOOKMARKS
-	} else if (!uri && get_opt_bool((const unsigned char *)"ui.sessions.auto_restore", NULL)) {
-		unsigned char *folder; /* UTF-8 */
+	} else if (!uri && get_opt_bool((const char *)"ui.sessions.auto_restore", NULL)) {
+		char *folder; /* UTF-8 */
 
 		folder = get_auto_save_bookmark_foldername_utf8();
 		if (folder) {
@@ -867,7 +867,7 @@ setup_session(struct session *ses, struct uri *uri, struct session *base)
 		goto_uri(ses, uri);
 
 	} else if (!goto_url_home(ses)) {
-		if (get_opt_bool((const unsigned char *)"ui.startup_goto_dialog", NULL)) {
+		if (get_opt_bool((const char *)"ui.startup_goto_dialog", NULL)) {
 			dialog_goto_url_open(ses);
 		}
 	}
@@ -992,12 +992,12 @@ init_remote_session(struct session *ses, remote_session_flags_T *remote_ptr,
 		 * It might be best to keep URIs in plain ASCII and
 		 * then have a function that reversibly converts them
 		 * to IRIs for display in a given encoding.  */
-		uri_cp = get_cp_index((const unsigned char *)"System");
+		uri_cp = get_cp_index((const char *)"System");
 		add_bookmark_cp(NULL, 1, uri_cp, struri(uri), struri(uri));
 #endif
 
 	} else if (remote & SES_REMOTE_INFO_BOX) {
-		unsigned char *text;
+		char *text;
 
 		if (!uri) return;
 
@@ -1052,7 +1052,7 @@ decode_session_info(struct terminal *term, struct terminal_info *info)
 	int len = info->length;
 	struct session *base_session = NULL;
 	remote_session_flags_T remote = 0;
-	unsigned char *str;
+	char *str;
 
 	switch (info->magic) {
 	case INTERLINK_NORMAL_MAGIC:
@@ -1118,10 +1118,10 @@ decode_session_info(struct terminal *term, struct terminal_info *info)
 
 	/* Extract multiple (possible) NUL terminated URIs */
 	while (len > 0) {
-		unsigned char *end = (unsigned char *)memchr(str, 0, len);
+		char *end = (char *)memchr(str, 0, len);
 		int urilength = end ? end - str : len;
 		struct uri *uri = NULL;
-		unsigned char *uristring = memacpy(str, urilength);
+		char *uristring = memacpy(str, urilength);
 
 		if (uristring) {
 			uri = get_hooked_uri(uristring, base_session, term->cwd);
@@ -1142,7 +1142,7 @@ decode_session_info(struct terminal *term, struct terminal_info *info)
 			struct session *ses;
 
 			if (!uri)
-				uri = get_uri((unsigned char *)"about:blank", 0);
+				uri = get_uri((char *)"about:blank", 0);
 
 			ses = init_session(base_session, term, uri, backgrounded);
 			if (!ses) {
@@ -1231,7 +1231,7 @@ reload(struct session *ses, int cache_mode)
 }
 
 void
-reload_frame(struct session *ses, unsigned char *name,
+reload_frame(struct session *ses, char *name,
              int cache_mode)
 {
 	abort_loading(ses, 0);
@@ -1278,7 +1278,7 @@ reload_frame(struct session *ses, unsigned char *name,
 
 
 struct frame *
-ses_find_frame(struct session *ses, unsigned char *name)
+ses_find_frame(struct session *ses, char *name)
 {
 	struct location *loc = cur_loc(ses);
 	struct frame *frame;
@@ -1341,8 +1341,8 @@ tabwin_func(struct window *tab, struct term_event *ev)
  * A maximum of @a str_size bytes (including null) will be written.
  * @relates session
  */
-unsigned char *
-get_current_url(struct session *ses, unsigned char *str, size_t str_size)
+char *
+get_current_url(struct session *ses, char *str, size_t str_size)
 {
 	struct uri *uri;
 	int length;
@@ -1367,8 +1367,8 @@ get_current_url(struct session *ses, unsigned char *str, size_t str_size)
  * @a str.  A maximum of @a str_size bytes (including null) will be written.
  * @relates session
  */
-unsigned char *
-get_current_title(struct session *ses, unsigned char *str, size_t str_size)
+char *
+get_current_title(struct session *ses, char *str, size_t str_size)
 {
 	struct document_view *doc_view = current_frame(ses);
 
@@ -1387,8 +1387,8 @@ get_current_title(struct session *ses, unsigned char *str, size_t str_size)
  * A maximum of @a str_size bytes (including null) will be written.
  * @relates session
  */
-unsigned char *
-get_current_link_url(struct session *ses, unsigned char *str, size_t str_size)
+char *
+get_current_link_url(struct session *ses, char *str, size_t str_size)
 {
 	struct link *link = get_current_session_link(ses);
 
@@ -1403,11 +1403,11 @@ get_current_link_url(struct session *ses, unsigned char *str, size_t str_size)
  * (the text between @<A> and @</A>), @a str is a preallocated string,
  * @a str_size includes the null char.
  * @relates session */
-unsigned char *
-get_current_link_name(struct session *ses, unsigned char *str, size_t str_size)
+char *
+get_current_link_name(struct session *ses, char *str, size_t str_size)
 {
 	struct link *link = get_current_session_link(ses);
-	unsigned char *where, *name = NULL;
+	char *where, *name = NULL;
 
 	assert(str && str_size > 0);
 

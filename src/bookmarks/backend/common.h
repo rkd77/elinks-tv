@@ -8,7 +8,7 @@
 
 struct bookmarks_backend {
 	/* Order matters here. --Zas. */
-	unsigned char *(*filename)(int);
+	char *(*filename)(int);
 	void (*read)(FILE *);
 	void (*write)(struct secure_save_info *, LIST_OF(struct bookmark) *);
 };

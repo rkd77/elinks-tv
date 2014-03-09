@@ -61,11 +61,11 @@
 	((typelen) >= sizeof(";base64") - 1 \
 	 && !memcmp(";base64", (end) - sizeof(";base64") + 1, sizeof(";base64") - 1))
 
-static unsigned char *
+static char *
 init_data_protocol_header(struct cache_entry *cached,
-			  unsigned char *type, int typelen)
+			  char *type, int typelen)
 {
-	unsigned char *head;
+	char *head;
 
 	assert(typelen);
 
@@ -73,8 +73,8 @@ init_data_protocol_header(struct cache_entry *cached,
 	if (!type) return NULL;
 
 	/* Set fake content type */
-	head = straconcat((const unsigned char *)"\r\nContent-Type: ", type, "\r\n",
-			  (unsigned char *) NULL);
+	head = straconcat((const char *)"\r\nContent-Type: ", type, "\r\n",
+			  (char *) NULL);
 	mem_free(type);
 	if (!head) return NULL;
 
@@ -82,12 +82,12 @@ init_data_protocol_header(struct cache_entry *cached,
 	return head;
 }
 
-static unsigned char *
+static char *
 parse_data_protocol_header(struct connection *conn, int *base64)
 {
 	struct uri *uri = conn->uri;
-	unsigned char *end = (unsigned char *)memchr(uri->data, ',', uri->datalen);
-	unsigned char *type = (unsigned char *)DEFAULT_DATA_MEDIATYPE;
+	char *end = (char *)memchr(uri->data, ',', uri->datalen);
+	char *type = (char *)DEFAULT_DATA_MEDIATYPE;
 	int typelen = sizeof(DEFAULT_DATA_MEDIATYPE) - 1;
 
 	if (end) {
@@ -116,7 +116,7 @@ data_protocol_handler(struct connection *conn)
 {
 	struct uri *uri = conn->uri;
 	struct cache_entry *cached = get_cache_entry(uri);
-	unsigned char *data_start, *data;
+	char *data_start, *data;
 	int base64 = 0;
 
 	if (!cached) {
@@ -141,7 +141,7 @@ data_protocol_handler(struct connection *conn)
 	}
 
 	if (base64) {
-		unsigned char *decoded = base64_encode(data);
+		char *decoded = base64_encode(data);
 
 		if (!decoded) {
 			abort_connection(conn, connection_state(S_OUT_OF_MEM));
