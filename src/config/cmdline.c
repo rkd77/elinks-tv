@@ -41,10 +41,10 @@
 
 
 /* Hack to handle URL extraction for -remote commands */
-static unsigned char *remote_url;
+static char *remote_url;
 
 static enum retval
-parse_options_(int argc, unsigned char *argv[], struct option *opt,
+parse_options_(int argc, char *argv[], struct option *opt,
                LIST_OF(struct string_list_item) *url_list)
 {
 	while (argc) {
@@ -52,9 +52,9 @@ parse_options_(int argc, unsigned char *argv[], struct option *opt,
 
 		if (argv[-1][0] == '-' && argv[-1][1]) {
 			struct option *option;
-			unsigned char *argname = &argv[-1][1];
-			unsigned char *oname = stracpy(argname);
-			unsigned char *err;
+			char *argname = &argv[-1][1];
+			char *oname = stracpy(argname);
+			char *err;
 
 			if (!oname) continue;
 
@@ -64,14 +64,14 @@ parse_options_(int argc, unsigned char *argv[], struct option *opt,
 			option = get_opt_rec(opt, argname);
 			if (!option) option = get_opt_rec(opt, oname);
 			if (!option) {
-				unsigned char *pos;
+				char *pos;
 
 				oname++; /* the '-' */
 				/* Substitute '-' by '_'. This helps
 				 * compatibility with that very wicked browser
 				 * called 'lynx'. */
-				for (pos = (unsigned char *)strchr((char *)oname, '_'); pos;
-				     pos = (unsigned char *)strchr((char *)pos, '_'))
+				for (pos = (char *)strchr((char *)oname, '_'); pos;
+				     pos = (char *)strchr((char *)pos, '_'))
 					*pos = '-';
 				option = get_opt_rec(opt, oname);
 				oname--;
@@ -116,7 +116,7 @@ unknown_option:
 }
 
 enum retval
-parse_options(int argc, unsigned char *argv[],
+parse_options(int argc, char *argv[],
 	      LIST_OF(struct string_list_item) *url_list)
 {
 	return parse_options_(argc, argv, cmdline_options, url_list);
@@ -127,35 +127,35 @@ parse_options(int argc, unsigned char *argv[],
  Options handlers
 **********************************************************************/
 
-static unsigned char *
-eval_cmd(struct option *o, unsigned char ***argv, int *argc)
+static char *
+eval_cmd(struct option *o, char ***argv, int *argc)
 {
-	if (*argc < 1) return (unsigned char *)gettext("Parameter expected");
+	if (*argc < 1) return (char *)gettext("Parameter expected");
 
 	(*argv)++; (*argc)--;	/* Consume next argument */
 
-	parse_config_file(config_options, (unsigned char *)"-eval", *(*argv - 1), NULL, 0);
+	parse_config_file(config_options, (char *)"-eval", *(*argv - 1), NULL, 0);
 
 	fflush(stdout);
 
 	return NULL;
 }
 
-static unsigned char *
-forcehtml_cmd(struct option *o, unsigned char ***argv, int *argc)
+static char *
+forcehtml_cmd(struct option *o, char ***argv, int *argc)
 {
-	safe_strncpy(get_opt_str((const unsigned char *)"mime.default_type", NULL), (const unsigned char *)"text/html", MAX_STR_LEN);
+	safe_strncpy(get_opt_str((const char *)"mime.default_type", NULL), (const char *)"text/html", MAX_STR_LEN);
 	return NULL;
 }
 
-static unsigned char *
-lookup_cmd(struct option *o, unsigned char ***argv, int *argc)
+static char *
+lookup_cmd(struct option *o, char ***argv, int *argc)
 {
 	struct sockaddr_storage *addrs = NULL;
 	int addrno, i;
 
-	if (!*argc) return (unsigned char *)gettext("Parameter expected");
-	if (*argc > 1) return (unsigned char *)gettext("Too many parameters");
+	if (!*argc) return (char *)gettext("Parameter expected");
+	if (*argc > 1) return (char *)gettext("Too many parameters");
 
 	(*argv)++; (*argc)--;
 	if (do_real_lookup(*(*argv - 1), &addrs, &addrno, 0) == DNS_ERROR) {
@@ -164,7 +164,7 @@ lookup_cmd(struct option *o, unsigned char ***argv, int *argc)
 #else
 		usrerror(gettext("Host not found"));
 #endif
-		return (unsigned char *)"";
+		return (char *)"";
 	}
 
 	for (i = 0; i < addrno; i++) {
@@ -181,7 +181,7 @@ lookup_cmd(struct option *o, unsigned char ***argv, int *argc)
 			printf("%s\n", p);
 #else
 		struct sockaddr_in addr = *((struct sockaddr_in *) &(addrs)[i]);
-		unsigned char *p = (unsigned char *) &addr.sin_addr.s_addr;
+		char *p = (char *) &addr.sin_addr.s_addr;
 
 		printf("%d.%d.%d.%d\n", (int) p[0], (int) p[1],
 				        (int) p[2], (int) p[3]);
@@ -192,7 +192,7 @@ lookup_cmd(struct option *o, unsigned char ***argv, int *argc)
 
 	fflush(stdout);
 
-	return (unsigned char *)"";
+	return (char *)"";
 }
 
 #define skipback_whitespace(start, S) \
@@ -208,27 +208,27 @@ enum remote_enum {
 };
 
 struct remote_method {
-	const unsigned char *name;
+	const char *name;
 	enum remote_enum type;
 };
 
-static unsigned char *
-remote_cmd(struct option *o, unsigned char ***argv, int *argc)
+static char *
+remote_cmd(struct option *o, char ***argv, int *argc)
 {
 	struct remote_method remote_methods[] = {
-		{ (const unsigned char *)"openURL",	  REMOTE_METHOD_OPENURL },
-		{ (const unsigned char *)"ping",	  REMOTE_METHOD_PING },
-		{ (const unsigned char *)"addBookmark",  REMOTE_METHOD_ADDBOOKMARK },
-		{ (const unsigned char *)"infoBox",	  REMOTE_METHOD_INFOBOX },
-		{ (const unsigned char *)"xfeDoCommand", REMOTE_METHOD_XFEDOCOMMAND },
+		{ (const char *)"openURL",	  REMOTE_METHOD_OPENURL },
+		{ (const char *)"ping",	  REMOTE_METHOD_PING },
+		{ (const char *)"addBookmark",  REMOTE_METHOD_ADDBOOKMARK },
+		{ (const char *)"infoBox",	  REMOTE_METHOD_INFOBOX },
+		{ (const char *)"xfeDoCommand", REMOTE_METHOD_XFEDOCOMMAND },
 		{ NULL,		  REMOTE_METHOD_NOT_SUPPORTED },
 	};
-	unsigned char *command, *arg, *argend, *argstring;
+	char *command, *arg, *argend, *argstring;
 	int method, len = 0;
-	unsigned char *remote_argv[10];
+	char *remote_argv[10];
 	int remote_argc;
 
-	if (*argc < 1) return (unsigned char *)gettext("Parameter expected");
+	if (*argc < 1) return (char *)gettext("Parameter expected");
 
 	command = *(*argv);
 
@@ -257,15 +257,15 @@ remote_cmd(struct option *o, unsigned char ***argv, int *argc)
 
 	arg = argstring = memacpy(arg, argend - arg);
 	if (!argstring)
-		return (unsigned char *)gettext("Out of memory");
+		return (char *)gettext("Out of memory");
 
 	remote_argc = 0;
 	do {
-		unsigned char *start, *end;
+		char *start, *end;
 
 		if (remote_argc > sizeof_array(remote_argv)) {
 			mem_free(argstring);
-			return (unsigned char *)gettext("Too many arguments");
+			return (char *)gettext("Too many arguments");
 		}
 
 		/* Skip parenthesis, comma, and surrounding whitespace. */
@@ -274,7 +274,7 @@ remote_cmd(struct option *o, unsigned char ***argv, int *argc)
 
 		if (*start == '"') {
 			end = ++start;
-			while ((end = (unsigned char *)strchr((char *)end, '"'))) {
+			while ((end = (char *)strchr((char *)end, '"'))) {
 				/* Treat "" inside quoted arg as ". */
 				if (end[1] != '"')
 					break;
@@ -283,12 +283,12 @@ remote_cmd(struct option *o, unsigned char ***argv, int *argc)
 			}
 
 			if (!end)
-				return (unsigned char *)gettext("Mismatched ending argument quoting");
+				return (char *)gettext("Mismatched ending argument quoting");
 
 			arg = end + 1;
 			skip_space(arg);
 			if (*arg && *arg != ',')
-				return (unsigned char *)gettext("Garbage after quoted argument");
+				return (char *)gettext("Garbage after quoted argument");
 
 			remote_argv[remote_argc++] = start;
 			*end = 0;
@@ -302,7 +302,7 @@ remote_cmd(struct option *o, unsigned char ***argv, int *argc)
 			*start = 0;
 
 		} else {
-			end = (unsigned char *)strchr((char *)start, ',');
+			end = (char *)strchr((char *)start, ',');
 			if (!end) {
 				end = start + strlen((const char *)start);
 				arg = end;
@@ -321,7 +321,7 @@ remote_cmd(struct option *o, unsigned char ***argv, int *argc)
 	} while (*arg);
 
 	for (method = 0; remote_methods[method].name; method++) {
-		const unsigned char *name = remote_methods[method].name;
+		const char *name = remote_methods[method].name;
 
 		if (!c_strlcasecmp(command, len, name, -1))
 			break;
@@ -336,7 +336,7 @@ remote_cmd(struct option *o, unsigned char ***argv, int *argc)
 		}
 
 		if (remote_argc == 2) {
-			unsigned char *where = remote_argv[1];
+			char *where = remote_argv[1];
 
 			if (strstr((char *)where, "new-window")) {
 				remote_session_flags |= SES_REMOTE_NEW_WINDOW;
@@ -382,7 +382,7 @@ remote_cmd(struct option *o, unsigned char ***argv, int *argc)
 			break;
 		remote_url = stracpy(remote_argv[0]);
 		if (remote_url)
-			insert_in_string(&remote_url, 0, (const unsigned char *)"about:", 6);
+			insert_in_string(&remote_url, 0, (const char *)"about:", 6);
 		remote_session_flags = SES_REMOTE_INFO_BOX;
 		break;
 
@@ -395,19 +395,19 @@ remote_cmd(struct option *o, unsigned char ***argv, int *argc)
 	/* If no flags was applied it can only mean we are dealing with
 	 * unknown method. */
 	if (!remote_session_flags)
-		return (unsigned char *)gettext("Remote method not supported");
+		return (char *)gettext("Remote method not supported");
 
 	(*argv)++; (*argc)--;	/* Consume next argument */
 
 	return NULL;
 }
 
-static unsigned char *
-version_cmd(struct option *o, unsigned char ***argv, int *argc)
+static char *
+version_cmd(struct option *o, char ***argv, int *argc)
 {
 	printf("%s\n", full_static_version);
 	fflush(stdout);
-	return (unsigned char *)"";
+	return (char *)"";
 }
 
 
@@ -421,12 +421,12 @@ version_cmd(struct option *o, unsigned char ***argv, int *argc)
  *   options (like: -?, -h and -help) on one line when printing
  *   short help. */
 
-#define gettext_nonempty(x) (*(x) ? (unsigned char *)gettext(x) : (unsigned char *)(x))
+#define gettext_nonempty(x) (*(x) ? (char *)gettext(x) : (char *)(x))
 
-static void print_option_desc(const unsigned char *desc)
+static void print_option_desc(const char *desc)
 {
 	struct string wrapped;
-	static const struct string indent = INIT_STRING((unsigned char *)"            ", 12);
+	static const struct string indent = INIT_STRING((char *)"            ", 12);
 
 	if (init_string(&wrapped)
 	    && wrap_option_desc(&wrapped, desc, &indent, 79 - indent.length)) {
@@ -445,25 +445,25 @@ static void print_option_desc(const unsigned char *desc)
 	done_string(&wrapped);
 }
 
-static void print_full_help_outer(struct option *tree, const unsigned char *path);
+static void print_full_help_outer(struct option *tree, const char *path);
 
 static void
-print_full_help_inner(struct option *tree, const unsigned char *path,
+print_full_help_inner(struct option *tree, const char *path,
 		      int trees)
 {
 	struct option *option;
-	unsigned char saved[MAX_STR_LEN];
-	unsigned char *savedpos = saved;
+	char saved[MAX_STR_LEN];
+	char *savedpos = saved;
 
 	*savedpos = 0;
 
 	foreach (option, *tree->value.tree) {
 		int type = option->type;
-		unsigned char *help;
-		unsigned char *capt = option->capt;
-		unsigned char *desc = (option->desc && *option->desc)
-				      ? (unsigned char *) gettext((const char *)option->desc)
-				      : (unsigned char *) "N/A";
+		char *help;
+		char *capt = option->capt;
+		char *desc = (option->desc && *option->desc)
+				      ? (char *) gettext((const char *)option->desc)
+				      : (char *) "N/A";
 
 		if (trees != (type == OPT_TREE))
 			continue;
@@ -475,14 +475,14 @@ print_full_help_inner(struct option *tree, const unsigned char *path,
 			continue;
 
 		if (!capt && !c_strncasecmp((const char *)option->name, "_template_", 10))
-			capt = (unsigned char *) N_("Template option folder");
+			capt = (char *) N_("Template option folder");
 
 		if (!capt) {
 			int len = strlen((const char *)option->name);
 			int max = MAX_STR_LEN - (savedpos - saved);
 
 			safe_strncpy(savedpos, option->name, max);
-			safe_strncpy(savedpos + len, (const unsigned char *)", -", max - len);
+			safe_strncpy(savedpos + len, (const char *)", -", max - len);
 			savedpos += len + 3;
 			continue;
 		}
@@ -578,7 +578,7 @@ print_full_help_inner(struct option *tree, const unsigned char *path,
 }
 
 static void
-print_full_help_outer(struct option *tree, const unsigned char *path)
+print_full_help_outer(struct option *tree, const char *path)
 {
 	print_full_help_inner(tree, path, 0);
 	print_full_help_inner(tree, path, 1);
@@ -598,10 +598,10 @@ print_short_help(void)
 	align[sizeof(align) - 1] = 0;
 
 	foreach (option, *cmdline_options->value.tree) {
-		unsigned char *capt;
-		unsigned char *help;
-		unsigned char *info = saved ? saved->source
-					    : (unsigned char *) "";
+		char *capt;
+		char *help;
+		char *info = saved ? saved->source
+					    : (char *) "";
 		int len = strlen((const char *)option->name);
 
 		/* Avoid printing compatibility options */
@@ -619,7 +619,7 @@ print_short_help(void)
 			}
 
 			add_to_string(saved, option->name);
-			add_to_string(saved, (const unsigned char *)", -");
+			add_to_string(saved, (const char *)", -");
 			continue;
 		}
 
@@ -645,10 +645,10 @@ print_short_help(void)
 
 #undef gettext_nonempty
 
-static unsigned char *
-printhelp_cmd(struct option *option, unsigned char ***argv, int *argc)
+static char *
+printhelp_cmd(struct option *option, char ***argv, int *argc)
 {
-	unsigned char *lineend = (unsigned char *)strchr((char *)full_static_version, '\n');
+	char *lineend = (char *)strchr((char *)full_static_version, '\n');
 
 	if (lineend) *lineend = '\0';
 
@@ -656,33 +656,33 @@ printhelp_cmd(struct option *option, unsigned char ***argv, int *argc)
 
 	if (!strcmp((const char *)option->name, "config-help")) {
 		printf("%s:\n", gettext("Configuration options"));
-		print_full_help_outer(config_options, (const unsigned char *)"");
+		print_full_help_outer(config_options, (const char *)"");
 	} else {
 		printf("%s\n\n%s:\n",
 		       gettext("Usage: elinks [OPTION]... [URL]..."),
 		       gettext("Options"));
 		if (!strcmp((const char *)option->name, "long-help")) {
-			print_full_help_outer(cmdline_options, (const unsigned char *)"-");
+			print_full_help_outer(cmdline_options, (const char *)"-");
 		} else {
 			print_short_help();
 		}
 	}
 
 	fflush(stdout);
-	return (unsigned char *)"";
+	return (char *)"";
 }
 
-static unsigned char *
-redir_cmd(struct option *option, unsigned char ***argv, int *argc)
+static char *
+redir_cmd(struct option *option, char ***argv, int *argc)
 {
-	unsigned char *target;
+	char *target;
 
 	/* I can't get any dirtier. --pasky */
 
 	if (!strcmp((const char *)option->name, "confdir")) {
-		target = (unsigned char *)"config-dir";
+		target = (char *)"config-dir";
 	} else if (!strcmp((const char *)option->name, "conffile")) {
-		target = (unsigned char *)"config-file";
+		target = (char *)"config-file";
 	} else if (!strcmp((const char *)option->name, "stdin")) {
 		static int complained;
 
@@ -702,7 +702,7 @@ redir_cmd(struct option *option, unsigned char ***argv, int *argc)
 		return NULL;
 
 	} else {
-		return (unsigned char *)gettext("Internal consistency error");
+		return (char *)gettext("Internal consistency error");
 	}
 
 	option = get_opt_rec(cmdline_options, target);
@@ -711,22 +711,22 @@ redir_cmd(struct option *option, unsigned char ***argv, int *argc)
 	return NULL;
 }
 
-static unsigned char *
-printconfigdump_cmd(struct option *option, unsigned char ***argv, int *argc)
+static char *
+printconfigdump_cmd(struct option *option, char ***argv, int *argc)
 {
-	unsigned char *config_string;
+	char *config_string;
 
 	/* Print all. */
-	get_opt_int((const unsigned char *)"config.saving_style", NULL) = 2;
+	get_opt_int((const char *)"config.saving_style", NULL) = 2;
 
-	config_string = create_config_string((unsigned char *)"", (unsigned char *)"");
+	config_string = create_config_string((char *)"", (char *)"");
 	if (config_string) {
 		printf("%s", config_string);
 		mem_free(config_string);
 	}
 
 	fflush(stdout);
-	return (unsigned char *)"";
+	return (char *)"";
 }
 
 

@@ -1457,7 +1457,7 @@ static void init_next(void)
 		update_options_visibility();
 		/* Parse commandline options again, in order to override any
 		 * config file options. */
-		parse_options(ac - 1, (unsigned char **)(av + 1), NULL);
+		parse_options(ac - 1, (av + 1), NULL);
 		/* ... and re-check stdio, in order to override any command
 		 * line options! >;) */
 

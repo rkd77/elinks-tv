@@ -22,13 +22,13 @@ INIT_INPUT_HISTORY(goto_url_history);
 static void
 load_url_history(void)
 {
-	load_input_history(&goto_url_history, (unsigned char *)GOTO_HISTORY_FILENAME);
+	load_input_history(&goto_url_history, (char *)GOTO_HISTORY_FILENAME);
 }
 
 static void
 save_url_history(void)
 {
-	save_input_history(&goto_url_history, (unsigned char *)GOTO_HISTORY_FILENAME);
+	save_input_history(&goto_url_history, (char *)GOTO_HISTORY_FILENAME);
 }
 
 static enum evhook_status
@@ -39,7 +39,7 @@ goto_url_history_write_hook(va_list ap, void *data)
 }
 
 static struct event_hook_info goto_url_history_hooks[] = {
-	{ (const unsigned char *)"periodic-saving", 0, goto_url_history_write_hook, NULL },
+	{ (const char *)"periodic-saving", 0, goto_url_history_write_hook, NULL },
 
 	NULL_EVENT_HOOK_INFO,
 };

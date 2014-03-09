@@ -52,7 +52,7 @@ colors_list_next(void)
 
 	if (!internal_pointer->name) return NULL;
 
-	kv.key = (unsigned char *) internal_pointer->name;
+	kv.key = (char *) internal_pointer->name;
 	kv.data = (void *) internal_pointer; /* cast away const */
 
 	internal_pointer++;
@@ -61,7 +61,7 @@ colors_list_next(void)
 }
 
 static struct fastfind_index ff_colors_index
-	= INIT_FASTFIND_INDEX((unsigned char *)"colors_lookup", colors_list_reset, colors_list_next);
+	= INIT_FASTFIND_INDEX((char *)"colors_lookup", colors_list_reset, colors_list_next);
 
 #endif /* USE_FASTFIND */
 
@@ -82,11 +82,11 @@ free_colors_lookup(void)
 }
 
 int
-decode_color(const unsigned char *str, int slen, color_T *color)
+decode_color(const char *str, int slen, color_T *color)
 {
 	if (*str == '#' && (slen == 7 || slen == 4)) {
 		unsigned char buffer[7];
-		unsigned char *end;
+		char *end;
 		color_T string_color;
 
 		str++;
@@ -136,14 +136,14 @@ decode_hex_color:
 	return -1; /* Not found */
 }
 
-const unsigned char *
+const char *
 get_color_string(color_T color, unsigned char hexcolor[8])
 {
 	const struct color_spec *cs;
 
 	for (cs = color_specs; cs->name; cs++)
 		if (cs->rgb == color)
-			return (const unsigned char *)cs->name;
+			return (const char *)cs->name;
 
 	color_to_string(color, hexcolor);
 	return hexcolor;
