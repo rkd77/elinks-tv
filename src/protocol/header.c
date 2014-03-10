@@ -140,16 +140,16 @@
  *
  * The terms message-header, field-name, start-line, and field-content
  * are defined in RFC 2616 sections 4.1 and 4.2.  */
-char *
-parse_header(char *head, const char *item, char **ptr)
+unsigned char *
+parse_header(unsigned char *head, const unsigned char *item, unsigned char **ptr)
 {
-	char *pos = head;
+	unsigned char *pos = head;
 
 	if (!pos) return NULL;
 
 	while (*pos) {
-		char *end, *value;
-		const char *itempos;
+		unsigned char *end, *value;
+		const unsigned char *itempos;
 		int len;
 
 		/* Go for a newline. */
@@ -232,9 +232,9 @@ parse_header(char *head, const char *item, char **ptr)
  * and cannot fail with HEADER_PARAM_OUT_OF_MEMORY.  Some callers may
  * rely on this. */
 enum parse_header_param
-parse_header_param(char *str, char *name, char **ret)
+parse_header_param(unsigned char *str, unsigned char *name, unsigned char **ret)
 {
-	char *p = str;
+	unsigned char *p = str;
 	int namelen, plen = 0;
 
 	if (ret) *ret = NULL;	/* default in case of early return */
@@ -247,7 +247,7 @@ parse_header_param(char *str, char *name, char **ret)
 
 	namelen = strlen((const char *)name);
 	do {
-		p = (char *)strchr((char *)p, ';');
+		p = (unsigned char *)strchr((char *)p, ';');
 		if (!p) return HEADER_PARAM_NOT_FOUND;
 
 		while (*p && (*p == ';' || *p <= ' ')) p++;
@@ -259,7 +259,7 @@ parse_header_param(char *str, char *name, char **ret)
 	while (*p && (*p <= ' ' || *p == '=')) p++;
 	if (!*p) {
 		if (ret) {
-			*ret = stracpy((const char *)"");
+			*ret = stracpy((const unsigned char *)"");
 			if (!*ret)
 				return HEADER_PARAM_OUT_OF_MEMORY;
 		}
@@ -295,10 +295,10 @@ parse_header_param(char *str, char *name, char **ret)
 
 /* Parse string param="value", return value as new string or NULL if any
  * error. */
-char *
-get_header_param(char *e, char *name)
+unsigned char *
+get_header_param(unsigned char *e, unsigned char *name)
 {
-	char *n, *start;
+	unsigned char *n, *start;
 
 again:
 	while (*e && c_toupper(*e++) != c_toupper(*name));
@@ -330,7 +330,7 @@ again:
 	while (start < e && *(e - 1) == ' ') e--;
 	if (start == e) return NULL;
 
-	n = (char *)mem_alloc(e - start + 1);
+	n = (unsigned char *)mem_alloc(e - start + 1);
 	if (n) {
 		int i = 0;
 

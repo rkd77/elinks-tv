@@ -56,7 +56,7 @@ static INIT_LIST_OF(struct cookie, cookies);
 struct c_domain {
 	LIST_HEAD(struct c_domain);
 
-	char domain[1]; /* Must be at end of struct. */
+	unsigned char domain[1]; /* Must be at end of struct. */
 };
 
 /* List of domains for which there may be cookies.  This supposedly
@@ -136,7 +136,7 @@ static union option_info cookies_options[] = {
 #define get_cookies_resave()		get_opt_cookies(COOKIES_RESAVE).number
 
 struct cookie_server *
-get_cookie_server(char *host, int hostlen)
+get_cookie_server(unsigned char *host, int hostlen)
 {
 	struct cookie_server *sort_spot = NULL;
 	struct cookie_server *cs;
@@ -225,7 +225,7 @@ delete_cookie(struct cookie *c)
 /* Check whether cookie's domain matches server.
  * It returns 1 if ok, 0 else. */
 static int
-is_domain_security_ok(char *domain, char *server, int server_len)
+is_domain_security_ok(unsigned char *domain, unsigned char *server, int server_len)
 {
 	int i;
 	int domain_len;
@@ -300,7 +300,7 @@ is_domain_security_ok(char *domain, char *server, int server_len)
  * although you may also want to set the remaining members and check
  * @get_cookies_accept_policy and @is_domain_security_ok.
  *
- * The char * arguments must be allocated with @mem_alloc or
+ * The unsigned char * arguments must be allocated with @mem_alloc or
  * equivalent, because @done_cookie will @mem_free them.  Likewise,
  * the caller must already have locked @server.  If @init_cookie
  * fails, then it frees the strings itself, and unlocks @server.
@@ -309,8 +309,8 @@ is_domain_security_ok(char *domain, char *server, int server_len)
  * consider that a bug.  This means callers can use e.g. @stracpy
  * and let @init_cookie check whether the call ran out of memory.  */
 struct cookie *
-init_cookie(char *name, char *value,
-	    char *path, char *domain,
+init_cookie(unsigned char *name, unsigned char *value,
+	    unsigned char *path, unsigned char *domain,
 	    struct cookie_server *server)
 {
 	struct cookie *cookie = (struct cookie *)mem_calloc(1, sizeof(*cookie));
@@ -336,9 +336,9 @@ init_cookie(char *name, char *value,
 }
 
 void
-set_cookie(struct uri *uri, char *str)
+set_cookie(struct uri *uri, unsigned char *str)
 {
-	char *path, *domain;
+	unsigned char *path, *domain;
 	struct cookie *cookie;
 	struct cookie_str cstr;
 	int max_age;
@@ -352,16 +352,16 @@ set_cookie(struct uri *uri, char *str)
 
 	if (!parse_cookie_str(&cstr, str)) return;
 
-	switch (parse_header_param(str, (char *)"path", &path)) {
-		char *path_end;
+	switch (parse_header_param(str, (unsigned char *)"path", &path)) {
+		unsigned char *path_end;
 
 	case HEADER_PARAM_FOUND:
 		if (!path[0]
 		    || path[strlen((const char *)path) - 1] != '/')
-			add_to_strn(&path, (const char *)"/");
+			add_to_strn(&path, (const unsigned char *)"/");
 
 		if (path[0] != '/') {
-			add_to_strn(&path, (const char *)"x");
+			add_to_strn(&path, (const unsigned char *)"x");
 			memmove(path + 1, path, strlen((const char *)path) - 1);
 			path[0] = '/';
 		}
@@ -372,7 +372,7 @@ set_cookie(struct uri *uri, char *str)
 		if (!path)
 			return;
 
-		path_end = (char *)strrchr((char *)path, '/');
+		path_end = (unsigned char *)strrchr((char *)path, '/');
 		if (path_end)
 			path_end[1] = '\0';
 		break;
@@ -381,7 +381,7 @@ set_cookie(struct uri *uri, char *str)
 		return;
 	}
 
-	if (parse_header_param(str, (char *)"domain", &domain) == HEADER_PARAM_NOT_FOUND)
+	if (parse_header_param(str, (unsigned char *)"domain", &domain) == HEADER_PARAM_NOT_FOUND)
 		domain = memacpy(uri->host, uri->hostlen);
 	if (domain && domain[0] == '.')
 		memmove(domain, domain + 1, strlen((const char *)domain));
@@ -421,10 +421,10 @@ set_cookie(struct uri *uri, char *str)
 
 	max_age = get_cookies_max_age();
 	if (max_age) {
-		char *date;
+		unsigned char *date;
 		time_t expires;
 
-		switch (parse_header_param(str, (char *)"expires", &date)) {
+		switch (parse_header_param(str, (unsigned char *)"expires", &date)) {
 		case HEADER_PARAM_FOUND:
 			expires = parse_date(&date, NULL, 0, 1); /* Convert date to seconds. */
 
@@ -452,7 +452,7 @@ set_cookie(struct uri *uri, char *str)
 		}
 	}
 
-	cookie->secure = (parse_header_param(str, (char *)"secure", NULL)
+	cookie->secure = (parse_header_param(str, (unsigned char *)"secure", NULL)
 	                  == HEADER_PARAM_FOUND);
 
 #ifdef DEBUG_COOKIES
@@ -606,7 +606,7 @@ accept_cookie_never(void *idp)
 
 
 static inline int
-is_path_prefix(char *d, char *s)
+is_path_prefix(unsigned char *d, unsigned char *s)
 {
 	int dl = strlen((const char *)d);
 
@@ -623,7 +623,7 @@ send_cookies(struct uri *uri)
 {
 	struct c_domain *cd;
 	struct cookie *c, *next;
-	char *path = NULL;
+	unsigned char *path = NULL;
 	static struct string header;
 	time_t now;
 
@@ -662,7 +662,7 @@ send_cookies(struct uri *uri)
 			continue;
 
 		if (header.length)
-			add_to_string(&header, (const char *)"; ");
+			add_to_string(&header, (const unsigned char *)"; ");
 
 		add_to_string(&header, c->name);
 		add_char_to_string(&header, '=');
@@ -690,14 +690,14 @@ load_cookies(void) {
 	/* Buffer size is set to be enough to read long lines that
 	 * save_cookies may write. 6 is choosen after the fprintf(..) call
 	 * in save_cookies(). --Zas */
-	char in_buffer[6 * MAX_STR_LEN];
-	char *cookfile = (char *)COOKIES_FILENAME;
+	unsigned char in_buffer[6 * MAX_STR_LEN];
+	unsigned char *cookfile = (unsigned char *)COOKIES_FILENAME;
 	FILE *fp;
 	time_t now;
 
 	if (elinks_home) {
 		cookfile = straconcat(elinks_home, cookfile,
-				      (char *) NULL);
+				      (unsigned char *) NULL);
 		if (!cookfile) return;
 	}
 
@@ -718,21 +718,21 @@ load_cookies(void) {
 	now = time(NULL);
 	while (fgets((char *)in_buffer, 6 * MAX_STR_LEN, fp)) {
 		struct cookie *cookie;
-		char *p, *q = in_buffer;
+		unsigned char *p, *q = in_buffer;
 		enum { NAME = 0, VALUE, SERVER, PATH, DOMAIN, EXPIRES, SECURE, MEMBERS } member_;
 		int member;
 		struct {
-			char *pos;
+			unsigned char *pos;
 			int len;
 		} members[MEMBERS];
 		time_t expires;
 
 		/* First find all members. */
 		for (member = NAME; member < MEMBERS; member++, q = ++p) {
-			p = (char *)strchr((char *)q, '\t');
+			p = (unsigned char *)strchr((char *)q, '\t');
 			if (!p) {
 				if (member + 1 != MEMBERS) break; /* last field ? */
-				p = (char *)strchr((char *)q, '\n');
+				p = (unsigned char *)strchr((char *)q, '\n');
 				if (!p) break;
 			}
 
@@ -808,7 +808,7 @@ set_cookies_dirty(void)
 void
 save_cookies(struct terminal *term) {
 	struct cookie *c;
-	char *cookfile;
+	unsigned char *cookfile;
 	struct secure_save_info *ssi;
 	time_t now;
 
@@ -834,13 +834,13 @@ save_cookies(struct terminal *term) {
 	}
 	if (!cookies_dirty && !term)
 		return;
-	if (get_cmd_opt_bool((const char *)"anonymous")) {
+	if (get_cmd_opt_bool((const unsigned char *)"anonymous")) {
 		CANNOT_SAVE_COOKIES(0, N_("ELinks was started with the -anonymous option."));
 		return;
 	}
 
 	cookfile = straconcat(elinks_home, COOKIES_FILENAME,
-			      (char *) NULL);
+			      (unsigned char *) NULL);
 	if (!cookfile) {
 		CANNOT_SAVE_COOKIES(0, N_("Out of memory"));
 		return;

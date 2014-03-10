@@ -9,8 +9,8 @@ enum parse_header_param {
 	 * Unknown values should be treated as errors. */
 };
 
-char *parse_header(char *, const char *, char **);
-enum parse_header_param parse_header_param(char *, char *, char **);
-char *get_header_param(char *, char *);
+unsigned char *parse_header(unsigned char *, const unsigned char *, unsigned char **);
+enum parse_header_param parse_header_param(unsigned char *, unsigned char *, unsigned char **);
+unsigned char *get_header_param(unsigned char *, unsigned char *);
 
 #endif
