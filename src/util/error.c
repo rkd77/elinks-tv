@@ -35,10 +35,10 @@
 #include "util/string.h"
 
 
-char full_static_version[1024] = "ELinks " VERSION_STRING;
+unsigned char full_static_version[1024] = "ELinks " VERSION_STRING;
 
 static void
-er(int bell, int shall_sleep, char *fmt, va_list params)
+er(int bell, int shall_sleep, unsigned char *fmt, va_list params)
 {
 	if (bell)
 #ifdef CONFIG_OS_WIN32
@@ -53,12 +53,12 @@ er(int bell, int shall_sleep, char *fmt, va_list params)
 }
 
 int errline;
-const char *errfile;
+const unsigned char *errfile;
 
 void
 elinks_debug(const char *fmt, ...)
 {
-	char errbuf[4096];
+	unsigned char errbuf[4096];
 	va_list params;
 
 	va_start(params, fmt);
@@ -74,7 +74,7 @@ elinks_debug(const char *fmt, ...)
 void
 elinks_wdebug(const char *fmt, ...)
 {
-	char errbuf[4096];
+	unsigned char errbuf[4096];
 	va_list params;
 
 	va_start(params, fmt);
@@ -90,7 +90,7 @@ elinks_wdebug(const char *fmt, ...)
 void
 elinks_error(const char *fmt, ...)
 {
-	char errbuf[4096];
+	unsigned char errbuf[4096];
 	va_list params;
 
 	va_start(params, fmt);
@@ -106,7 +106,7 @@ elinks_error(const char *fmt, ...)
 void
 elinks_internal(const char *fmt, ...)
 {
-	char errbuf[4096];
+	unsigned char errbuf[4096];
 	va_list params;
 
 	va_start(params, fmt);
@@ -145,7 +145,7 @@ int assert_failed = 0;
 void
 elinks_assertm(int x, const char *fmt, ...)
 {
-	char *buf = NULL;
+	unsigned char *buf = NULL;
 	va_list params;
 
 	if (assert_failed) return;
@@ -184,7 +184,7 @@ static FILE *log_file = NULL;
 static void
 done_log(void)
 {
-	char errbuf[4096];
+	unsigned char errbuf[4096];
 	time_t curtime = time(NULL);
 	struct tm *loctime = localtime(&curtime);
 	int len;
@@ -200,16 +200,16 @@ done_log(void)
 }
 
 void
-elinks_log(const char *msg, const char *file, int line,
+elinks_log(const char *msg, const unsigned char *file, int line,
 	   const char *fmt, ...)
 {
-	static char *log_files = NULL;
-	static char *log_msg = NULL;
-	char errbuf[4096];
+	static unsigned char *log_files = NULL;
+	static unsigned char *log_msg = NULL;
+	unsigned char errbuf[4096];
 	va_list params;
 
 	if (!log_file) {
-		char *log_name;
+		unsigned char *log_name;
 		time_t curtime = time(NULL);
 		struct tm *loctime = localtime(&curtime);
 		int len;
