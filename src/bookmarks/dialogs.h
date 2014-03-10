@@ -17,8 +17,8 @@ void bookmark_manager(struct session *ses);
 void launch_bm_add_dialog(struct terminal *term,
 			  struct dialog_data *parent,
 			  struct session *ses,
-			  char *title,
-			  char *url);
+			  unsigned char *title,
+			  unsigned char *url);
 
 /* ...with the current document's title and URL */
 void launch_bm_add_doc_dialog(struct terminal *term,

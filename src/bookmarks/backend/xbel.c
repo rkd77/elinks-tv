@@ -38,8 +38,8 @@
 struct attributes {
 	LIST_HEAD(struct attributes);
 
-	char *name;
-	char *value;
+	unsigned char *name;
+	unsigned char *value;
 };
 
 /* Prototypes */
@@ -50,9 +50,9 @@ static void on_text(void *data, const XML_Char *text, int len);
 static struct tree_node *new_node(struct tree_node *parent);
 static void free_node(struct tree_node *node);
 static void free_xbeltree(struct tree_node *node);
-static struct tree_node *get_child(struct tree_node *node, const char *name);
-static char *get_attribute_value(struct tree_node *node,
-					  const char *name);
+static struct tree_node *get_child(struct tree_node *node, const unsigned char *name);
+static unsigned char *get_attribute_value(struct tree_node *node,
+					  const unsigned char *name);
 
 
 struct read_bookmarks_xbel {
@@ -60,7 +60,7 @@ struct read_bookmarks_xbel {
 };
 
 static void read_bookmarks_xbel(FILE *f);
-static char * filename_bookmarks_xbel(int writing);
+static unsigned char * filename_bookmarks_xbel(int writing);
 static int xbeltree_to_bookmarks_list(const struct read_bookmarks_xbel *preload,
 				      struct tree_node *root,
 				      struct bookmark *current_parent);
@@ -72,8 +72,8 @@ static void write_bookmarks_xbel(struct secure_save_info *ssi,
 
 /* Element */
 struct tree_node {
-	char *name;		/* Name of the element */
-	char *text;		/* Text inside the element */
+	unsigned char *name;		/* Name of the element */
+	unsigned char *text;		/* Text inside the element */
 	LIST_OF(struct attributes) attrs;
 	struct tree_node *parent;
 	struct tree_node *children;
@@ -134,7 +134,7 @@ read_bookmarks_xbel(FILE *f)
 	}
 
 	if (!err) {
-		preload.utf8_cp = get_cp_index((const char *)"UTF-8");
+		preload.utf8_cp = get_cp_index((const unsigned char *)"UTF-8");
 		readok = xbeltree_to_bookmarks_list(&preload,
 						    root_node->children, /* Top node is xbel */
 						    NULL);
@@ -149,7 +149,7 @@ static void
 write_bookmarks_xbel(struct secure_save_info *ssi,
 		     LIST_OF(struct bookmarks) *bookmarks_list)
 {
-	int folder_state = get_opt_bool((const char *)"bookmarks.folder_state", NULL);
+	int folder_state = get_opt_bool((const unsigned char *)"bookmarks.folder_state", NULL);
 	/* We check for readok in filename_bookmarks_xbel(). */
 
 	secure_fputs(ssi,
@@ -165,11 +165,11 @@ write_bookmarks_xbel(struct secure_save_info *ssi,
 	secure_fputs(ssi, "\n</xbel>\n");
 }
 
-static char *
+static unsigned char *
 filename_bookmarks_xbel(int writing)
 {
 	if (writing && !readok) return NULL;
-	return (char *)BOOKMARKS_XBEL_FILENAME;
+	return (unsigned char *)BOOKMARKS_XBEL_FILENAME;
 }
 
 static void
@@ -182,7 +182,7 @@ indentation(struct secure_save_info *ssi, int num)
 }
 
 static void
-print_xml_entities(struct secure_save_info *ssi, const char *str)
+print_xml_entities(struct secure_save_info *ssi, const unsigned char *str)
 {
 	struct string entitized = NULL_STRING;
 
@@ -268,7 +268,7 @@ on_element_open(void *data, const char *name, const char **attr)
 
 	current_node = node;
 
-	current_node->name = stracpy((char *) name);
+	current_node->name = stracpy((unsigned char *) name);
 	if (!current_node->name) {
 		mem_free(current_node);
 		return;
@@ -276,8 +276,8 @@ on_element_open(void *data, const char *name, const char **attr)
 
 	for (; *attr; attr += 2) {
 		struct attributes *attribute = (struct attributes *)mem_calloc(1, sizeof(*attribute));
-		char *name = stracpy((char *) attr[0]);
-		char *value = stracpy((char *) attr[1]);
+		unsigned char *name = stracpy((unsigned char *) attr[0]);
+		unsigned char *value = stracpy((unsigned char *) attr[1]);
 
 		if (!attribute || !name || !value) {
 			mem_free_if(attribute);
@@ -301,14 +301,14 @@ on_element_close(void *data, const char *name)
 	current_node = current_node->parent;
 }
 
-static char *
-delete_whites(const char *s)
+static unsigned char *
+delete_whites(const unsigned char *s)
 {
-	char *r;
+	unsigned char *r;
 	int last_was_space = 0, c = 0, i;
 	int len = strlen((const char *)s);
 
-	r = (char *)mem_alloc(len + 1);
+	r = (unsigned char *)mem_alloc(len + 1);
 	if (!r) return NULL;
 
 	for (i = 0; i < len; i++) {
@@ -357,7 +357,7 @@ on_text(void *data, const XML_Char *text, int len)
 
 		strncpy(tmp + len2, text, len);
 		tmp[len + len2] = '\0';
-		current_node->text = delete_whites((const char *)tmp);
+		current_node->text = delete_whites((const unsigned char *)tmp);
 
 		mem_free(tmp);
 	}
@@ -376,22 +376,22 @@ xbeltree_to_bookmarks_list(const struct read_bookmarks_xbel *preload,
 
 	while (node) {
 		if (!strcmp((const char *)node->name, "bookmark")) {
-			char *href;
+			unsigned char *href;
 
-			title = get_child(node, (const char *)"title");
-			href = get_attribute_value(node, (const char *)"href");
+			title = get_child(node, (const unsigned char *)"title");
+			href = get_attribute_value(node, (const unsigned char *)"href");
 
 			intl_set_charset_by_index(preload->utf8_cp);
 			tmp = add_bookmark(current_parent, 0,
 					   /* The <title> element is optional */
 					   title && title->text ? title->text
-						 : (char *) gettext("No title"),
+						 : (unsigned char *) gettext("No title"),
 					   /* XXX: The href attribute isn't optional but
 					    * we don't validate the source XML yet, so
 					    * we can't always assume a non NULL value for
 					    * get_attribute_value() */
 					   href ? href
-						: (char *) gettext("No URL"));
+						: (unsigned char *) gettext("No URL"));
 
 			/* Out of memory */
 			if (!tmp) return 0;
@@ -400,27 +400,27 @@ xbeltree_to_bookmarks_list(const struct read_bookmarks_xbel *preload,
 			lastbm = tmp;
 
 		} else if (!strcmp((const char *)node->name, "folder")) {
-			char *folded;
+			unsigned char *folded;
 
-			title = get_child(node, (const char *)"title");
+			title = get_child(node, (const unsigned char *)"title");
 
 			intl_set_charset_by_index(preload->utf8_cp);
 			tmp = add_bookmark(current_parent, 0,
 					   title && title->text ? title->text
-						 : (char *) gettext("No title"),
+						 : (unsigned char *) gettext("No title"),
 					   NULL);
 
 			/* Out of memory */
 			if (!tmp) return 0;
 
-			folded = get_attribute_value(node, (const char *)"folded");
+			folded = get_attribute_value(node, (const unsigned char *)"folded");
 			if (folded && !strcmp((const char *)folded, "no"))
 				tmp->box_item->expanded = 1;
 
 			lastbm = tmp;
 
 		} else if (!strcmp((const char *)node->name, "separator")) {
-			tmp = add_bookmark(current_parent, 0, (char *)"-", (char *)"");
+			tmp = add_bookmark(current_parent, 0, (unsigned char *)"-", (unsigned char *)"");
 
 			/* Out of memory */
 			if (!tmp) return 0;
@@ -471,7 +471,7 @@ free_xbeltree(struct tree_node *node)
 }
 
 static struct tree_node *
-get_child(struct tree_node *node, const char *name)
+get_child(struct tree_node *node, const unsigned char *name)
 {
 	struct tree_node *ret;
 
@@ -489,8 +489,8 @@ get_child(struct tree_node *node, const char *name)
 	return NULL;
 }
 
-static char *
-get_attribute_value(struct tree_node *node, const char *name)
+static unsigned char *
+get_attribute_value(struct tree_node *node, const unsigned char *name)
 {
 	struct attributes *attribute;
 

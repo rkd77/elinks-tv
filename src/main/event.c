@@ -42,7 +42,7 @@ struct event_handler {
 
 struct event {
 	/* The event name has to be unique. */
-	char *name;
+	unsigned char *name;
 
 	/* There are @count event @handlers all ordered by priority. */
 	struct event_handler *handlers;
@@ -74,7 +74,7 @@ invalid_event_id(register int id)
 }
 
 int
-register_event(char *name)
+register_event(unsigned char *name)
 {
 	int id = get_event_id(name);
 	struct event *event;
@@ -117,7 +117,7 @@ register_event(char *name)
 }
 
 int
-get_event_id(char *name)
+get_event_id(unsigned char *name)
 {
 	struct hash_item *item;
 	int namelen;
@@ -141,7 +141,7 @@ get_event_id(char *name)
 	return EVENT_NONE;
 }
 
-char *
+unsigned char *
 get_event_name(int id)
 {
 	if (invalid_event_id(id)) return NULL;
@@ -181,7 +181,7 @@ trigger_event(int id, ...)
 }
 
 void
-trigger_event_name(char *name, ...)
+trigger_event_name(unsigned char *name, ...)
 {
 	va_list ap;
 	int id = get_event_id(name);
@@ -284,7 +284,7 @@ register_event_hooks(struct event_hook_info *hooks)
 	int i;
 
 	for (i = 0; hooks[i].name; i++) {
-		int id = register_event((char *)hooks[i].name);
+		int id = register_event((unsigned char *)hooks[i].name);
 
 		if (id == EVENT_NONE) continue;
 
@@ -299,7 +299,7 @@ unregister_event_hooks(struct event_hook_info *hooks)
 	int i;
 
 	for (i = 0; hooks[i].name; i++) {
-		int id = get_event_id((char *)hooks[i].name);
+		int id = get_event_id((unsigned char *)hooks[i].name);
 
 		if (id == EVENT_NONE) continue;
 

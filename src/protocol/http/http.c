@@ -65,7 +65,7 @@
 
 static struct auth_entry proxy_auth;
 
-static char *accept_charset = NULL;
+static unsigned char *accept_charset = NULL;
 
 
 static union option_info http_options[] = {
@@ -259,16 +259,16 @@ static void
 init_accept_charset(void)
 {
 	struct string ac;
-	char *cs;
+	unsigned char *cs;
 	int i;
 
 	if (!init_string(&ac)) return;
 
 	for (i = 0; (cs = get_cp_mime_name(i)); i++) {
 		if (ac.length) {
-			add_to_string(&ac, (const char *)", ");
+			add_to_string(&ac, (const unsigned char *)", ");
 		} else {
-			add_to_string(&ac, (const char *)"Accept-Charset: ");
+			add_to_string(&ac, (const unsigned char *)"Accept-Charset: ");
 		}
 		add_to_string(&ac, cs);
 	}
@@ -283,9 +283,9 @@ init_accept_charset(void)
 }
 
 
-char *
-subst_user_agent(char *fmt, char *version,
-		 char *sysname, char *termsize)
+unsigned char *
+subst_user_agent(unsigned char *fmt, unsigned char *version,
+		 unsigned char *sysname, unsigned char *termsize)
 {
 	struct string agent;
 
@@ -345,8 +345,8 @@ add_url_to_http_string(struct string *header, struct uri *uri, int components)
 	 * before. We should probably encode all URLs as early as
 	 * possible, and possibly decode them back in protocol
 	 * backends. --pasky */
-	char *string = get_uri_string(uri, components);
-	char *data = string;
+	unsigned char *string = get_uri_string(uri, components);
+	unsigned char *data = string;
 
 	if (!string) return;
 
@@ -360,7 +360,7 @@ add_url_to_http_string(struct string *header, struct uri *uri, int components)
 		if (data[len++] == '\\')
 			add_char_to_string(header, '/');
 		else
-			add_to_string(header, (const char *)"%20");
+			add_to_string(header, (const unsigned char *)"%20");
 
 		data	+= len;
 	}
@@ -372,7 +372,7 @@ add_url_to_http_string(struct string *header, struct uri *uri, int components)
  * It returns -1 if not a number, 0 otherwise.
  * @end should be > @start. */
 static int
-revstr2num(char *start, char *end, int *value)
+revstr2num(unsigned char *start, unsigned char *end, int *value)
 {
 	int q = 1, val = 0;
 
@@ -394,8 +394,8 @@ revstr2num(char *start, char *end, int *value)
 static int
 get_http_code(struct read_buffer *rb, int *code, struct http_version *version)
 {
-	char *head = rb->data;
-	char *start;
+	unsigned char *head = rb->data;
+	unsigned char *start;
 
 	*code = 0;
 	version->major = 0;
@@ -450,22 +450,22 @@ get_http_code(struct read_buffer *rb, int *code, struct http_version *version)
 
 static int
 check_http_server_bugs(struct uri *uri, struct http_connection_info *http,
-		       char *head)
+		       unsigned char *head)
 {
-	char *server;
-	const char *const *s;
-	static const char *const buggy_servers[] = {
-		(const char *)"mod_czech/3.1.0",
-		(const char *)"Purveyor",
-		(const char *)"Netscape-Enterprise",
+	unsigned char *server;
+	const unsigned char *const *s;
+	static const unsigned char *const buggy_servers[] = {
+		(const unsigned char *)"mod_czech/3.1.0",
+		(const unsigned char *)"Purveyor",
+		(const unsigned char *)"Netscape-Enterprise",
 		NULL
 	};
 
-	if (!get_opt_bool((const char *)"protocol.http.bugs.allow_blacklist", NULL)
+	if (!get_opt_bool((const unsigned char *)"protocol.http.bugs.allow_blacklist", NULL)
 	    || HTTP_1_0(http->sent_version))
 		return 0;
 
-	server = parse_header(head, (char *)"Server", NULL);
+	server = parse_header(head, (unsigned char *)"Server", NULL);
 	if (!server)
 		return 0;
 
@@ -496,7 +496,7 @@ http_end_request(struct connection *conn, struct connection_state state,
 
 	if (http && !http->close
 	    && (!conn->socket->ssl) /* We won't keep alive ssl connections */
-	    && (!get_opt_bool((const char *)"protocol.http.bugs.post_no_keepalive", NULL)
+	    && (!get_opt_bool((const unsigned char *)"protocol.http.bugs.post_no_keepalive", NULL)
 		|| !conn->uri->post)) {
 		if (is_in_state(state, S_OK) && conn->cached)
 			normalize_cache_entry(conn->cached, !notrunc ? conn->from : -1);
@@ -568,7 +568,7 @@ init_http_connection_info(struct connection *conn, int major, int minor, int clo
 		http->bl_flags = get_blacklist_flags(conn->proxied_uri);
 
 	if (http->bl_flags & SERVER_BLACKLIST_HTTP10
-	    || get_opt_bool((const char *)"protocol.http.bugs.http10", NULL)) {
+	    || get_opt_bool((const unsigned char *)"protocol.http.bugs.http10", NULL)) {
 		http->sent_version.major = 1;
 		http->sent_version.minor = 0;
 	}
@@ -591,22 +591,22 @@ accept_encoding_header(struct string *header)
 #if defined(CONFIG_GZIP) || defined(CONFIG_BZIP2) || defined(CONFIG_LZMA)
 	int comma = 0;
 
-	add_to_string(header, (const char *)"Accept-Encoding: ");
+	add_to_string(header, (const unsigned char *)"Accept-Encoding: ");
 
 #ifdef CONFIG_BZIP2
-	add_to_string(header, (const char *)"bzip2");
+	add_to_string(header, (const unsigned char *)"bzip2");
 	comma = 1;
 #endif
 
 #ifdef CONFIG_GZIP
-	if (comma) add_to_string(header, (const char *)", ");
-	add_to_string(header, (const char *)"deflate, gzip");
+	if (comma) add_to_string(header, (const unsigned char *)", ");
+	add_to_string(header, (const unsigned char *)"deflate, gzip");
 	comma = 1;
 #endif
 
 #ifdef CONFIG_LZMA
 	if (comma) add_to_string(header, ", ");
-	add_to_string(header, (const char *)"lzma");
+	add_to_string(header, (const unsigned char *)"lzma");
 #endif
 	add_crlf_to_string(header);
 #endif
@@ -651,12 +651,12 @@ http_send_header(struct socket *socket)
 {
 	struct connection *conn = (struct connection *)socket->conn;
 	struct http_connection_info *http;
-	int trace = get_opt_bool((const char *)"protocol.http.trace", NULL);
+	int trace = get_opt_bool((const unsigned char *)"protocol.http.trace", NULL);
 	struct string header;
-	char *post_data = NULL;
+	unsigned char *post_data = NULL;
 	struct auth_entry *entry = NULL;
 	struct uri *uri = conn->proxied_uri; /* Set to the real uri */
-	char *optstr;
+	unsigned char *optstr;
 	int use_connect, talking_to_proxy;
 
 	/* Sanity check for a host */
@@ -679,19 +679,19 @@ http_send_header(struct socket *socket)
 	use_connect = connection_is_https_proxy(conn) && !conn->socket->ssl;
 
 	if (trace) {
-		add_to_string(&header, (const char *)"TRACE ");
+		add_to_string(&header, (const unsigned char *)"TRACE ");
 	} else if (use_connect) {
-		add_to_string(&header, (const char *)"CONNECT ");
+		add_to_string(&header, (const unsigned char *)"CONNECT ");
 		/* In CONNECT requests, we send only a subset of the
 		 * headers to the proxy.  See the "CONNECT:" comments
 		 * below.  After the CONNECT request succeeds, we
 		 * negotiate TLS with the real server and make a new
 		 * HTTP request that includes all the headers.  */
 	} else if (uri->post) {
-		add_to_string(&header, (const char *)"POST ");
+		add_to_string(&header, (const unsigned char *)"POST ");
 		conn->unrestartable = 1;
 	} else {
-		add_to_string(&header, (const char *)"GET ");
+		add_to_string(&header, (const unsigned char *)"GET ");
 	}
 
 	if (!talking_to_proxy) {
@@ -713,7 +713,7 @@ http_send_header(struct socket *socket)
 		}
 	}
 
-	add_to_string(&header, (const char *)" HTTP/");
+	add_to_string(&header, (const unsigned char *)" HTTP/");
 	add_long_to_string(&header, http->sent_version.major);
 	add_char_to_string(&header, '.');
 	add_long_to_string(&header, http->sent_version.minor);
@@ -722,17 +722,17 @@ http_send_header(struct socket *socket)
 	/* CONNECT: Sending a Host header seems pointless as the same
 	 * information is already in the CONNECT line.  It's harmless
 	 * though and Mozilla does it too.  */
-	add_to_string(&header, (const char *)"Host: ");
+	add_to_string(&header, (const unsigned char *)"Host: ");
 	add_uri_to_string(&header, uri, URI_HTTP_HOST);
 	add_crlf_to_string(&header);
 
 	/* CONNECT: Proxy-Authorization is intended to be seen by the proxy.  */
 	if (talking_to_proxy) {
-		char *user = get_opt_str((const char *)"protocol.http.proxy.user", NULL);
-		char *passwd = get_opt_str((const char *)"protocol.http.proxy.passwd", NULL);
+		unsigned char *user = get_opt_str((const unsigned char *)"protocol.http.proxy.user", NULL);
+		unsigned char *passwd = get_opt_str((const unsigned char *)"protocol.http.proxy.passwd", NULL);
 
 		if (proxy_auth.digest) {
-			char *response;
+			unsigned char *response;
 			int userlen = int_min(strlen((const char *)user), AUTH_USER_MAXLEN - 1);
 			int passwordlen = int_min(strlen((const char *)passwd), AUTH_PASSWORD_MAXLEN - 1);
 
@@ -747,7 +747,7 @@ http_send_header(struct socket *socket)
 			 * should be the proxy URI aka conn->uri. --jonas */
 			response = get_http_auth_digest_response(&proxy_auth, uri);
 			if (response) {
-				add_to_string(&header, (const char *)"Proxy-Authorization: Digest ");
+				add_to_string(&header, (const unsigned char *)"Proxy-Authorization: Digest ");
 				add_to_string(&header, response);
 				add_crlf_to_string(&header);
 
@@ -756,14 +756,14 @@ http_send_header(struct socket *socket)
 
 		} else {
 			if (user[0]) {
-				char *proxy_data;
+				unsigned char *proxy_data;
 
-				proxy_data = straconcat(user, ":", passwd, (char *) NULL);
+				proxy_data = straconcat(user, ":", passwd, (unsigned char *) NULL);
 				if (proxy_data) {
-					char *proxy_64 = base64_encode(proxy_data);
+					unsigned char *proxy_64 = base64_encode(proxy_data);
 
 					if (proxy_64) {
-						add_to_string(&header, (const char *)"Proxy-Authorization: Basic ");
+						add_to_string(&header, (const unsigned char *)"Proxy-Authorization: Basic ");
 						add_to_string(&header, proxy_64);
 						add_crlf_to_string(&header);
 						mem_free(proxy_64);
@@ -777,14 +777,14 @@ http_send_header(struct socket *socket)
 	/* CONNECT: User-Agent does not reveal anything about the
 	 * resource we're fetching, and it may help the proxy return
 	 * better error messages.  */
-	optstr = get_opt_str((const char *)"protocol.http.user_agent", NULL);
+	optstr = get_opt_str((const unsigned char *)"protocol.http.user_agent", NULL);
 	if (*optstr && strcmp((const char *)optstr, " ")) {
-		char *ustr, ts[64] = "";
+		unsigned char *ustr, ts[64] = "";
 		/* TODO: Somehow get the terminal in which the
 		 * document will actually be displayed.  */
 		struct terminal *term = get_default_terminal();
 
-		add_to_string(&header, (const char *)"User-Agent: ");
+		add_to_string(&header, (const unsigned char *)"User-Agent: ");
 
 		if (term) {
 			unsigned int tslen = 0;
@@ -793,7 +793,7 @@ http_send_header(struct socket *socket)
 			ts[tslen++] = 'x';
 			ulongcat(ts, &tslen, term->height, 3, 0);
 		}
-		ustr = subst_user_agent(optstr, (char *)VERSION_STRING, system_name,
+		ustr = subst_user_agent(optstr, (unsigned char *)VERSION_STRING, system_name,
 					ts);
 
 		if (ustr) {
@@ -807,28 +807,28 @@ http_send_header(struct socket *socket)
 	/* CONNECT: Referer probably is a secret page in the HTTPS
 	 * server, so don't reveal it to the proxy.  */
 	if (!use_connect) {
-		switch (get_opt_int((const char *)"protocol.http.referer.policy", NULL)) {
+		switch (get_opt_int((const unsigned char *)"protocol.http.referer.policy", NULL)) {
 			case REFERER_NONE:
 				/* oh well */
 				break;
 
 			case REFERER_FAKE:
-				optstr = get_opt_str((const char *)"protocol.http.referer.fake", NULL);
+				optstr = get_opt_str((const unsigned char *)"protocol.http.referer.fake", NULL);
 				if (!optstr[0]) break;
-				add_to_string(&header, (const char *)"Referer: ");
+				add_to_string(&header, (const unsigned char *)"Referer: ");
 				add_to_string(&header, optstr);
 				add_crlf_to_string(&header);
 				break;
 
 			case REFERER_TRUE:
 				if (!conn->referrer) break;
-				add_to_string(&header, (const char *)"Referer: ");
+				add_to_string(&header, (const unsigned char *)"Referer: ");
 				add_url_to_http_string(&header, conn->referrer, URI_HTTP_REFERRER);
 				add_crlf_to_string(&header);
 				break;
 
 			case REFERER_SAME_URL:
-				add_to_string(&header, (const char *)"Referer: ");
+				add_to_string(&header, (const unsigned char *)"Referer: ");
 				add_url_to_http_string(&header, uri, URI_HTTP_REFERRER);
 				add_crlf_to_string(&header);
 				break;
@@ -845,10 +845,10 @@ http_send_header(struct socket *socket)
 	 * sending "Accept: text/css" when it wants an external
 	 * stylesheet, then it should do that only in the inner GET
 	 * and not in the outer CONNECT.  */
-	add_to_string(&header, (const char *)"Accept: */*");
+	add_to_string(&header, (const unsigned char *)"Accept: */*");
 	add_crlf_to_string(&header);
 
-	if (get_opt_bool((const char *)"protocol.http.compression", NULL))
+	if (get_opt_bool((const unsigned char *)"protocol.http.compression", NULL))
 		accept_encoding_header(&header);
 
 	if (!accept_charset) {
@@ -856,20 +856,20 @@ http_send_header(struct socket *socket)
 	}
 
 	if (!(http->bl_flags & SERVER_BLACKLIST_NO_CHARSET)
-	    && !get_opt_bool((const char *)"protocol.http.bugs.accept_charset", NULL)
+	    && !get_opt_bool((const unsigned char *)"protocol.http.bugs.accept_charset", NULL)
 	    && accept_charset) {
 		add_to_string(&header, accept_charset);
 	}
 
-	optstr = get_opt_str((const char *)"protocol.http.accept_language", NULL);
+	optstr = get_opt_str((const unsigned char *)"protocol.http.accept_language", NULL);
 	if (optstr[0]) {
-		add_to_string(&header, (const char *)"Accept-Language: ");
+		add_to_string(&header, (const unsigned char *)"Accept-Language: ");
 		add_to_string(&header, optstr);
 		add_crlf_to_string(&header);
 	}
 #ifdef CONFIG_NLS
-	else if (get_opt_bool((const char *)"protocol.http.accept_ui_language", NULL)) {
-		char *code = language_to_iso639(current_language);
+	else if (get_opt_bool((const unsigned char *)"protocol.http.accept_ui_language", NULL)) {
+		unsigned char *code = language_to_iso639(current_language);
 
 		if (code) {
 			add_to_string(&header, "Accept-Language: ");
@@ -887,15 +887,15 @@ http_send_header(struct socket *socket)
 	/* FIXME: What about post-HTTP/1.1?? --Zas */
 	if (HTTP_1_1(http->sent_version)) {
 		if (!IS_PROXY_URI(conn->uri)) {
-			add_to_string(&header, (const char *)"Connection: ");
+			add_to_string(&header, (const unsigned char *)"Connection: ");
 		} else {
-			add_to_string(&header, (const char *)"Proxy-Connection: ");
+			add_to_string(&header, (const unsigned char *)"Proxy-Connection: ");
 		}
 
-		if (!uri->post || !get_opt_bool((const char *)"protocol.http.bugs.post_no_keepalive", NULL)) {
-			add_to_string(&header, (const char *)"Keep-Alive");
+		if (!uri->post || !get_opt_bool((const unsigned char *)"protocol.http.bugs.post_no_keepalive", NULL)) {
+			add_to_string(&header, (const unsigned char *)"Keep-Alive");
 		} else {
-			add_to_string(&header, (const char *)"close");
+			add_to_string(&header, (const unsigned char *)"close");
 		}
 		add_crlf_to_string(&header);
 	}
@@ -906,12 +906,12 @@ http_send_header(struct socket *socket)
 		if (!conn->cached->incomplete && conn->cached->head
 		    && conn->cache_mode <= CACHE_MODE_CHECK_IF_MODIFIED) {
 			if (conn->cached->last_modified) {
-				add_to_string(&header, (const char *)"If-Modified-Since: ");
+				add_to_string(&header, (const unsigned char *)"If-Modified-Since: ");
 				add_to_string(&header, conn->cached->last_modified);
 				add_crlf_to_string(&header);
 			}
 			if (conn->cached->etag) {
-				add_to_string(&header, (const char *)"If-None-Match: ");
+				add_to_string(&header, (const unsigned char *)"If-None-Match: ");
 				add_to_string(&header, conn->cached->etag);
 				add_crlf_to_string(&header);
 			}
@@ -921,9 +921,9 @@ http_send_header(struct socket *socket)
 	/* CONNECT: Let's send cache control headers to the proxy too;
 	 * they may affect DNS caching.  */
 	if (conn->cache_mode >= CACHE_MODE_FORCE_RELOAD) {
-		add_to_string(&header, (const char *)"Pragma: no-cache");
+		add_to_string(&header, (const unsigned char *)"Pragma: no-cache");
 		add_crlf_to_string(&header);
-		add_to_string(&header, (const char *)"Cache-Control: no-cache");
+		add_to_string(&header, (const unsigned char *)"Cache-Control: no-cache");
 		add_crlf_to_string(&header);
 	}
 
@@ -933,7 +933,7 @@ http_send_header(struct socket *socket)
 		/* conn->from takes precedence. conn->progress.start is set only the first
 		 * time, then conn->from gets updated and in case of any retries
 		 * etc we have everything interesting in conn->from already. */
-		add_to_string(&header, (const char *)"Range: bytes=");
+		add_to_string(&header, (const unsigned char *)"Range: bytes=");
 		add_long_to_string(&header, conn->from ? conn->from : conn->progress->start);
 		add_char_to_string(&header, '-');
 		add_crlf_to_string(&header);
@@ -949,11 +949,11 @@ http_send_header(struct socket *socket)
 
 	if (entry) {
 		if (entry->digest) {
-			char *response;
+			unsigned char *response;
 
 			response = get_http_auth_digest_response(entry, uri);
 			if (response) {
-				add_to_string(&header, (const char *)"Authorization: Digest ");
+				add_to_string(&header, (const unsigned char *)"Authorization: Digest ");
 				add_to_string(&header, response);
 				add_crlf_to_string(&header);
 
@@ -967,19 +967,19 @@ http_send_header(struct socket *socket)
 			 * and password, separated by a single colon (":")
 			 * character, within a base64 [7] encoded string in the
 			 * credentials. */
-			char *id;
+			unsigned char *id;
 
 			/* Create base64 encoded string. */
 			id = straconcat(entry->user, ":", entry->password,
-					(char *) NULL);
+					(unsigned char *) NULL);
 			if (id) {
-				char *base64 = base64_encode(id);
+				unsigned char *base64 = base64_encode(id);
 
 				mem_free_set(&id, base64);
 			}
 
 			if (id) {
-				add_to_string(&header, (const char *)"Authorization: Basic ");
+				add_to_string(&header, (const unsigned char *)"Authorization: Basic ");
 				add_to_string(&header, id);
 				add_crlf_to_string(&header);
 				mem_free(id);
@@ -992,11 +992,11 @@ http_send_header(struct socket *socket)
 		/* We search for first '\n' in uri->post to get content type
 		 * as set by get_form_uri(). This '\n' is dropped if any
 		 * and replaced by correct '\r\n' termination here. */
-		char *postend = (char *)strchr((char *)uri->post, '\n');
+		unsigned char *postend = (unsigned char *)strchr((char *)uri->post, '\n');
 		struct connection_state error;
 
 		if (postend) {
-			add_to_string(&header, (const char *)"Content-Type: ");
+			add_to_string(&header, (const unsigned char *)"Content-Type: ");
 			add_bytes_to_string(&header, uri->post, postend - uri->post);
 			add_crlf_to_string(&header);
 		}
@@ -1019,7 +1019,7 @@ http_send_header(struct socket *socket)
 		struct string *cookies = send_cookies(uri);
 
 		if (cookies) {
-			add_to_string(&header, (const char *)"Cookie: ");
+			add_to_string(&header, (const unsigned char *)"Cookie: ");
 			add_string_to_string(&header, cookies);
 			add_crlf_to_string(&header);
 			done_string(cookies);
@@ -1051,8 +1051,8 @@ http_send_header(struct socket *socket)
 #undef POST_BUFFER_SIZE
 
 
-static char *
-decompress_data(struct connection *conn, char *data, int len,
+static unsigned char *
+decompress_data(struct connection *conn, unsigned char *data, int len,
 		int *new_len)
 {
 	*new_len = 0; /* new_len must be zero if we would ever return NULL */
@@ -1163,7 +1163,7 @@ read_chunked_http_data(struct connection *conn, struct read_buffer *rb)
 			int l = is_line_in_buffer(rb);
 
 			if (l) {
-				char *de;
+				unsigned char *de;
 				int n = 0;
 
 				if (l != -1) {
@@ -1201,7 +1201,7 @@ read_chunked_http_data(struct connection *conn, struct read_buffer *rb)
 				if (add_fragment(conn->cached, conn->from, rb->data, len) == 1)
 					conn->tries = 0;
 			} else {
-				char *data = decompress_data(conn, rb->data, len, &data_len);
+				unsigned char *data = decompress_data(conn, rb->data, len, &data_len);
 
 				if (add_fragment(conn->cached, conn->from, data, data_len) == 1)
 					conn->tries = 0;
@@ -1269,7 +1269,7 @@ read_normal_http_data(struct connection *conn, struct read_buffer *rb)
 		if (add_fragment(conn->cached, conn->from, rb->data, data_len) == 1)
 			conn->tries = 0;
 	} else {
-		char *data = decompress_data(conn, rb->data, len, &data_len);
+		unsigned char *data = decompress_data(conn, rb->data, len, &data_len);
 
 		if (add_fragment(conn->cached, conn->from, data, data_len) == 1)
 			conn->tries = 0;
@@ -1371,15 +1371,15 @@ get_header(struct read_buffer *rb)
 /* returns 1 if we need retry the connection (for negotiate-auth only) */
 static int
 check_http_authentication(struct connection *conn, struct uri *uri,
-		char *header, char *header_field)
+		unsigned char *header, unsigned char *header_field)
 {
-	char *str, *d;
+	unsigned char *str, *d;
 	int ret = 0;
 
 	d = parse_header(header, header_field, &str);
 	while (d) {
 		if (!c_strncasecmp((const char *)d, "Basic", 5)) {
-			char *realm = get_header_param(d, (char *)"realm");
+			unsigned char *realm = get_header_param(d, (unsigned char *)"realm");
 
 			if (realm) {
 				add_auth_entry(uri, realm, NULL, NULL, 0);
@@ -1388,9 +1388,9 @@ check_http_authentication(struct connection *conn, struct uri *uri,
 				break;
 			}
 		} else if (!c_strncasecmp((const char *)d, "Digest", 6)) {
-			char *realm = get_header_param(d, (char *)"realm");
-			char *nonce = get_header_param(d, (char *)"nonce");
-			char *opaque = get_header_param(d, (char *)"opaque");
+			unsigned char *realm = get_header_param(d, (unsigned char *)"realm");
+			unsigned char *nonce = get_header_param(d, (unsigned char *)"nonce");
+			unsigned char *opaque = get_header_param(d, (unsigned char *)"opaque");
 
 			add_auth_entry(uri, realm, nonce, opaque, 1);
 
@@ -1426,11 +1426,11 @@ http_got_header(struct socket *socket, struct read_buffer *rb)
 {
 	struct connection *conn = (struct connection *)socket->conn;
 	struct http_connection_info *http = (struct http_connection_info *)conn->info;
-	char *head;
+	unsigned char *head;
 #ifdef CONFIG_COOKIES
-	char *cookie, *ch;
+	unsigned char *cookie, *ch;
 #endif
-	char *d;
+	unsigned char *d;
 	struct uri *uri = conn->proxied_uri; /* Set to the real uri */
 	struct http_version version = { 0, 9 };
 	struct connection_state state = (!is_in_state(conn->state, S_PROC)
@@ -1480,7 +1480,7 @@ again:
 	 * content type has been obsoleted by the @content_type member of
 	 * {struct cache_entry}. */
 	head = (a ? memacpy(rb->data, a)
-		  : stracpy((const char *)"\r\nContent-Type: text/html\r\n"));
+		  : stracpy((const unsigned char *)"\r\nContent-Type: text/html\r\n"));
 	if (!head) {
 		abort_connection(conn, connection_state(S_OUT_OF_MEM));
 		return;
@@ -1499,7 +1499,7 @@ again:
 		 * only be used for CGI scripts so that it does not interfere
 		 * with status code depended handling for ``normal'' HTTP like
 		 * redirects. */
-		d = parse_header(head, (const char *)"Status", NULL);
+		d = parse_header(head, (const unsigned char *)"Status", NULL);
 		if (d) {
 			int h2 = atoi((const char *)d);
 
@@ -1516,7 +1516,7 @@ again:
 
 #ifdef CONFIG_COOKIES
 	ch = head;
-	while ((cookie = parse_header(ch, (const char *)"Set-Cookie", &ch))) {
+	while ((cookie = parse_header(ch, (const unsigned char *)"Set-Cookie", &ch))) {
 		set_cookie(uri, cookie);
 		mem_free(cookie);
 	}
@@ -1564,7 +1564,7 @@ again:
 	conn->cached->cgi = conn->cgi;
 	mem_free_set(&conn->cached->head, head);
 
-	if (!get_opt_bool((const char *)"document.cache.ignore_cache_control", NULL)) {
+	if (!get_opt_bool((const unsigned char *)"document.cache.ignore_cache_control", NULL)) {
 		struct cache_entry *cached = conn->cached;
 
 		/* I am not entirely sure in what order we should process these
@@ -1575,7 +1575,7 @@ again:
 		 * is also set, so the cache management knows max_age contains a
 		 * valid time. If on the other hand no caching is requested
 		 * cached->expire should be set to zero.  */
-		if ((d = parse_header(cached->head, (const char *)"Expires", NULL))) {
+		if ((d = parse_header(cached->head, (const unsigned char *)"Expires", NULL))) {
 			/* Convert date to seconds. */
 			time_t expires = parse_date(&d, NULL, 0, 1);
 
@@ -1587,7 +1587,7 @@ again:
 			}
 		}
 
-		if ((d = parse_header(cached->head, (const char *)"Pragma", NULL))) {
+		if ((d = parse_header(cached->head, (const unsigned char *)"Pragma", NULL))) {
 			if (strstr((char *)d, "no-cache")) {
 				cached->cache_mode = CACHE_MODE_NEVER;
 				cached->expire = 0;
@@ -1596,13 +1596,13 @@ again:
 		}
 
 		if (cached->cache_mode != CACHE_MODE_NEVER
-		    && (d = parse_header(cached->head, (const char *)"Cache-Control", NULL))) {
+		    && (d = parse_header(cached->head, (const unsigned char *)"Cache-Control", NULL))) {
 			if (strstr((char *)d, "no-cache") || strstr((char *)d, "must-revalidate")) {
 				cached->cache_mode = CACHE_MODE_NEVER;
 				cached->expire = 0;
 
 			} else  {
-				char *pos = (char *)strstr((char *)d, "max-age=");
+				unsigned char *pos = (unsigned char *)strstr((char *)d, "max-age=");
 
 				assert(cached->cache_mode != CACHE_MODE_NEVER);
 
@@ -1626,7 +1626,7 @@ again:
 	 * for any status? If the server didn't mean it, it wouldn't send
 	 * it, after all...? --pasky */
 	if (h == 201 || h == 301 || h == 302 || h == 303 || h == 307) {
-		d = parse_header(conn->cached->head, (const char *)"Location", NULL);
+		d = parse_header(conn->cached->head, (const unsigned char *)"Location", NULL);
 		if (d) {
 			int use_get_method = (h == 303);
 
@@ -1641,7 +1641,7 @@ again:
 			/* So POST must not be redirected to GET, but some
 			 * BUGGY message boards rely on it :-( */
 	    		if (h == 302
-			    && get_opt_bool((const char *)"protocol.http.bugs.broken_302_redirect", NULL))
+			    && get_opt_bool((const unsigned char *)"protocol.http.bugs.broken_302_redirect", NULL))
 				use_get_method = 1;
 
 			redirect_cache(conn->cached, d, use_get_method, -1);
@@ -1651,20 +1651,20 @@ again:
 
 	if (h == 401) {
 		if (check_http_authentication(conn, uri,
-				conn->cached->head, (char *)"WWW-Authenticate")) {
+				conn->cached->head, (unsigned char *)"WWW-Authenticate")) {
 			retry_connection(conn, connection_state(S_RESTART));
 			return;
 		}
 
 	}
 	if (h == 407) {
-		char *str;
+		unsigned char *str;
 		int restart = 0;
 
-		d = parse_header(conn->cached->head, (const char *)"Proxy-Authenticate", &str);
+		d = parse_header(conn->cached->head, (const unsigned char *)"Proxy-Authenticate", &str);
 		while (d) {
 			if (!c_strncasecmp((const char *)d, "Basic", 5)) {
-				char *realm = get_header_param(d, (char *)"realm");
+				unsigned char *realm = get_header_param(d, (unsigned char *)"realm");
 
 				if (realm) {
 					mem_free_set(&proxy_auth.realm, realm);
@@ -1674,10 +1674,10 @@ again:
 				}
 
 			} else if (!c_strncasecmp((const char *)d, "Digest", 6)) {
-				char *realm = get_header_param(d, (char *)"realm");
-				char *nonce = get_header_param(d, (char *)"nonce");
-				char *opaque = get_header_param(d, (char *)"opaque");
-				char *stale = get_header_param(d, (char *)"stale");
+				unsigned char *realm = get_header_param(d, (unsigned char *)"realm");
+				unsigned char *nonce = get_header_param(d, (unsigned char *)"nonce");
+				unsigned char *opaque = get_header_param(d, (unsigned char *)"opaque");
+				unsigned char *stale = get_header_param(d, (unsigned char *)"stale");
 
 				if (stale) {
 					if (strcasecmp((const char *)stale, "true")) restart = 1;
@@ -1695,7 +1695,7 @@ again:
 			}
 
 			mem_free(d);
-			d = parse_header(str, (const char *)"Proxy-Authenticate", &str);
+			d = parse_header(str, (const unsigned char *)"Proxy-Authenticate", &str);
 		}
 		if (restart) {
 			retry_connection(conn, connection_state(S_RESTART));
@@ -1708,8 +1708,8 @@ again:
 	http->length = -1;
 	http->recv_version = version;
 
-	if ((d = parse_header(conn->cached->head, (const char *)"Connection", NULL))
-	     || (d = parse_header(conn->cached->head, (const char *)"Proxy-Connection", NULL))) {
+	if ((d = parse_header(conn->cached->head, (const unsigned char *)"Connection", NULL))
+	     || (d = parse_header(conn->cached->head, (const unsigned char *)"Proxy-Connection", NULL))) {
 		if (!c_strcasecmp((const char *)d, "close")) http->close = 1;
 		mem_free(d);
 	} else if (PRE_HTTP_1_1(version)) {
@@ -1718,7 +1718,7 @@ again:
 
 	cf = conn->from;
 	conn->from = 0;
-	d = parse_header(conn->cached->head, (const char *)"Content-Range", NULL);
+	d = parse_header(conn->cached->head, (const unsigned char *)"Content-Range", NULL);
 	if (d) {
 		if (strlen((const char *)d) > 6) {
 			d[5] = 0;
@@ -1747,7 +1747,7 @@ again:
 		foreach (s, conn->downloads) {
 			fprintf(stderr, "conn %p status %p pri %d st %d er %d :: ce %s",
 				conn, s, s->pri, s->state, s->prev_error,
-				s->cached ? s->cached->url : (char *) "N-U-L-L");
+				s->cached ? s->cached->url : (unsigned char *) "N-U-L-L");
 		}
 	}
 #endif
@@ -1758,9 +1758,9 @@ again:
 	}
 	conn->progress->start = conn->from;
 
-	d = parse_header(conn->cached->head, (const char *)"Content-Length", NULL);
+	d = parse_header(conn->cached->head, (const unsigned char *)"Content-Length", NULL);
 	if (d) {
-		char *ep;
+		unsigned char *ep;
 		long long l;
 
 		errno = 0;
@@ -1775,7 +1775,7 @@ again:
 	}
 
 	if (!conn->unrestartable) {
-		d = parse_header(conn->cached->head, (const char *)"Accept-Ranges", NULL);
+		d = parse_header(conn->cached->head, (const unsigned char *)"Accept-Ranges", NULL);
 
 		if (d) {
 			if (!c_strcasecmp((const char *)d, "none"))
@@ -1787,7 +1787,7 @@ again:
 		}
 	}
 
-	d = parse_header(conn->cached->head, (const char *)"Transfer-Encoding", NULL);
+	d = parse_header(conn->cached->head, (const unsigned char *)"Transfer-Encoding", NULL);
 	if (d) {
 		if (!c_strcasecmp((const char *)d, "chunked")) {
 			http->length = LEN_CHUNKED;
@@ -1797,7 +1797,7 @@ again:
 	}
 	if (!http->close && http->length == -1) http->close = 1;
 
-	d = parse_header(conn->cached->head, (const char *)"Last-Modified", NULL);
+	d = parse_header(conn->cached->head, (const unsigned char *)"Last-Modified", NULL);
 	if (d) {
 		if (conn->cached->last_modified && c_strcasecmp((const char *)conn->cached->last_modified, (const char *)d)) {
 			delete_entry_content(conn->cached);
@@ -1812,16 +1812,16 @@ again:
 		else mem_free(d);
 	}
 	if (!conn->cached->last_modified) {
-		d = parse_header(conn->cached->head, (const char *)"Date", NULL);
+		d = parse_header(conn->cached->head, (const unsigned char *)"Date", NULL);
 		if (d) conn->cached->last_modified = d;
 	}
 
 	/* FIXME: Parse only if HTTP/1.1 or later? --Zas */
-	d = parse_header(conn->cached->head, (const char *)"ETag", NULL);
+	d = parse_header(conn->cached->head, (const unsigned char *)"ETag", NULL);
 	if (d) {
 		if (conn->cached->etag) {
-			char *old_tag = conn->cached->etag;
-			char *new_tag = d;
+			unsigned char *old_tag = conn->cached->etag;
+			unsigned char *new_tag = d;
 
 			/* http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.19 */
 
@@ -1848,10 +1848,10 @@ again:
 			mem_free(d);
 	}
 
-	d = parse_header(conn->cached->head, (const char *)"Content-Encoding", NULL);
+	d = parse_header(conn->cached->head, (const unsigned char *)"Content-Encoding", NULL);
 	if (d) {
 #if defined(CONFIG_GZIP) || defined(CONFIG_BZIP2) || defined(CONFIG_LZMA)
-		char *extension = get_extension_from_uri(uri);
+		unsigned char *extension = get_extension_from_uri(uri);
 		int file_encoding;
 
 		file_encoding = extension ? guess_encoding(extension) : ENCODING_NONE;
