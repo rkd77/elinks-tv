@@ -75,9 +75,9 @@ static void
 found_dns(void *data, struct sockaddr_storage *addr, int addrlen)
 {
 	unsigned char buf[64];
-	const char *res;
+	const unsigned char *res;
 	struct sockaddr *s;
-	char **ip = (char **)data;
+	unsigned char **ip = (unsigned char **)data;
 	void *src;
 
 	if (!ip || !addr) return;
@@ -87,7 +87,7 @@ found_dns(void *data, struct sockaddr_storage *addr, int addrlen)
 	} else {
 		src = &(((struct sockaddr_in *)s)->sin_addr.s_addr);
 	}
-	res = (const char *)inet_ntop(s->sa_family, src, (char *)buf, 64);
+	res = (const unsigned char *)inet_ntop(s->sa_family, src, (char *)buf, 64);
 	if (res) {
 		*ip = stracpy(res);
 	}
@@ -264,7 +264,7 @@ release_document(struct document *document)
 }
 
 int
-find_tag(struct document *document, char *name, int namelen)
+find_tag(struct document *document, unsigned char *name, int namelen)
 {
 	struct tag *tag;
 
@@ -310,12 +310,12 @@ update_cached_document_options(struct session *ses)
 	struct active_link_options active_link;
 
 	memset(&active_link, 0, sizeof(active_link));	/* Safer. */
-	active_link.color.foreground = get_opt_color((const char *)"document.browse.links.active_link.colors.text", ses);
-	active_link.color.background = get_opt_color((const char *)"document.browse.links.active_link.colors.background", ses);
-	active_link.enable_color = get_opt_bool((const char *)"document.browse.links.active_link.enable_color", ses);
-	active_link.invert = get_opt_bool((const char *)"document.browse.links.active_link.invert", ses);
-	active_link.underline = get_opt_bool((const char *)"document.browse.links.active_link.underline", ses);
-	active_link.bold = get_opt_bool((const char *)"document.browse.links.active_link.bold", ses);
+	active_link.color.foreground = get_opt_color((const unsigned char *)"document.browse.links.active_link.colors.text", ses);
+	active_link.color.background = get_opt_color((const unsigned char *)"document.browse.links.active_link.colors.background", ses);
+	active_link.enable_color = get_opt_bool((const unsigned char *)"document.browse.links.active_link.enable_color", ses);
+	active_link.invert = get_opt_bool((const unsigned char *)"document.browse.links.active_link.invert", ses);
+	active_link.underline = get_opt_bool((const unsigned char *)"document.browse.links.active_link.underline", ses);
+	active_link.bold = get_opt_bool((const unsigned char *)"document.browse.links.active_link.bold", ses);
 
 	foreach (document, format_cache) {
 		copy_struct(&document->options.active_link, &active_link);
@@ -356,7 +356,7 @@ void
 shrink_format_cache(int whole)
 {
 	struct document *document, *next;
-	int format_cache_size = get_opt_int((const char *)"document.cache.format.size", NULL);
+	int format_cache_size = get_opt_int((const unsigned char *)"document.cache.format.size", NULL);
 	int format_cache_entries = 0;
 
 	foreachsafe (document, next, format_cache) {

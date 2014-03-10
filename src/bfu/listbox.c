@@ -52,7 +52,7 @@ dlg_format_listbox(struct dialog_data *dlg_data,
 
 	/* This is only weird heuristic, it could scale well I hope. */
 	optimal_h = max_height * 7 / 10 - VERTICAL_LISTBOX_MARGIN;
-	min = get_opt_int((const char *)"ui.dialogs.listbox_min_height", NULL);
+	min = get_opt_int((const unsigned char *)"ui.dialogs.listbox_min_height", NULL);
 
 	if (max_height - VERTICAL_LISTBOX_MARGIN < min) {
 		/* Big trouble: can't satisfy even the minimum :-(. */
@@ -359,12 +359,12 @@ display_listbox_item(struct listbox_item *item, void *data_, int *offset)
 	int d;
 	int x, y;
 
-	tree_color = get_bfu_color(data->term, (const char *)"menu.normal");
+	tree_color = get_bfu_color(data->term, (const unsigned char *)"menu.normal");
 	if (item == data->box->sel) {
-		text_color = get_bfu_color(data->term, (const char *)"menu.selected");
+		text_color = get_bfu_color(data->term, (const unsigned char *)"menu.selected");
 
 	} else if (item->marked) {
-		text_color = get_bfu_color(data->term, (const char *)"menu.marked");
+		text_color = get_bfu_color(data->term, (const unsigned char *)"menu.marked");
 
 	} else {
 		text_color = tree_color;
@@ -383,7 +383,7 @@ display_listbox_item(struct listbox_item *item, void *data_, int *offset)
 
 		/* XXX */
 		x = data->widget_data->box.x + d * 5;
-		draw_text(data->term, x, y, (const char *)"     ", 5, 0, tree_color);
+		draw_text(data->term, x, y, (const unsigned char *)"     ", 5, 0, tree_color);
 
 		if (root ? root->child.prev == child
 			 : data->box->items->prev == child)
@@ -460,7 +460,7 @@ display_listbox_item(struct listbox_item *item, void *data_, int *offset)
 		data->box->ops->draw(item, data, x, y, width);
 
 	} else {
-		char *text;
+		unsigned char *text;
 		const struct listbox_ops *ops = data->box->ops;
 		int len_bytes;
 
@@ -506,7 +506,7 @@ display_listbox(struct dialog_data *dlg_data, struct widget_data *widget_data)
 	listbox_sel_move(widget_data, 0);
 
 	draw_box(term, &widget_data->box, ' ', 0,
-		 get_bfu_color(term, (const char *)"menu.normal"));
+		 get_bfu_color(term, (const unsigned char *)"menu.normal"));
 
 	memset(&data, 0, sizeof(data));
 	data.term = term;

@@ -41,15 +41,15 @@
 
 #ifdef DEBUG_MEMLEAK
 
-char *
-debug_memacpy(const char *f, int l, const char *src, int len)
+unsigned char *
+debug_memacpy(const unsigned char *f, int l, const unsigned char *src, int len)
 {
-	char *m;
+	unsigned char *m;
 
 	string_assert(f, l, len >= 0, "memacpy");
 	if_assert_failed len = 0;
 
-	m = (char *)debug_mem_alloc(f, l, len + 1);
+	m = (unsigned char *)debug_mem_alloc(f, l, len + 1);
 	if (!m) return NULL;
 
 	if (src && len) memcpy(m, src, len);
@@ -58,8 +58,8 @@ debug_memacpy(const char *f, int l, const char *src, int len)
 	return m;
 }
 
-char *
-debug_stracpy(const char *f, int l, const char *src)
+unsigned char *
+debug_stracpy(const unsigned char *f, int l, const unsigned char *src)
 {
 	string_assert(f, l, src, "stracpy");
 	if_assert_failed return NULL;
@@ -69,15 +69,15 @@ debug_stracpy(const char *f, int l, const char *src)
 
 #else /* DEBUG_MEMLEAK */
 
-char *
-memacpy(const char *src, int len)
+unsigned char *
+memacpy(const unsigned char *src, int len)
 {
-	char *m;
+	unsigned char *m;
 
 	assertm(len >= 0, "[memacpy]");
 	if_assert_failed { len = 0; }
 
-	m = (char *)mem_alloc(len + 1);
+	m = (unsigned char *)mem_alloc(len + 1);
 	if (!m) return NULL;
 
 	if (src && len) memcpy(m, src, len);
@@ -86,8 +86,8 @@ memacpy(const char *src, int len)
 	return m;
 }
 
-char *
-stracpy(const char *src)
+unsigned char *
+stracpy(const unsigned char *src)
 {
 	assertm(src, "[stracpy]");
 	if_assert_failed return NULL;
@@ -99,9 +99,9 @@ stracpy(const char *src)
 
 
 void
-add_to_strn(char **dst, const char *src)
+add_to_strn(unsigned char **dst, const unsigned char *src)
 {
-	char *newdst;
+	unsigned char *newdst;
 	int dstlen;
 	int srclen;
 
@@ -110,19 +110,19 @@ add_to_strn(char **dst, const char *src)
 
 	dstlen = strlen((const char *)*dst);
 	srclen = strlen((const char *)src) + 1; /* Include the NUL char! */
-	newdst = (char *)mem_realloc(*dst, dstlen + srclen);
+	newdst = (unsigned char *)mem_realloc(*dst, dstlen + srclen);
 	if (!newdst) return;
 
 	memcpy(newdst + dstlen, src, srclen);
 	*dst = newdst;
 }
 
-char *
-insert_in_string(char **dst, int pos,
-		 const char *seq, int seqlen)
+unsigned char *
+insert_in_string(unsigned char **dst, int pos,
+		 const unsigned char *seq, int seqlen)
 {
 	int dstlen = strlen((const char *)*dst);
-	char *string = (char *)mem_realloc(*dst, dstlen + seqlen + 1);
+	unsigned char *string = (unsigned char *)mem_realloc(*dst, dstlen + seqlen + 1);
 
 	if (!string) return NULL;
 
@@ -133,31 +133,31 @@ insert_in_string(char **dst, int pos,
 	return string;
 }
 
-char *
-straconcat(const char *str, ...)
+unsigned char *
+straconcat(const unsigned char *str, ...)
 {
 	va_list ap;
-	const char *a;
-	char *s;
+	const unsigned char *a;
+	unsigned char *s;
 	unsigned int len;
 
 	assertm(str != NULL, "[straconcat]");
 	if_assert_failed { return NULL; }
 
 	len = strlen((const char *)str);
-	s = (char *)mem_alloc(len + 1);
+	s = (unsigned char *)mem_alloc(len + 1);
 	if (!s) return NULL;
 
 	if (len) memcpy(s, str, len);
 
 	va_start(ap, str);
-	while ((a = va_arg(ap, const char *))) {
+	while ((a = va_arg(ap, const unsigned char *))) {
 		unsigned int l = strlen((const char *)a);
-		char *ns;
+		unsigned char *ns;
 
 		if (!l) continue;
 
-		ns = (char *)mem_realloc(s, len + 1 + l);
+		ns = (unsigned char *)mem_realloc(s, len + 1 + l);
 		if (!ns) {
 			mem_free(s);
 			va_end(ap);
@@ -175,15 +175,15 @@ straconcat(const char *str, ...)
 }
 
 int
-xstrcmp(const char *s1, const char *s2)
+xstrcmp(const unsigned char *s1, const unsigned char *s2)
 {
 	if (!s1) return -!!s2;
 	if (!s2) return 1;
 	return strcmp((const char *)s1, (const char *)s2);
 }
 
-char *
-safe_strncpy(char *dst, const char *src, size_t dst_size)
+unsigned char *
+safe_strncpy(unsigned char *dst, const unsigned char *src, size_t dst_size)
 {
 	assertm(dst && src && dst_size > 0, "[safe_strncpy]");
 	if_assert_failed return NULL;
@@ -226,15 +226,15 @@ safe_strncpy(char *dst, const char *src, size_t dst_size)
 }
 
 int
-elinks_strlcmp(const char *s1, size_t n1,
-	       const char *s2, size_t n2)
+elinks_strlcmp(const unsigned char *s1, size_t n1,
+	       const unsigned char *s2, size_t n2)
 {
 	strlcmp_device("strlcmp", s1, n1, s2, n2, s1[p], s2[p]);
 }
 
 int
-elinks_strlcasecmp(const char *s1, size_t n1,
-		   const char *s2, size_t n2,
+elinks_strlcasecmp(const unsigned char *s1, size_t n1,
+		   const unsigned char *s2, size_t n2,
 		   const int locale_indep)
 {
 	if (locale_indep) {
@@ -270,8 +270,8 @@ int
 c_strcasecmp(const char *s1, const char *s2)
 {
 	for (;; s1++, s2++) {
-		unsigned char c1 = c_tolower(*(const char *) s1);
-		unsigned char c2 = c_tolower(*(const char *) s2);
+		unsigned char c1 = c_tolower(*(const unsigned char *) s1);
+		unsigned char c2 = c_tolower(*(const unsigned char *) s2);
 		
 		if (c1 != c2)
 			return (c1 < c2) ? -1: +1;
@@ -283,8 +283,8 @@ c_strcasecmp(const char *s1, const char *s2)
 int c_strncasecmp(const char *s1, const char *s2, size_t n)
 {
 	for (; n > 0; n--, s1++, s2++) {
-		unsigned char c1 = c_tolower(*(const char *) s1);
-		unsigned char c2 = c_tolower(*(const char *) s2);
+		unsigned char c1 = c_tolower(*(const unsigned char *) s1);
+		unsigned char c2 = c_tolower(*(const unsigned char *) s2);
 		
 		if (c1 != c2)
 			return (c1 < c2) ? -1: +1;
@@ -320,7 +320,7 @@ char * c_strcasestr(const char *haystack, const char *needle)
 
 struct string *
 #ifdef DEBUG_MEMLEAK
-init_string__(const char *file, int line, struct string *string)
+init_string__(const unsigned char *file, int line, struct string *string)
 #else
 init_string(struct string *string)
 #endif
@@ -330,9 +330,9 @@ init_string(struct string *string)
 
 	string->length = 0;
 #ifdef DEBUG_MEMLEAK
-	string->source = (char *)debug_mem_alloc(file, line, STRING_GRANULARITY + 1);
+	string->source = (unsigned char *)debug_mem_alloc(file, line, STRING_GRANULARITY + 1);
 #else
-	string->source = (char *)mem_alloc(STRING_GRANULARITY + 1);
+	string->source = (unsigned char *)mem_alloc(STRING_GRANULARITY + 1);
 #endif
 	if (!string->source) return NULL;
 
@@ -363,7 +363,7 @@ done_string(struct string *string)
 
 /** @relates string */
 struct string *
-add_to_string(struct string *string, const char *source)
+add_to_string(struct string *string, const unsigned char *source)
 {
 	assertm(string && source, "[add_to_string]");
 	if_assert_failed { return NULL; }
@@ -411,7 +411,7 @@ add_string_to_string(struct string *string, const struct string *from)
 
 /** @relates string */
 struct string *
-add_file_to_string(struct string *string, const char *filename)
+add_file_to_string(struct string *string, const unsigned char *filename)
 {
 	FILE *file;
 	off_t filelen;
@@ -454,7 +454,7 @@ struct string *
 string_concat(struct string *string, ...)
 {
 	va_list ap;
-	const char *source;
+	const unsigned char *source;
 
 	assertm(string != NULL, "[string_concat]");
 	if_assert_failed { return NULL; }
@@ -462,7 +462,7 @@ string_concat(struct string *string, ...)
 	check_string_magic(string);
 
 	va_start(ap, string);
-	while ((source = va_arg(ap, const char *)))
+	while ((source = va_arg(ap, const unsigned char *)))
 		if (*source)
 			add_to_string(string, source);
 
@@ -546,7 +546,7 @@ add_format_to_string(struct string *string, const char *format, ...)
 
 struct string *
 add_to_string_list(LIST_OF(struct string_list_item) *list,
-		   const char *source, int length)
+		   const unsigned char *source, int length)
 {
 	struct string_list_item *item;
 	struct string *string;

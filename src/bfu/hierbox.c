@@ -298,7 +298,7 @@ hierbox_browser(struct hierbox_browser *browser, struct session *ses)
 	struct listbox_data *listbox_data;
 	struct dialog *dlg;
 	int button = browser->buttons_size + 2;
-	int anonymous = get_cmd_opt_bool("anonymous");
+	int anonymous = get_cmd_opt_bool((const unsigned char *)"anonymous");
 
 	assert(ses);
 
@@ -413,7 +413,7 @@ push_hierbox_info_button(struct dialog_data *dlg_data, struct widget_data *butto
 	struct listbox_item *item = box->sel;
 	struct terminal *term = dlg_data->win->term;
 	struct listbox_context *context;
-	char *msg;
+	unsigned char *msg;
 
 	if (!item) return EVENT_PROCESSED;
 
@@ -595,8 +595,8 @@ print_delete_error(struct listbox_item *item, struct terminal *term,
 		   const struct listbox_ops *ops, enum delete_error err)
 {
 	struct string msg;
-	char *errmsg;
-	char *text;
+	unsigned char *errmsg;
+	unsigned char *text;
 
 	switch (err) {
 	case DELETE_IMPOSSIBLE:
@@ -631,7 +631,7 @@ print_delete_error(struct listbox_item *item, struct terminal *term,
 	mem_free(text);
 
 	if (item->type == BI_LEAF) {
-		char *info = ops->get_info(item, term);
+		unsigned char *info = ops->get_info(item, term);
 
 		if (info) {
 			add_format_to_string(&msg, "\n\n%s", info);
@@ -722,7 +722,7 @@ query_delete_selected_item(void *context_)
 	struct listbox_data *box = oldcontext->box;
 	const struct listbox_ops *ops = box->ops;
 	struct listbox_item *item = box->sel;
-	char *text;
+	unsigned char *text;
 	enum delete_error delete2;
 
 	assert(item);
@@ -754,7 +754,7 @@ query_delete_selected_item(void *context_)
 			MSG_BOX_BUTTON(N_("~Yes"), push_ok_delete_button, B_ENTER),
 			MSG_BOX_BUTTON(N_("~No"), done_listbox_context, B_ESC));
 	} else {
-		char *msg = ops->get_info(item, term);
+		unsigned char *msg = ops->get_info(item, term);
 
 		ops->lock(item);
 
@@ -888,7 +888,7 @@ static int
 scan_for_matches(struct listbox_item *item, void *info_, int *offset)
 {
 	struct listbox_context *context = (struct listbox_context *)info_;
-	char *text = (char *) context->widget_data;
+	unsigned char *text = (unsigned char *) context->widget_data;
 
 	if (!*text) {
 		item->visible = 1;
@@ -922,7 +922,7 @@ mark_visible(struct listbox_item *item, void *xxx, int *offset)
 
 
 static void
-search_hierbox_browser(void *data, char *text)
+search_hierbox_browser(void *data, unsigned char *text)
 {
 	struct dialog_data *dlg_data = (struct dialog_data *)data;
 	struct listbox_data *box = get_dlg_listbox_data(dlg_data);
@@ -939,7 +939,7 @@ search_hierbox_browser(void *data, char *text)
 				    scan_for_matches, context);
 
 	if (!context->item && *text) {
-		switch (get_opt_int("document.browse.search.show_not_found",
+		switch (get_opt_int((const unsigned char *)"document.browse.search.show_not_found",
 		                    NULL)) {
 		case 2:
 			info_box(term, MSGBOX_FREE_TEXT,
@@ -976,7 +976,7 @@ push_hierbox_search_button(struct dialog_data *dlg_data,
 
 	input_dialog(term, NULL, N_("Search"), N_("Name"),
 		     dlg_data, NULL,
-		     MAX_STR_LEN, "", 0, 0, NULL,
+		     MAX_STR_LEN, (const unsigned char *)"", 0, 0, NULL,
 		     search_hierbox_browser, NULL);
 
 	return EVENT_PROCESSED;

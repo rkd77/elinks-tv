@@ -18,8 +18,8 @@
 #include "terminal/terminal.h"
 
 /* no-op - just for marking */
-#define N_(msg) (char *)(__(msg))
-#define N__(msg) (char *)(__(msg))
+#define N_(msg) (unsigned char *)(__(msg))
+#define N__(msg) (unsigned char *)(__(msg))
 
 /* The intl/gettext/libgettext.h header nukes gettext functions but not the _()
  * function so make sure it is also just a noop when NLS is disabled. */
@@ -29,16 +29,22 @@
 
 /* In order to make it able to compile using -Werror this has to be a function
  * so that local @term variables will not be reported as unused. */
-static inline char *
-_(const char *msg, struct terminal *term)
+static inline unsigned char *
+_(const unsigned char *msg, struct terminal *term)
 {
-	return gettext(msg);
+	return (unsigned char *)gettext((const char *)msg);
 }
 
-static inline char *
-n_(char *msg1, char *msg2, unsigned long int n, struct terminal *term)
+static inline unsigned char *
+_(const char *msg, struct terminal *term)
 {
-	return __(msg1);
+	return (unsigned char *)gettext(msg);
+}
+
+static inline unsigned char *
+n_(unsigned char *msg1, unsigned char *msg2, unsigned long int n, struct terminal *term)
+{
+	return (unsigned char *)__(msg1);
 }
 
 static inline void

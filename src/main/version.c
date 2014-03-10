@@ -34,14 +34,14 @@ add_module_to_string(struct string *string, struct module *module,
 
 	if (!module->submodules) return;
 
-	add_to_string(string, (const char *)" (");
+	add_to_string(string, (const unsigned char *)" (");
 
 	foreach_module (submodule, module->submodules, i) {
-		if (i > 0) add_to_string(string, (const char *)", ");
+		if (i > 0) add_to_string(string, (const unsigned char *)", ");
 		add_module_to_string(string, submodule, term);
 	}
 
-	add_to_string(string, (const char *)")");
+	add_to_string(string, (const unsigned char *)")");
 }
 
 static void
@@ -51,7 +51,7 @@ add_modules_to_string(struct string *string, struct terminal *term)
 	int i;
 
 	foreach_module (module, builtin_modules, i) {
-		if (i > 0) add_to_string(string, (const char *)", ");
+		if (i > 0) add_to_string(string, (const unsigned char *)", ");
 		add_module_to_string(string, module, term);
 	}
 }
@@ -61,8 +61,8 @@ add_modules_to_string(struct string *string, struct terminal *term)
 static void
 wrap_string(struct string *string, int start_at, int maxlen)
 {
-	char *pos, *start_pos;
-	char *last_pos = NULL;
+	unsigned char *pos, *start_pos;
+	unsigned char *last_pos = NULL;
 
 	assert(string && string->source && start_at < string->length);
 	if_assert_failed return;
@@ -70,7 +70,7 @@ wrap_string(struct string *string, int start_at, int maxlen)
 	if (maxlen <= 0) return;
 
 	pos = start_pos = &string->source[start_at];
-	while ((pos = (char *)strchr((char *)pos, ' '))) {
+	while ((pos = (unsigned char *)strchr((char *)pos, ' '))) {
 		int len = pos - start_pos;
 
 		if (len < maxlen) {
@@ -85,7 +85,7 @@ wrap_string(struct string *string, int start_at, int maxlen)
 }
 
 /* @more will add more information especially for info box. */
-char *
+unsigned char *
 get_dyn_full_version(struct terminal *term, int more)
 {
 	static const unsigned char comma[] = ", ";
@@ -104,7 +104,7 @@ get_dyn_full_version(struct terminal *term, int more)
 			     build_date, build_time);
 
 	if (more) {
-		add_to_string(&string, (const char *)"\n\n");
+		add_to_string(&string, (const unsigned char *)"\n\n");
 		add_to_string(&string, _("Text WWW browser", term));
 	}
 
@@ -147,14 +147,14 @@ get_dyn_full_version(struct terminal *term, int more)
 		comma, _("Combining characters", term),
 #endif
 		comma,
-		(char *) NULL
+		(unsigned char *) NULL
 	);
 
 	add_modules_to_string(&string, term);
 
 	if (!more) {
 		int start_at = 0;
-		char *last_newline = (char *)strrchr((char *)string.source, '\n');
+		unsigned char *last_newline = (unsigned char *)strrchr((char *)string.source, '\n');
 
 		if (last_newline) {
 			start_at = last_newline - string.source + 1;
@@ -170,7 +170,7 @@ get_dyn_full_version(struct terminal *term, int more)
 void
 init_static_version(void)
 {
-	char *s = get_dyn_full_version((struct terminal *) NULL, 0);
+	unsigned char *s = get_dyn_full_version((struct terminal *) NULL, 0);
 
 	if (s) {
 		safe_strncpy(full_static_version, s, sizeof(full_static_version));

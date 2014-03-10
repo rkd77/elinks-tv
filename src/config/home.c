@@ -24,7 +24,7 @@
 #include "util/string.h"
 
 
-char *elinks_home = NULL;
+unsigned char *elinks_home = NULL;
 int first_use = 0;
 
 static inline void

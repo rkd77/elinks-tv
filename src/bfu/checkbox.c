@@ -21,7 +21,7 @@
 #define CHECKBOX_LS (CHECKBOX_LEN + CHECKBOX_SPACING)	/* "[X] " */
 
 void
-add_dlg_radio_do(struct dialog *dlg, char *text,
+add_dlg_radio_do(struct dialog *dlg, unsigned char *text,
 		 int groupid, int groupnum, int *data)
 {
 	struct widget *widget = &dlg->widgets[dlg->number_of_widgets++];
@@ -42,7 +42,7 @@ dlg_format_checkbox(struct dialog_data *dlg_data,
 		    enum format_align align, int format_only)
 {
 	struct terminal *term = dlg_data->win->term;
-	const char *text = widget_data->widget->text;
+	const unsigned char *text = widget_data->widget->text;
 
 	set_box(&widget_data->box, x, *y, CHECKBOX_LEN, CHECKBOX_HEIGHT);
 
@@ -52,7 +52,7 @@ dlg_format_checkbox(struct dialog_data *dlg_data,
 		if (rw) *rw -= CHECKBOX_LS;
 		dlg_format_text_do(dlg_data, text, x + CHECKBOX_LS, y,
 				   w - CHECKBOX_LS, rw,
-				   get_bfu_color(term, "dialog.checkbox-label"),
+				   get_bfu_color(term, (const unsigned char *)"dialog.checkbox-label"),
 				   align, format_only);
 		if (rw) *rw += CHECKBOX_LS;
 	}
@@ -63,21 +63,21 @@ display_checkbox(struct dialog_data *dlg_data, struct widget_data *widget_data)
 {
 	struct terminal *term = dlg_data->win->term;
 	struct color_pair *color;
-	const char *text;
+	const unsigned char *text;
 	struct box *pos = &widget_data->box;
 	int selected = is_selected_widget(dlg_data, widget_data);
 
 	if (selected) {
-		color = get_bfu_color(term, "dialog.checkbox-selected");
+		color = get_bfu_color(term, (const unsigned char *)"dialog.checkbox-selected");
 	} else {
-		color = get_bfu_color(term, "dialog.checkbox");
+		color = get_bfu_color(term, (const unsigned char *)"dialog.checkbox");
 	}
 	if (!color) return EVENT_PROCESSED;
 
 	if (widget_data->info.checkbox.checked)
-		text = widget_data->widget->info.checkbox.gid ? "(X)" : "[X]";
+		text = widget_data->widget->info.checkbox.gid ? (const unsigned char *)"(X)" : (const unsigned char *)"[X]";
 	else
-		text = widget_data->widget->info.checkbox.gid ? "( )" : "[ ]";
+		text = widget_data->widget->info.checkbox.gid ? (const unsigned char *)"( )" : (const unsigned char *)"[ ]";
 
 	draw_dlg_text(dlg_data, pos->x, pos->y, text, CHECKBOX_LEN, 0, color);
 

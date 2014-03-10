@@ -51,14 +51,14 @@
  * @returns 0 if OK or width needed for the whole number to fit there,
  * if it had to be truncated. A negative value signs an error. */
 int
-elinks_ulongcat(char *s, unsigned int *slen,
+elinks_ulongcat(unsigned char *s, unsigned int *slen,
 		unsigned long long number, unsigned int width,
 		unsigned char fillchar, unsigned int base,
 		unsigned int upper)
 {
 	static const unsigned char unum[]= "0123456789ABCDEF";
 	static const unsigned char lnum[]= "0123456789abcdef";
-	const char *to_num = (upper ? unum : lnum);
+	const unsigned char *to_num = (upper ? unum : lnum);
 	unsigned int start = slen ? *slen : 0;
 	unsigned int nlen = 1; /* '0' is one char, we can't have less. */
 	unsigned int pos = start; /* starting position of the number */
@@ -109,12 +109,12 @@ elinks_ulongcat(char *s, unsigned int *slen,
 
 /** Similar to elinks_ulongcat() but for @c long number. */
 int
-elinks_longcat(char *s, unsigned int *slen,
+elinks_longcat(unsigned char *s, unsigned int *slen,
 	       long long number, unsigned int width,
 	       unsigned char fillchar, unsigned int base,
 	       unsigned int upper)
 {
-	char *p = s;
+	unsigned char *p = s;
 
 	if (number < 0 && width > 0) {
 		if (slen) p[(*slen)++] = '-';
@@ -248,7 +248,7 @@ add_timeval_to_string(struct string *string, timeval_T *timeval)
 
 #ifdef HAVE_STRFTIME
 struct string *
-add_date_to_string(struct string *string, const char *fmt,
+add_date_to_string(struct string *string, const unsigned char *fmt,
 		   const time_t *date)
 {
 	unsigned char buffer[MAX_STR_LEN];
@@ -265,7 +265,7 @@ add_date_to_string(struct string *string, const char *fmt,
 /* Encoders and string changers */
 
 struct string *
-add_string_replace(struct string *string, char *src, int len,
+add_string_replace(struct string *string, unsigned char *src, int len,
 		   unsigned char replaceable, unsigned char replacement)
 {
 	int oldlength = string->length;
@@ -281,7 +281,7 @@ add_string_replace(struct string *string, char *src, int len,
 }
 
 struct string *
-add_html_to_string(struct string *string, const char *src, int len)
+add_html_to_string(struct string *string, const unsigned char *src, int len)
 {
 	for (; len; len--, src++) {
 		if (*src < 0x20
@@ -289,7 +289,7 @@ add_html_to_string(struct string *string, const char *src, int len)
 		    || *src == '\"' || *src == '\'') {
 			int rollback_length = string->length;
 
-			if (!add_bytes_to_string(string, (const char *)"&#", 2)
+			if (!add_bytes_to_string(string, (const unsigned char *)"&#", 2)
 			    || !add_long_to_string(string, (long long)*src)
 			    || !add_char_to_string(string, ';')) {
 				string->length = rollback_length;
@@ -307,14 +307,14 @@ add_html_to_string(struct string *string, const char *src, int len)
 
 struct string *
 add_cp_html_to_string(struct string *string, int src_codepage,
-		      const char *src, int len)
+		      const unsigned char *src, int len)
 {
-	const char *const end = src + len;
+	const unsigned char *const end = src + len;
 	unicode_val_T unicode;
 
 	for (;;) {
 		unicode = cp_to_unicode(src_codepage,
-					(char **) &src, end);
+					(unsigned char **) &src, end);
 		if (unicode == UCS_NO_CHAR)
 			break;
 
@@ -323,7 +323,7 @@ add_cp_html_to_string(struct string *string, int src_codepage,
 		    || unicode == '\"' || unicode == '\'') {
 			int rollback_length = string->length;
 
-			if (!add_bytes_to_string(string, (const char *)"&#", 2)
+			if (!add_bytes_to_string(string, (const unsigned char *)"&#", 2)
 			    || !add_long_to_string(string, unicode)
 			    || !add_char_to_string(string, ';')) {
 				string->length = rollback_length;
@@ -341,7 +341,7 @@ add_cp_html_to_string(struct string *string, int src_codepage,
 
 /* TODO Optimize later --pasky */
 struct string *
-add_quoted_to_string(struct string *string, const char *src, int len)
+add_quoted_to_string(struct string *string, const unsigned char *src, int len)
 {
 	for (; len; len--, src++) {
 		if (isquote(*src) || *src == '\\')
@@ -353,12 +353,12 @@ add_quoted_to_string(struct string *string, const char *src, int len)
 }
 
 struct string *
-add_shell_quoted_to_string(struct string *string, char *src, int len)
+add_shell_quoted_to_string(struct string *string, unsigned char *src, int len)
 {
 	add_char_to_string(string, '\'');
 	for (; len; len--, ++src)
 		if (*src == '\'')
-			add_to_string(string, (const char *)"'\\''");
+			add_to_string(string, (const unsigned char *)"'\\''");
 		else
 			add_char_to_string(string, *src);
 	add_char_to_string(string, '\'');
@@ -367,7 +367,7 @@ add_shell_quoted_to_string(struct string *string, char *src, int len)
 }
 
 struct string *
-add_shell_safe_to_string(struct string *string, char *cmd, int cmdlen)
+add_shell_safe_to_string(struct string *string, unsigned char *cmd, int cmdlen)
 {
 	int prev_safe = 0;
 
@@ -390,7 +390,7 @@ add_shell_safe_to_string(struct string *string, char *cmd, int cmdlen)
 
 
 long
-strtolx(char *str, char **end)
+strtolx(unsigned char *str, unsigned char **end)
 {
 	long num;
 	unsigned char postfix;
@@ -419,7 +419,7 @@ strtolx(char *str, char **end)
 }
 
 int
-month2num(const char *str)
+month2num(const unsigned char *str)
 {
 	unsigned char month[3] = { str[0]|32, str[1]|32, str[2]|32 };
 
@@ -470,10 +470,10 @@ month2num(const char *str)
 /** This function drops control chars, nbsp char and limit the number
  * of consecutive space chars to one. It modifies its argument. */
 void
-clr_spaces(char *str)
+clr_spaces(unsigned char *str)
 {
-	char *s;
-	char *dest = str;
+	unsigned char *s;
+	unsigned char *dest = str;
 
 	assert(str);
 
@@ -496,7 +496,7 @@ clr_spaces(char *str)
  * update_bookmark() assumes this function does not switch translation
  * tables.  */
 void
-sanitize_title(char *title)
+sanitize_title(unsigned char *title)
 {
 	int len = strlen((const char *)title);
 
@@ -512,7 +512,7 @@ sanitize_title(char *title)
 /** Returns 0 if @a url contains invalid chars, 1 if ok.
  * It trims starting/ending spaces. */
 int
-sanitize_url(char *url)
+sanitize_url(unsigned char *url)
 {
 	int len = strlen((const char *)url);
 

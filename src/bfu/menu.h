@@ -78,7 +78,7 @@ enum hotkey_state {
 /* XXX: keep order of fields, there's some hard initializations for it. --Zas
  */
 struct menu_item {
-	char *text;		/* The item label */
+	unsigned char *text;		/* The item label */
 
 	/* The following three members are tightly coupled:
 	 *
@@ -89,7 +89,7 @@ struct menu_item {
 	 * - A few places however there is no associated keybinding and no
 	 *   ``default'' handler defined in which case @rtext (if non NULL)
 	 *   will be drawn and @func will be called when selecting the item. */
-	char *rtext;		/* Right aligned guiding text */
+	unsigned char *rtext;		/* Right aligned guiding text */
 	action_id_T action_id;	/* Default item handlers */
 	menu_func_T func;		/* Called when selecting the item */
 
@@ -104,8 +104,8 @@ struct menu_item {
 
 #define INIT_MENU_ITEM(text, rtext, action_id, func, data, flags)	\
 {									\
-	(char *) (text),					\
-	(char *) (rtext),					\
+	(unsigned char *) (text),					\
+	(unsigned char *) (rtext),					\
 	(action_id),							\
 	(func),								\
 	(void *) (data),						\
@@ -126,8 +126,8 @@ struct menu_item {
 #define SET_MENU_ITEM(e_, text_, rtext_, action_id_, func_, data_,	\
 		      flags_, hotkey_state_, hotkey_pos_)		\
 do {									\
-	(e_)->text = (char *) (text_);				\
-	(e_)->rtext = (char *) (rtext_);			\
+	(e_)->text = (unsigned char *) (text_);				\
+	(e_)->rtext = (unsigned char *) (rtext_);			\
 	(e_)->action_id = (action_id_);					\
 	(e_)->func = (func_);						\
 	(e_)->data = (void *) (data_);					\
@@ -163,12 +163,12 @@ struct menu {
 struct menu_item *new_menu(menu_item_flags_T);
 
 void
-add_to_menu(struct menu_item **mi, char *text, char *rtext,
+add_to_menu(struct menu_item **mi, unsigned char *text, unsigned char *rtext,
 	    action_id_T action_id, menu_func_T func, void *data,
 	    menu_item_flags_T flags);
 
 #define add_menu_separator(menu) \
-	add_to_menu(menu, (char *)"", NULL, ACT_MAIN_NONE, NULL, NULL, NO_SELECT)
+	add_to_menu(menu, (unsigned char *)"", NULL, ACT_MAIN_NONE, NULL, NULL, NO_SELECT)
 
 /* Implies that the action will be handled by do_action() */
 #define add_menu_action(menu, text, action_id) \

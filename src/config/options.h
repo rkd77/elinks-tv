@@ -134,8 +134,8 @@ struct session; /* session/session.h */
  *
  * @return NULL if successful, or a localized error string that the
  * caller will not free.  */
-typedef char *option_command_fn_T(struct option *option,
-					   char ***argv, int *argc);
+typedef unsigned char *option_command_fn_T(struct option *option,
+					   unsigned char ***argv, int *argc);
 
 union option_value {
 	/** The ::OPT_TREE list_head is allocated.
@@ -159,7 +159,7 @@ union option_value {
 	 * The ::OPT_ALIAS string is NOT allocated, has variable length
 	 * (option.max) and should remain untouched! It contains the full path to
 	 * the "real" / aliased option. */
-	char *string;
+	unsigned char *string;
 };
 
 
@@ -188,13 +188,13 @@ typedef int (*change_hook_T)(struct session *session, struct option *current,
 struct option {
 	OBJECT_HEAD(struct option);
 
-	const char *name;
+	const unsigned char *name;
 	option_flags_T flags;
 	int type;
 	long min, max;
 	union option_value value;
-	char *desc;
-	char *capt;
+	unsigned char *desc;
+	unsigned char *capt;
 
 	struct option *root;
 
@@ -211,7 +211,7 @@ struct option {
  * with ::INIT_OPT_INT or a similar macro.
  * @relates option */
 #define INIT_OPTION(name, flags, type, min, max, value, desc, capt) \
-	{ NULL_LIST_HEAD, INIT_OBJECT("option"), name, flags, type, min, max, { (LIST_OF(struct option) *) (value) }, desc, capt }
+	{ NULL_LIST_HEAD, INIT_OBJECT("option"), (const unsigned char *)name, flags, type, min, max, { (LIST_OF(struct option) *) (value) }, (unsigned char *)desc, (unsigned char *)capt }
 
 extern struct option *config_options;
 extern struct option *cmdline_options;
@@ -222,7 +222,7 @@ extern void done_options(void);
 
 
 struct change_hook_info {
-	const char *name;
+	const unsigned char *name;
 	change_hook_T change_hook;
 };
 
@@ -234,9 +234,9 @@ extern void prepare_mustsave_flags(LIST_OF(struct option) *, int set_all);
 extern void untouch_options(LIST_OF(struct option) *);
 
 extern void smart_config_string(struct string *, int, int,
-				LIST_OF(struct option) *, char *, int,
+				LIST_OF(struct option) *, unsigned char *, int,
 				void (*)(struct string *, struct option *,
-					 char *, int, int, int, int));
+					 unsigned char *, int, int, int, int));
 
 enum copy_option_flags {
 	/* Do not create a listbox option for the new option. */
@@ -257,7 +257,7 @@ void mark_option_as_deleted(struct option *);
 /** Some minimal option cache */
 struct option_resolver {
 	int id;
-	char *name;
+	unsigned char *name;
 };
 
 /** Update the visibility of the box item of each option
@@ -293,14 +293,14 @@ extern void checkout_option_values(struct option_resolver *resolvers,
  * use get_opt_type() and add_opt_type(). For command line options, you want to
  * use get_opt_type_tree(cmdline_options, "option", NULL). */
 
-extern struct option *get_opt_rec(struct option *, const char *);
-extern struct option *get_opt_rec_real(struct option *, const char *);
+extern struct option *get_opt_rec(struct option *, const unsigned char *);
+extern struct option *get_opt_rec_real(struct option *, const unsigned char *);
 struct option *indirect_option(struct option *);
 #ifdef CONFIG_DEBUG
-extern union option_value *get_opt_(char *, int, int, struct option *, const char *, struct session *);
+extern union option_value *get_opt_(unsigned char *, int, int, struct option *, const unsigned char *, struct session *);
 #define get_opt(tree, name, ses, type) get_opt_(__FILE__, __LINE__, type, tree, name, ses)
 #else
-extern union option_value *get_opt_(struct option *, const char *, struct session *);
+extern union option_value *get_opt_(struct option *, const unsigned char *, struct session *);
 #define get_opt(tree, name, ses, type) get_opt_(tree, name, ses)
 #endif
 
@@ -328,9 +328,9 @@ extern union option_value *get_opt_(struct option *, const char *, struct sessio
 #define get_cmd_opt_color(name) get_opt_color_tree(cmdline_options, name, NULL)
 #define get_cmd_opt_tree(name) get_opt_tree_tree(cmdline_options, name, NULL)
 
-extern struct option *add_opt(struct option *, char *, char *,
-			      char *, option_flags_T, int,
-			      long, long, longptr_T, char *);
+extern struct option *add_opt(struct option *, unsigned char *, unsigned char *,
+			      unsigned char *, option_flags_T, int,
+			      long, long, longptr_T, unsigned char *);
 
 /** Check whether the character @a c may be used in the name of an
  * option.  This does not allow the '.' used in multi-part names like
@@ -346,9 +346,9 @@ extern struct option *add_opt(struct option *, char *, char *,
  * It may of some use for people wanting a very small static non-i18n elinks binary,
  * at time of writing gain is over 25Kbytes. --Zas */
 #ifndef CONFIG_SMALL
-#define DESC(x) (char *)(x)
+#define DESC(x) (unsigned char *)(x)
 #else
-#define DESC(x) ((char *) "")
+#define DESC(x) ((unsigned char *) "")
 #endif
 
 
@@ -367,7 +367,7 @@ extern struct option *add_opt(struct option *, char *, char *,
 /*! @relates option */
 #define add_opt_str_tree(tree, path, capt, name, flags, def, desc) \
 do { \
-	char *ptr = (char *)mem_alloc(MAX_STR_LEN); \
+	unsigned char *ptr = mem_alloc(MAX_STR_LEN); \
 	safe_strncpy(ptr, def, MAX_STR_LEN); \
 	add_opt(tree, path, capt, name, flags, OPT_STRING, 0, MAX_STR_LEN, (longptr_T) ptr, DESC(desc)); \
 } while (0)
@@ -407,18 +407,18 @@ do { \
 struct option_init {
 	/** The name of the option tree where the option should be
 	 * registered.  option.root is computed from this.  */
-	const char *path;
+	const unsigned char *path;
 
 	/** The name of the option.  This goes to option.name.  */
-	const char *name;
+	const unsigned char *name;
 
 	/** The caption shown in the option manager.  This goes to
 	 * option.capt.  */
-	char *capt;
+	unsigned char *capt;
 
 	/** The long description shown when the user edits the option,
 	 * or NULL if not available.  This goes to option.desc.  */
-	char *desc;
+	unsigned char *desc;
 
 	/** Flags for the option.  These go to option.flags.  */
 	option_flags_T flags;
@@ -486,57 +486,57 @@ extern void unregister_options(union option_info info[], struct option *tree);
 
 /*! @relates option_info */
 #define INIT_OPT_BOOL(path, capt, name, flags, def, desc) \
-	{{ (const char *)path, (const char *)name, (char *)capt, DESC(desc), flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, (unsigned char *)capt, DESC(desc), flags, \
 	   OPT_BOOL, 0, 1,  def, NULL, NULL }}
 
 /*! @relates option_info */
 #define INIT_OPT_INT(path, capt, name, flags, min, max, def, desc) \
-	{{ (const char *)path, (const char *)name, (char *)capt, DESC(desc), flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, (unsigned char *)capt, DESC(desc), flags, \
 	   OPT_INT, min, max,  def, NULL, NULL }}
 
 /*! @relates option_info */
 #define INIT_OPT_LONG(path, capt, name, flags, min, max, def, desc) \
-	{{ (const char *)path, (const char *)name, (char *)capt, DESC(desc), flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, (unsigned char *)capt, DESC(desc), flags, \
 	   OPT_LONG, min, max,  def, NULL, NULL }}
 
 /*! @relates option_info */
 #define INIT_OPT_STRING(path, capt, name, flags, def, desc) \
-	{{ (const char *)path, (const char *)name, (char *)capt, DESC(desc), flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, (unsigned char *)capt, DESC(desc), flags, \
 	   OPT_STRING, 0, MAX_STR_LEN,  0, def, NULL }}
 
 /*! @relates option_info */
 #define INIT_OPT_CODEPAGE(path, capt, name, flags, def, desc) \
-	{{ (const char *)path, (const char *)name, (char *)capt, DESC(desc), flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, (unsigned char *)capt, DESC(desc), flags, \
 	   OPT_CODEPAGE, 0, 0,  0, def, NULL }}
 
 /*! @relates option_info */
 #define INIT_OPT_COLOR(path, capt, name, flags, def, desc) \
-	{{ (const char *)path, (const char *)name, (char *)capt, DESC(desc), flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, (unsigned char *)capt, DESC(desc), flags, \
 	   OPT_COLOR, 0, 0,  0, def, NULL }}
 
 /*! @relates option_info */
 #define INIT_OPT_LANGUAGE(path, capt, name, flags, desc) \
-	{{ (const char *)path, (const char *)name, (char *)capt, DESC(desc), flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, (unsigned char *)capt, DESC(desc), flags, \
 	   OPT_LANGUAGE, 0, 0,  0, NULL, NULL }}
 
 /*! @relates option_info */
 #define INIT_OPT_COMMAND(path, capt, name, flags, cmd, desc) \
-	{{ (const char *)path, (const char *)name, (char *)capt, DESC(desc), flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, (unsigned char *)capt, DESC(desc), flags, \
 	   OPT_COMMAND, 0, 0,  0, NULL, cmd }}
 
 /*! @relates option_info */
 #define INIT_OPT_CMDALIAS(path, capt, name, flags, def, desc) \
-	{{ (const char *)path, (const char *)name, (char *)capt, DESC(desc), flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, (unsigned char *)capt, DESC(desc), flags, \
 	   OPT_ALIAS, 0, sizeof(def) - 1,  0, def, NULL }}
 
 /*! @relates option_info */
 #define INIT_OPT_ALIAS(path, name, flags, def) \
-	{{ (const char *)path, (const char *)name, NULL, NULL, flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, NULL, NULL, flags, \
 	   OPT_ALIAS, 0, sizeof(def) - 1,  0, def, NULL }}
 
 /*! @relates option_info */
 #define INIT_OPT_TREE(path, capt, name, flags, desc) \
-	{{ (const char *)path, (const char *)name, (char *)capt, DESC(desc), flags, \
+	{{ (const unsigned char *)path, (const unsigned char *)name, (unsigned char *)capt, DESC(desc), flags, \
 	   OPT_TREE, 0, 0,  0, NULL, NULL }}
 
 

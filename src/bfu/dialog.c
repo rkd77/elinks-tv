@@ -88,14 +88,14 @@ redraw_dialog(struct dialog_data *dlg_data, int layout)
 			dlg_data->box.width - 2 * (DIALOG_LEFT_BORDER + 1),
 			dlg_data->box.height - 2 * (DIALOG_TOP_BORDER + 1));
 
-		draw_border(term, &dlg_data->real_box, get_bfu_color(term, "dialog.frame"), DIALOG_FRAME);
+		draw_border(term, &dlg_data->real_box, get_bfu_color(term, (const unsigned char *)"dialog.frame"), DIALOG_FRAME);
 
 		assert(dlg_data->dlg->title);
 
-		title_color = get_bfu_color(term, "dialog.title");
+		title_color = get_bfu_color(term, (const unsigned char *)"dialog.title");
 		if (title_color && dlg_data->real_box.width > 2) {
-			char *title = dlg_data->dlg->title;
-			int titlelen = strlen(title);
+			unsigned char *title = dlg_data->dlg->title;
+			int titlelen = strlen((const char *)title);
 			int titlecells = titlelen;
 			int x, y;
 
@@ -117,9 +117,9 @@ redraw_dialog(struct dialog_data *dlg_data, int layout)
 			y = dlg_data->real_box.y - 1;
 
 
-			draw_text(term, x - 1, y, " ", 1, 0, title_color);
+			draw_text(term, x - 1, y, (const unsigned char *)" ", 1, 0, title_color);
 			draw_text(term, x, y, title, titlelen, 0, title_color);
-			draw_text(term, x + titlecells, y, " ", 1, 0,
+			draw_text(term, x + titlecells, y, (const unsigned char *)" ", 1, 0,
 				  title_color);
 		}
 	}
@@ -156,7 +156,7 @@ init_widget(struct dialog_data *dlg_data, int i)
 	widget_data->widget = &dlg_data->dlg->widgets[i];
 
 	if (widget_data->widget->datalen) {
-		widget_data->cdata = (char *)mem_alloc(widget_data->widget->datalen);
+		widget_data->cdata = (unsigned char *)mem_alloc(widget_data->widget->datalen);
 		if (!widget_data->cdata) {
 			return NULL;
 		}
@@ -330,7 +330,7 @@ select_button_by_key(struct dialog_data *dlg_data)
 
 	foreach_widget(dlg_data, widget_data) {
 		int hk_pos;
-		const char *hk_ptr;
+		const unsigned char *hk_ptr;
 		term_event_char_T hk_char;
 
 		if (widget_data->widget->type != WIDGET_BUTTON)
@@ -684,12 +684,12 @@ draw_dialog(struct dialog_data *dlg_data, int width, int height)
 		dlg_width, dlg_height);
 
 	draw_box(term, &dlg_data->box, ' ', 0,
-		 get_bfu_color(term, (const char *)"dialog.generic"));
+		 get_bfu_color(term, (const unsigned char *)"dialog.generic"));
 
-	if (get_opt_bool((const char *)"ui.dialogs.shadows", NULL)) {
+	if (get_opt_bool((const unsigned char *)"ui.dialogs.shadows", NULL)) {
 		/* Draw shadow */
 		draw_shadow(term, &dlg_data->box,
-			    get_bfu_color(term, (const char *)"dialog.shadow"), 2, 1);
+			    get_bfu_color(term, (const unsigned char *)"dialog.shadow"), 2, 1);
 #ifdef CONFIG_UTF8
 		if (term->utf8_cp)
 			fix_dwchar_around_box(term, &dlg_data->box, 0, 2, 1);

@@ -37,13 +37,13 @@
 
 #ifdef DEBUG_BUTTON_HOTKEY
 void
-add_dlg_button_do(const char *file, int line,
-		  struct dialog *dlg, char *text, int flags,
+add_dlg_button_do(const unsigned char *file, int line,
+		  struct dialog *dlg, unsigned char *text, int flags,
 		  widget_handler_T *handler, void *data,
 		  done_handler_T *done, void *done_data)
 #else
 void
-add_dlg_button_do(struct dialog *dlg, char *text, int flags,
+add_dlg_button_do(struct dialog *dlg, unsigned char *text, int flags,
 		  widget_handler_T *handler, void *data,
 		  done_handler_T *done, void *done_data)
 #endif
@@ -64,7 +64,7 @@ add_dlg_button_do(struct dialog *dlg, char *text, int flags,
 	widget->info.button.truetextlen = textlen;
 
 	if (textlen > 1) {
-		char *pos = (char *)memchr(text, '~', textlen - 1);
+		unsigned char *pos = (unsigned char *)memchr(text, '~', textlen - 1);
 
 		if (pos) {
 			widget->info.button.hotkey_pos = pos - text;
@@ -191,11 +191,11 @@ display_button(struct dialog_data *dlg_data, struct widget_data *widget_data)
 	int sel = is_selected_widget(dlg_data, widget_data);
 
 	if (sel) {
-		shortcut_color = get_bfu_color(term, "dialog.button-shortcut-selected");
-		color =  get_bfu_color(term, "dialog.button-selected");
+		shortcut_color = get_bfu_color(term, (const unsigned char *)"dialog.button-shortcut-selected");
+		color =  get_bfu_color(term, (const unsigned char *)"dialog.button-selected");
 	} else {
-		shortcut_color = get_bfu_color(term, "dialog.button-shortcut");
-		color =  get_bfu_color(term, "dialog.button");
+		shortcut_color = get_bfu_color(term, (const unsigned char *)"dialog.button-shortcut");
+		color =  get_bfu_color(term, (const unsigned char *)"dialog.button");
 	}
 	if (!color || !shortcut_color) return EVENT_PROCESSED;
 
@@ -216,13 +216,13 @@ display_button(struct dialog_data *dlg_data, struct widget_data *widget_data)
 	}
 
 
-	draw_dlg_text(dlg_data, pos->x, pos->y, BUTTON_LEFT, BUTTON_LEFT_LEN, 0, color);
+	draw_dlg_text(dlg_data, pos->x, pos->y, (const unsigned char *)BUTTON_LEFT, BUTTON_LEFT_LEN, 0, color);
 	if (len > 0) {
-		const char *text = widget_data->widget->text;
+		const unsigned char *text = widget_data->widget->text;
 		int hk_pos = widget_data->widget->info.button.hotkey_pos;
 		int attr;
 
-		attr = get_opt_bool("ui.dialogs.underline_button_shortcuts",
+		attr = get_opt_bool((const unsigned char *)"ui.dialogs.underline_button_shortcuts",
 		                    NULL)
 		     ? SCREEN_ATTR_UNDERLINE : 0;
 
@@ -299,7 +299,7 @@ display_button(struct dialog_data *dlg_data, struct widget_data *widget_data)
 			  BUTTON_RIGHT, BUTTON_RIGHT_LEN, 0, color);
 	} else
 #endif /* CONFIG_UTF8 */
-		draw_dlg_text(dlg_data, x + len, pos->y, BUTTON_RIGHT,
+		draw_dlg_text(dlg_data, x + len, pos->y, (const unsigned char *)BUTTON_RIGHT,
 			  BUTTON_RIGHT_LEN, 0, color);
 	if (sel) {
 		set_dlg_cursor(term, dlg_data, x, pos->y, 1);

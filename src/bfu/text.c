@@ -23,7 +23,7 @@
 #define is_unsplitable(pos) (*(pos) && *(pos) != '\n' && !isspace(*(pos)))
 
 void
-add_dlg_text(struct dialog *dlg, const char *text,
+add_dlg_text(struct dialog *dlg, const unsigned char *text,
 	     enum format_align align, int bottom_pad)
 {
 	struct widget *widget = &dlg->widgets[dlg->number_of_widgets++];
@@ -38,26 +38,26 @@ add_dlg_text(struct dialog *dlg, const char *text,
 /* Returns length of substring (from start of @text) before a split. */
 #ifdef CONFIG_UTF8
 static inline int
-split_line(const char *text, int max_width, int *cells, int utf8)
+split_line(const unsigned char *text, int max_width, int *cells, int utf8)
 #else
 static inline int
-split_line(const char *text, int max_width, int *cells)
+split_line(const unsigned char *text, int max_width, int *cells)
 #endif /* CONFIG_UTF8 */
 {
-	const char *split = text;
+	const unsigned char *split = text;
 #ifdef CONFIG_UTF8
-	char *text_end = split + strlen((const char *)split);
+	unsigned char *text_end = split + strlen((const char *)split);
 #endif /* CONFIG_UTF8 */
 	int cells_save = *cells;
 
 	if (max_width <= 0) return 0;
 
 	while (*split && *split != '\n') {
-		char *next_split;
+		unsigned char *next_split;
 
 #ifdef CONFIG_UTF8
 		if (utf8) {
-			char *next_char_begin = split
+			unsigned char *next_char_begin = split
 							 + utf8charlen(split);
 
 			next_split = split;
@@ -79,7 +79,7 @@ split_line(const char *text, int max_width, int *cells)
 		} else
 #endif /* CONFIG_UTF8 */
 		{
-			next_split = (char *)(split + 1);
+			next_split = (unsigned char *)(split + 1);
 
 			while (is_unsplitable(next_split))
 				next_split++;
@@ -153,15 +153,15 @@ split_line(const char *text, int max_width, int *cells)
 
 /* Find the start of each line with the current max width */
 #ifdef CONFIG_UTF8
-static char **
+static unsigned char **
 split_lines(struct widget_data *widget_data, int max_width, int utf8)
 #else
-static char **
+static unsigned char **
 split_lines(struct widget_data *widget_data, int max_width)
 #endif /* CONFIG_UTF8 */
 {
-	const char *text = widget_data->widget->text;
-	char **lines = (char **) widget_data->cdata;
+	const unsigned char *text = widget_data->widget->text;
+	unsigned char **lines = (unsigned char **) widget_data->cdata;
 	int line = 0;
 
 	if (widget_data->info.text.max_width == max_width) return lines;
@@ -196,13 +196,13 @@ split_lines(struct widget_data *widget_data, int max_width)
 		if (!realloc_lines(&lines, line, line + 1))
 			break;
 
-		lines[line++] = (char *)text;
+		lines[line++] = (unsigned char *)text;
 		text += width;
 	}
 
 	/* Yes it might be a bit ugly on the other hand it will be autofreed
 	 * for us. */
-	widget_data->cdata = (char *) lines;
+	widget_data->cdata = (unsigned char *) lines;
 	widget_data->info.text.lines = line;
 	widget_data->info.text.max_width = max_width;
 
@@ -212,7 +212,7 @@ split_lines(struct widget_data *widget_data, int max_width)
 /* Format text according to dialog box and alignment. */
 void
 dlg_format_text_do(struct dialog_data *dlg_data,
-		const char *text,
+		const unsigned char *text,
 		int x, int *y, int width, int *real_width,
 		struct color_pair *color, enum format_align align,
 		int format_only)
@@ -270,9 +270,9 @@ dlg_format_text(struct dialog_data *dlg_data,
 		int format_only)
 {
 	struct terminal *term = dlg_data->win->term;
-	const char *text = widget_data->widget->text;
+	const unsigned char *text = widget_data->widget->text;
 	unsigned char saved = 0;
-	char *saved_pos = NULL;
+	unsigned char *saved_pos = NULL;
 	int height;
 
 	height = int_max(0, max_height - 3);
@@ -288,7 +288,7 @@ dlg_format_text(struct dialog_data *dlg_data,
 	    && (widget_data->info.text.max_width != width
 		|| height < widget_data->info.text.lines))
 	{
-		char **lines;
+		unsigned char **lines;
 		int current;
 		int visible;
 
@@ -304,7 +304,7 @@ dlg_format_text(struct dialog_data *dlg_data,
 			return;
 #endif
 
-		lines = (char **) widget_data->cdata;
+		lines = (unsigned char **) widget_data->cdata;
 
 		/* Make maximum number of lines available */
 		visible = int_max(widget_data->info.text.lines - height,
@@ -343,7 +343,7 @@ dlg_format_text(struct dialog_data *dlg_data,
 
 	dlg_format_text_do(dlg_data, text,
 		x, y, width, real_width,
-		get_bfu_color(term, (const char *)"dialog.text"),
+		get_bfu_color(term, (const unsigned char *)"dialog.text"),
 		widget_data->widget->info.text.align, format_only);
 
 	if (widget_data->widget->info.text.is_label) (*y)--;
@@ -370,7 +370,7 @@ display_text(struct dialog_data *dlg_data, struct widget_data *widget_data)
 		return EVENT_PROCESSED;
 
 	draw_box(win->term, &box, ' ', 0,
-		 get_bfu_color(win->term, (const char *)"dialog.scrollbar"));
+		 get_bfu_color(win->term, (const unsigned char *)"dialog.scrollbar"));
 
 	current = widget_data->info.text.current;
 	scale = (box.height + 1) * 100 / lines;
@@ -397,7 +397,7 @@ display_text(struct dialog_data *dlg_data, struct widget_data *widget_data)
 #endif
 
 	draw_box(win->term, &box, ' ', 0,
-		 get_bfu_color(win->term, (const char *)"dialog.scrollbar-selected"));
+		 get_bfu_color(win->term, (const unsigned char *)"dialog.scrollbar-selected"));
 
 	/* Hope this is at least a bit reasonable. Set cursor
 	 * and window pointer to start of the first text line. */
@@ -427,7 +427,7 @@ format_and_display_text(struct widget_data *widget_data,
 	widget_data->info.text.current = current;
 
 	draw_box(term, &widget_data->box, ' ', 0,
-		 get_bfu_color(term, (const char *)"dialog.generic"));
+		 get_bfu_color(term, (const unsigned char *)"dialog.generic"));
 
 	dlg_format_text(dlg_data, widget_data,
 			widget_data->box.x, &y, widget_data->box.width, NULL,

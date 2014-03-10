@@ -91,8 +91,8 @@ typedef int msgbox_flags_T;
  * ...no matter that it could fit on one line in case of a tiny message box. */
 struct dialog_data *
 msg_box(struct terminal *term, struct memory_list *mem_list,
-	msgbox_flags_T flags, char *title, enum format_align align,
-	char *text, void *udata, int buttons, ...);
+	msgbox_flags_T flags, unsigned char *title, enum format_align align,
+	unsigned char *text, void *udata, int buttons, ...);
 
 /* Cast @value to @type and warn if the conversion is suspicious.
  * If @value has side effects, this does them only once.
@@ -105,7 +105,7 @@ msg_box(struct terminal *term, struct memory_list *mem_list,
 /* A button in the variadic arguments of msg_box().
  * This macro expands into three arguments.  */
 #define MSG_BOX_BUTTON(label, handler, flags) \
-	MSG_BOX_CAST(const char *, label), \
+	MSG_BOX_CAST(const unsigned char *, label), \
 	MSG_BOX_CAST(done_handler_T *, handler), \
 	MSG_BOX_CAST(int, flags)
 
@@ -118,21 +118,21 @@ msg_box(struct terminal *term, struct memory_list *mem_list,
  * This one automagically localizes the format string. The possible
  * additional parameters still need to be localized manually at the user's
  * side. */
-char *msg_text(struct terminal *term, char *format, ...);
+unsigned char *msg_text(struct terminal *term, unsigned char *format, ...);
 
 /* A periodically refreshed message box with one OK button. The text in the
  * message box is updated using the get_info() function. If get_info() returns
  * NULL the message box is closed. */
 void
 refreshed_msg_box(struct terminal *term, msgbox_flags_T flags,
-		  char *title, enum format_align align,
-		  char *(get_info)(struct terminal *, void *),
+		  unsigned char *title, enum format_align align,
+		  unsigned char *(get_info)(struct terminal *, void *),
 		  void *data);
 
 struct dialog_data *
 info_box(struct terminal *term, msgbox_flags_T flags,
-	 char *title, enum format_align align,
-	 char *text);
+	 unsigned char *title, enum format_align align,
+	 unsigned char *text);
 
 
 #endif

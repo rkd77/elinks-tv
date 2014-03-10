@@ -28,7 +28,7 @@ dlg_format_group(struct dialog_data *dlg_data,
 	int space_between_widgets = 1;
 	int line_width = 0;
 	int xpos;
-	struct color_pair *color = get_bfu_color(term, "dialog.text");
+	struct color_pair *color = get_bfu_color(term, (const unsigned char *)"dialog.text");
 
 	assert(n > 0);
 	if_assert_failed return;
@@ -36,7 +36,7 @@ dlg_format_group(struct dialog_data *dlg_data,
 	while (n--) {
 		int widget_width;
 		int width;
-		const char *text = widget_data->widget->text;
+		const unsigned char *text = widget_data->widget->text;
 		int label_length;
 		int label_padding;
 
