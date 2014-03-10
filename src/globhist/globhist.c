@@ -43,8 +43,8 @@ INIT_LIST_OF(struct global_history_item, global_history_reap_list);
 
 
 /* GUI stuff. Declared here because done_global_history() frees it. */
-char *gh_last_searched_title = NULL;
-char *gh_last_searched_url = NULL;
+unsigned char *gh_last_searched_title = NULL;
+unsigned char *gh_last_searched_url = NULL;
 
 enum global_history_options {
 	GLOBHIST_TREE,
@@ -143,7 +143,7 @@ delete_global_history_item(struct global_history_item *history_item)
 
 /* Search global history for item matching url. */
 struct global_history_item *
-get_global_history_item(char *url)
+get_global_history_item(unsigned char *url)
 {
 	struct hash_item *item;
 
@@ -160,7 +160,7 @@ get_global_history_item(char *url)
 /* Search global history for certain item. There must be full match with the
  * parameter or the parameter must be NULL/zero. */
 struct global_history_item *
-multiget_global_history_item(char *url, char *title, time_t time)
+multiget_global_history_item(unsigned char *url, unsigned char *title, time_t time)
 {
 	struct global_history_item *history_item;
 
@@ -183,7 +183,7 @@ multiget_global_history_item(char *url, char *title, time_t time)
 #endif
 
 static struct global_history_item *
-init_global_history_item(char *url, char *title, time_t vtime)
+init_global_history_item(unsigned char *url, unsigned char *title, time_t vtime)
 {
 	struct global_history_item *history_item;
 
@@ -264,7 +264,7 @@ add_item_to_global_history(struct global_history_item *history_item,
 /* Add a new entry in history list, take care of duplicate, respect history
  * size limit, and update any open history dialogs. */
 void
-add_global_history_item(char *url, char *title, time_t vtime)
+add_global_history_item(unsigned char *url, unsigned char *title, time_t vtime)
 {
 	struct global_history_item *history_item;
 	int max_globhist_items;
@@ -288,7 +288,7 @@ add_global_history_item(char *url, char *title, time_t vtime)
 
 
 int
-globhist_simple_search(char *search_url, char *search_title)
+globhist_simple_search(unsigned char *search_url, unsigned char *search_title)
 {
 	struct global_history_item *history_item;
 
@@ -329,18 +329,18 @@ globhist_simple_search(char *search_url, char *search_title)
 static void
 read_global_history(void)
 {
-	char in_buffer[MAX_STR_LEN * 3];
-	char *file_name = (char *)GLOBAL_HISTORY_FILENAME;
-	char *title;
+	unsigned char in_buffer[MAX_STR_LEN * 3];
+	unsigned char *file_name = (unsigned char *)GLOBAL_HISTORY_FILENAME;
+	unsigned char *title;
 	FILE *f;
 
 	if (!get_globhist_enable()
-	    || get_cmd_opt_bool((const char *)"anonymous"))
+	    || get_cmd_opt_bool((const unsigned char *)"anonymous"))
 		return;
 
 	if (elinks_home) {
 		file_name = straconcat(elinks_home, file_name,
-				       (char *) NULL);
+				       (unsigned char *) NULL);
 		if (!file_name) return;
 	}
 	f = fopen((const char *)file_name, "rb");
@@ -351,17 +351,17 @@ read_global_history(void)
 	global_history.nosave = 1;
 
 	while (fgets((char *)in_buffer, sizeof(in_buffer), f)) {
-		char *url, *last_visit, *eol;
+		unsigned char *url, *last_visit, *eol;
 
-		url = (char *)strchr((char *)title, '\t');
+		url = (unsigned char *)strchr((char *)title, '\t');
 		if (!url) continue;
 		*url++ = '\0'; /* Now url points to the character after \t. */
 
-		last_visit = (char *)strchr((char *)url, '\t');
+		last_visit = (unsigned char *)strchr((char *)url, '\t');
 		if (!last_visit) continue;
 		*last_visit++ = '\0';
 
-		eol = (char *)strchr((char *)last_visit, '\n');
+		eol = (unsigned char *)strchr((char *)last_visit, '\n');
 		if (!eol) continue;
 		*eol = '\0'; /* Drop ending '\n'. */
 
@@ -376,16 +376,16 @@ static void
 write_global_history(void)
 {
 	struct global_history_item *history_item;
-	char *file_name;
+	unsigned char *file_name;
 	struct secure_save_info *ssi;
 
 	if (!global_history.dirty || !elinks_home
 	    || !get_globhist_enable()
-	    || get_cmd_opt_bool((const char *)"anonymous"))
+	    || get_cmd_opt_bool((const unsigned char *)"anonymous"))
 		return;
 
 	file_name = straconcat(elinks_home, GLOBAL_HISTORY_FILENAME,
-			       (char *) NULL);
+			       (unsigned char *) NULL);
 	if (!file_name) return;
 
 	ssi = secure_open(file_name);
@@ -425,7 +425,7 @@ global_history_write_hook(va_list ap, void *data)
 }
 
 struct event_hook_info global_history_hooks[] = {
-	{ (const char *)"periodic-saving", 0, global_history_write_hook, NULL },
+	{ (const unsigned char *)"periodic-saving", 0, global_history_write_hook, NULL },
 
 	NULL_EVENT_HOOK_INFO,
 };

@@ -104,7 +104,7 @@ struct terminal {
 
 	/** This is the terminal's current title, as perhaps displayed
 	 * somewhere in the X window frame or so. */
-	char *title;
+	unsigned char *title;
 
 	/** This is the screen. See terminal/screen.h */
 	struct terminal_screen *screen;
@@ -156,7 +156,7 @@ struct terminal {
 	int environment;
 
 	/** The current working directory for this terminal / ELinks instance. */
-	char cwd[MAX_CWD_LEN];
+	unsigned char cwd[MAX_CWD_LEN];
 
 	/** For communication between instances */
 	struct terminal_interlink *interlink;
@@ -191,7 +191,7 @@ int get_terminal_codepage(const struct terminal *);
 
 void redraw_all_terminals(void);
 void destroy_all_terminals(void);
-void exec_thread(char *, int);
+void exec_thread(unsigned char *, int);
 void close_handle(void *);
 
 #ifdef CONFIG_FASTMEM
@@ -225,11 +225,11 @@ enum term_exec {
 	TERM_EXEC_NEWWIN = 2
 };
 
-void exec_on_terminal(struct terminal *, char *, char *, enum term_exec);
+void exec_on_terminal(struct terminal *, unsigned char *, unsigned char *, enum term_exec);
 void exec_shell(struct terminal *term);
 
-int set_terminal_title(struct terminal *, char *);
-void do_terminal_function(struct terminal *, unsigned char, char *);
+int set_terminal_title(struct terminal *, unsigned char *);
+void do_terminal_function(struct terminal *, unsigned char, unsigned char *);
 
 int check_terminal_pipes(void);
 void close_terminal_pipes(void);

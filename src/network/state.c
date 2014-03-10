@@ -21,7 +21,7 @@
 /* Global variables */
 struct s_msg_dsc {
 	int n;
-	char *msg;
+	unsigned char *msg;
 };
 static const struct s_msg_dsc msg_dsc[] = {
 	{S_WAIT,		N_("Waiting in queue")},
@@ -150,13 +150,13 @@ static INIT_LIST_OF(struct strerror_val, strerror_buf);
 /* It returns convenient error message, depending on @state.
  * It never returns NULL (if one changes that, be warn that
  * callers may not test for this condition) --Zas */
-char *
+unsigned char *
 get_state_message(struct connection_state state, struct terminal *term)
 {
-	char *e;
+	unsigned char *e;
 	struct strerror_val *s;
 	int len;
-	char *unknown_error = _("Unknown error", term);
+	unsigned char *unknown_error = _("Unknown error", term);
 
 	if (!is_system_error(state)) {
 		int i;
@@ -168,7 +168,7 @@ get_state_message(struct connection_state state, struct terminal *term)
 		return unknown_error;
 	}
 
-	e = (char *) strerror(state.syserr);
+	e = (unsigned char *) strerror(state.syserr);
 	if (!e || !*e) return unknown_error;
 
 	len = strlen((const char *)e);

@@ -63,11 +63,11 @@ current_link_evhook(struct document_view *doc_view, enum script_event_hook_type 
 	if (!doc_view->vs->ecmascript) return -1;
 
 	foreach (evhook, *link->event_hooks) {
-		char *ret;
+		unsigned char *ret;
 
 		if (evhook->type != type) continue;
 		ret = evhook->src;
-		while ((ret = (char *)strstr((char *)ret, "return ")))
+		while ((ret = (unsigned char *)strstr((char *)ret, "return ")))
 			while (*ret != ' ') *ret++ = ' ';
 		{
 			struct string src = INIT_STRING(evhook->src, strlen((const char *)evhook->src));
@@ -132,8 +132,8 @@ get_link_cursor_offset(struct document_view *doc_view, struct link *link)
 				return 0;
 #ifdef CONFIG_UTF8
 			else if (utf8) {
-				char *scroll = fs->value + fs->vpos;
-				char *point = fs->value + fs->state;
+				unsigned char *scroll = fs->value + fs->vpos;
+				unsigned char *point = fs->value + fs->state;
 
 				if (fs->type == FC_PASSWORD)
 					return utf8_ptr2chars(scroll, point);
@@ -327,7 +327,7 @@ highlight_links_with_prefixes_that_start_with_n(struct terminal *term,
                                                 struct document_view *doc_view,
                                                 int n)
 {
-	struct color_pair *color = get_bfu_color(term, (const char *)"searched");
+	struct color_pair *color = get_bfu_color(term, (const unsigned char *)"searched");
 	int xoffset = doc_view->box.x - doc_view->vs->x;
 	int yoffset = doc_view->box.y - doc_view->vs->y;
 	struct document *document = doc_view->document;
@@ -1199,12 +1199,12 @@ goto_link_number_do(struct session *ses, struct document_view *doc_view, int n)
 
 	link = &doc_view->document->links[n];
 	if (!link_is_textinput(link)
-	    && get_opt_bool((const char *)"document.browse.accesskey.auto_follow", ses))
+	    && get_opt_bool((const unsigned char *)"document.browse.accesskey.auto_follow", ses))
 		enter(ses, doc_view, 0);
 }
 
 void
-goto_link_number(struct session *ses, char *num)
+goto_link_number(struct session *ses, unsigned char *num)
 {
 	struct document_view *doc_view;
 
@@ -1319,7 +1319,7 @@ link_menu(struct terminal *term, void *xxx, void *ses_)
 			add_menu_action(&mi, N_("Open in new tab in ~background"),
 					ACT_MAIN_OPEN_LINK_IN_NEW_TAB_IN_BACKGROUND);
 
-			if (!get_cmd_opt_bool((const char *)"anonymous")) {
+			if (!get_cmd_opt_bool((const unsigned char *)"anonymous")) {
 				add_menu_separator(&mi);
 				add_menu_action(&mi, N_("~Download link"), ACT_MAIN_LINK_DOWNLOAD);
 
@@ -1376,7 +1376,7 @@ link_menu(struct terminal *term, void *xxx, void *ses_)
 						ACT_MAIN_OPEN_LINK_IN_NEW_TAB_IN_BACKGROUND);
 			}
 
-			if (!get_cmd_opt_bool((const char *)"anonymous"))
+			if (!get_cmd_opt_bool((const unsigned char *)"anonymous"))
 				add_menu_action(&mi, N_("Submit form and ~download"), ACT_MAIN_LINK_DOWNLOAD);
 
 			add_menu_action(&mi, N_("~Reset form"), ACT_MAIN_RESET_FORM);
@@ -1392,7 +1392,7 @@ link_menu(struct terminal *term, void *xxx, void *ses_)
 	if (link->where_img) {
 		/* [gettext_accelerator_context(link_menu.map, link_menu.std, link_menu.form)] */
 		add_menu_action(&mi, N_("V~iew image"), ACT_MAIN_VIEW_IMAGE);
-		if (!get_cmd_opt_bool((const char *)"anonymous"))
+		if (!get_cmd_opt_bool((const unsigned char *)"anonymous"))
 			add_menu_action(&mi, N_("Download ima~ge"), ACT_MAIN_LINK_DOWNLOAD_IMAGE);
 		/* [gettext_accelerator_context()] */
 	}
@@ -1410,7 +1410,7 @@ end:
 }
 
 /** Return current link's title. */
-char *
+unsigned char *
 get_current_link_title(struct document_view *doc_view)
 {
 	struct link *link;
@@ -1424,7 +1424,7 @@ get_current_link_title(struct document_view *doc_view)
 	link = get_current_link(doc_view);
 
 	if (link && link->title && *link->title) {
-		char *link_title, *src;
+		unsigned char *link_title, *src;
 		struct conv_table *convert_table;
 
 		convert_table = get_translation_table(doc_view->document->cp,
@@ -1450,7 +1450,7 @@ get_current_link_title(struct document_view *doc_view)
 	return NULL;
 }
 
-char *
+unsigned char *
 get_current_link_info(struct session *ses, struct document_view *doc_view)
 {
 	struct link *link;
@@ -1469,7 +1469,7 @@ get_current_link_info(struct session *ses, struct document_view *doc_view)
 	if (!link_is_form(link)) {
 		struct terminal *term = ses->tab->term;
 		struct string str;
-		char *uristring = link->where;
+		unsigned char *uristring = link->where;
 
 		if (!init_string(&str)) return NULL;
 
@@ -1486,9 +1486,9 @@ get_current_link_info(struct session *ses, struct document_view *doc_view)
 		/* Add the uri with password and post info stripped */
 		add_string_uri_to_string(&str, uristring, URI_PUBLIC);
 		if (link->accesskey > 0
-		    && get_opt_bool((const char *)"document.browse.accesskey.display",
+		    && get_opt_bool((const unsigned char *)"document.browse.accesskey.display",
 		                    ses)) {
-			add_to_string(&str, (const char *)" (");
+			add_to_string(&str, (const unsigned char *)" (");
 			add_accesskey_to_string(&str, link->accesskey);
 			add_char_to_string(&str, ')');
 		}

@@ -41,9 +41,9 @@
 #include "viewer/text/view.h"
 
 
-char *
+unsigned char *
 get_download_msg(struct download *download, struct terminal *term,
-		 int wide, int full, char *separator)
+		 int wide, int full, unsigned char *separator)
 {
 	if (!download_is_progressing(download)) {
 		/* DBG("%d -> %s", download->state, _(get_err_msg(download->state), term)); */
@@ -67,15 +67,15 @@ get_download_msg(struct download *download, struct terminal *term,
 void
 update_status(void)
 {
-	int show_title_bar = 0 & get_opt_bool((const char *)"ui.show_title_bar", NULL);
-	int show_status_bar = get_opt_bool((const char *)"ui.show_status_bar", NULL);
-	int show_tabs_bar = get_opt_int((const char *)"ui.tabs.show_bar", NULL);
-	int show_tabs_bar_at_top = get_opt_bool((const char *)"ui.tabs.top", NULL);
+	int show_title_bar = 0 & get_opt_bool((const unsigned char *)"ui.show_title_bar", NULL);
+	int show_status_bar = get_opt_bool((const unsigned char *)"ui.show_status_bar", NULL);
+	int show_tabs_bar = get_opt_int((const unsigned char *)"ui.tabs.show_bar", NULL);
+	int show_tabs_bar_at_top = get_opt_bool((const unsigned char *)"ui.tabs.top", NULL);
 #ifdef CONFIG_LEDS
-	int show_leds = get_opt_bool((const char *)"ui.leds.enable", NULL);
+	int show_leds = get_opt_bool((const unsigned char *)"ui.leds.enable", NULL);
 #endif
-	int set_window_title = get_opt_bool((const char *)"ui.window_title", NULL);
-	int insert_mode = get_opt_bool((const char *)"document.browse.forms.insert_mode",
+	int set_window_title = get_opt_bool((const unsigned char *)"ui.window_title", NULL);
+	int insert_mode = get_opt_bool((const unsigned char *)"document.browse.forms.insert_mode",
 	                               NULL);
 	struct session *ses;
 	int tabs_count = 1;
@@ -142,11 +142,11 @@ update_status(void)
 	}
 }
 
-static char *
+static unsigned char *
 get_current_link_info_and_title(struct session *ses,
 				struct document_view *doc_view)
 {
-	char *link_info, *link_title, *ret = NULL;
+	unsigned char *link_info, *link_title, *ret = NULL;
 
 	link_info = get_current_link_info(ses, doc_view);
 	if (!link_info) return NULL;
@@ -156,7 +156,7 @@ get_current_link_info_and_title(struct session *ses,
 		assert(*link_title);
 
 		ret = straconcat(link_info, " - ", link_title,
-				 (char *) NULL);
+				 (unsigned char *) NULL);
 		mem_free(link_info);
 		mem_free(link_title);
 	}
@@ -169,7 +169,7 @@ get_current_link_info_and_title(struct session *ses,
 static inline void
 display_status_bar(struct session *ses, struct terminal *term, int tabs_count)
 {
-	char *msg = NULL;
+	unsigned char *msg = NULL;
 	unsigned int tab_info_len = 0;
 	struct download *download = get_current_download(ses);
 	struct session_status *status = &ses->status;
@@ -238,15 +238,15 @@ display_status_bar(struct session *ses, struct terminal *term, int tabs_count)
 			int full = term->width > 130;
 			int wide = term->width > 80;
 
-			msg = get_download_msg(download, term, wide, full, (char *)", ");
+			msg = get_download_msg(download, term, wide, full, (unsigned char *)", ");
 		}
 	}
 
 	set_box(&box, 0, term->height - 1, term->width, 1);
-	draw_box(term, &box, ' ', 0, get_bfu_color(term, (const char *)"status.status-bar"));
+	draw_box(term, &box, ' ', 0, get_bfu_color(term, (const unsigned char *)"status.status-bar"));
 
 	if (!status->show_tabs_bar && tabs_count > 1) {
-		char tab_info[8];
+		unsigned char tab_info[8];
 
 		tab_info[tab_info_len++] = '[';
 		ulongcat(tab_info, &tab_info_len, term->current_tab + 1, 4, 0);
@@ -254,7 +254,7 @@ display_status_bar(struct session *ses, struct terminal *term, int tabs_count)
 		tab_info[tab_info_len++] = ' ';
 		tab_info[tab_info_len] = '\0';
 
-		text_color = get_bfu_color(term, (const char *)"status.status-text");
+		text_color = get_bfu_color(term, (const unsigned char *)"status.status-text");
 		draw_text(term, 0, term->height - 1, tab_info, tab_info_len,
 			0, text_color);
 	}
@@ -262,7 +262,7 @@ display_status_bar(struct session *ses, struct terminal *term, int tabs_count)
 	if (!msg) return;
 
 	if (!text_color)
-		text_color = get_bfu_color(term, (const char *)"status.status-text");
+		text_color = get_bfu_color(term, (const unsigned char *)"status.status-text");
 
 	msglen = strlen((const char *)msg);
 	draw_text(term, 0 + tab_info_len, term->height - 1,
@@ -290,11 +290,11 @@ display_status_bar(struct session *ses, struct terminal *term, int tabs_count)
 static inline void
 display_tab_bar(struct session *ses, struct terminal *term, int tabs_count)
 {
-	struct color_pair *normal_color = get_bfu_color(term, (const char *)"tabs.normal");
-	struct color_pair *selected_color = get_bfu_color(term, (const char *)"tabs.selected");
-	struct color_pair *loading_color = get_bfu_color(term, (const char *)"tabs.loading");
-	struct color_pair *fresh_color = get_bfu_color(term, (const char *)"tabs.unvisited");
-	struct color_pair *tabsep_color = get_bfu_color(term, (const char *)"tabs.separator");
+	struct color_pair *normal_color = get_bfu_color(term, (const unsigned char *)"tabs.normal");
+	struct color_pair *selected_color = get_bfu_color(term, (const unsigned char *)"tabs.selected");
+	struct color_pair *loading_color = get_bfu_color(term, (const unsigned char *)"tabs.loading");
+	struct color_pair *fresh_color = get_bfu_color(term, (const unsigned char *)"tabs.unvisited");
+	struct color_pair *tabsep_color = get_bfu_color(term, (const unsigned char *)"tabs.separator");
 	struct session_status *status = &ses->status;
 	int tab_width = int_max(1, term->width / tabs_count);
 	int tab_total_width = tab_width * tabs_count;
@@ -313,7 +313,7 @@ display_tab_bar(struct session *ses, struct terminal *term, int tabs_count)
 		struct document_view *doc_view;
 		struct session *tab_ses = (struct session *)tab->data;
 		int actual_tab_width = tab_width - 1;
-		char *msg;
+		unsigned char *msg;
 
 		/* Adjust tab size to use full term width. */
 		if (tab_remain_width) {
@@ -399,16 +399,16 @@ display_title_bar(struct session *ses, struct terminal *term)
 	struct document_view *doc_view;
 	struct document *document;
 	struct string title;
-	char buf[40];
+	unsigned char buf[40];
 	int buflen = 0;
 	int height;
 
 	/* Clear the old title */
-	if (!get_opt_bool((const char *)"ui.show_menu_bar_always", NULL)) {
+	if (!get_opt_bool((const unsigned char *)"ui.show_menu_bar_always", NULL)) {
 		struct box box;
 
 		set_box(&box, 0, 0, term->width, 1);
-		draw_box(term, &box, ' ', 0, get_bfu_color(term, (const char *)"title.title-bar"));
+		draw_box(term, &box, ' ', 0, get_bfu_color(term, (const unsigned char *)"title.title-bar"));
 	}
 
 	doc_view = current_frame(ses);
@@ -457,7 +457,7 @@ display_title_bar(struct session *ses, struct terminal *term)
 		add_bytes_to_string(&title, document->title, titlelen);
 
 		if (titlewidth == maxlen)
-			add_bytes_to_string(&title, (const char *)"...", 3);
+			add_bytes_to_string(&title, (const unsigned char *)"...", 3);
 	}
 
 	if (buflen > 0)
@@ -476,7 +476,7 @@ display_title_bar(struct session *ses, struct terminal *term)
 			x = int_max(term->width - 1 - title.length, 0);
 
 		draw_text(term, x, 0, title.source, title.length, 0,
-			  get_bfu_color(term, (const char *)"title.title-text"));
+			  get_bfu_color(term, (const unsigned char *)"title.title-text"));
 	}
 
 	done_string(&title);
@@ -487,8 +487,8 @@ display_window_title(struct session *ses, struct terminal *term)
 {
 	static struct session *last_ses;
 	struct session_status *status = &ses->status;
-	char *doc_title = NULL;
-	char *title;
+	unsigned char *doc_title = NULL;
+	unsigned char *title;
 	int titlelen;
 
 	if (ses->doc_view
@@ -498,8 +498,8 @@ display_window_title(struct session *ses, struct terminal *term)
 		doc_title = ses->doc_view->document->title;
 
 	title = doc_title ? straconcat(doc_title, " - ELinks",
-				       (char *) NULL)
-			  : stracpy((const char *)"ELinks");
+				       (unsigned char *) NULL)
+			  : stracpy((const unsigned char *)"ELinks");
 	if (!title) return;
 
 	titlelen = strlen((const char *)title);

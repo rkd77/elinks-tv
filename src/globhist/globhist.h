@@ -13,22 +13,22 @@ struct global_history_item {
 
 	struct listbox_item *box_item;
 
-	char *title;
-	char *url;
+	unsigned char *title;
+	unsigned char *url;
 
 	time_t last_visit;
 };
 
 extern struct input_history global_history;
 
-extern char *gh_last_searched_title;
-extern char *gh_last_searched_url;
+extern unsigned char *gh_last_searched_title;
+extern unsigned char *gh_last_searched_url;
 
 extern struct module global_history_module;
 
 void delete_global_history_item(struct global_history_item *);
-struct global_history_item *get_global_history_item(char *);
-void add_global_history_item(char *, char *, time_t);
-int globhist_simple_search(char *, char *);
+struct global_history_item *get_global_history_item(unsigned char *);
+void add_global_history_item(unsigned char *, unsigned char *, time_t);
+int globhist_simple_search(unsigned char *, unsigned char *);
 
 #endif

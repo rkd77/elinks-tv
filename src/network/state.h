@@ -122,7 +122,7 @@ struct connection_state {
 	int syserr;
 };
 
-char *get_state_message(struct connection_state state, struct terminal *term);
+unsigned char *get_state_message(struct connection_state state, struct terminal *term);
 void done_state_message(void);
 
 static inline struct connection_state

@@ -35,11 +35,11 @@
 
 static INIT_INPUT_HISTORY(exmode_history);
 
-typedef int (*exmode_handler_T)(struct session *, char *, char *);
+typedef int (*exmode_handler_T)(struct session *, unsigned char *, unsigned char *);
 
 static int
-exmode_action_handler(struct session *ses, char *command,
-		      char *args)
+exmode_action_handler(struct session *ses, unsigned char *command,
+		      unsigned char *args)
 {
 	action_id_T action_id = get_action_from_string(KEYMAP_MAIN, command);
 
@@ -60,8 +60,8 @@ exmode_action_handler(struct session *ses, char *command,
 }
 
 static int
-exmode_confcmd_handler(struct session *ses, char *command,
-			char *args)
+exmode_confcmd_handler(struct session *ses, unsigned char *command,
+			unsigned char *args)
 {
 	enum parse_error err;
 
@@ -90,8 +90,8 @@ exmode_exec(struct session *ses, unsigned char buffer[INPUT_LINE_BUFFER_SIZE])
 	 * part should be thought out somehow yet, I s'pose... let's leave it
 	 * off for now). Then try to evaluate it as configfile command. Then at
 	 * least pop up an error. */
-	char *command = buffer;
-	char *args = command;
+	unsigned char *command = buffer;
+	unsigned char *args = command;
 	int i;
 
 	while (*command == ':') command++;

@@ -1050,14 +1050,14 @@ void TTermView::draw()
 	}
 }
 
-void setTerminalTitle(struct terminal *term, char *text)
+void setTerminalTitle(struct terminal *term, unsigned char *text)
 {
 	if (!term->fWindow) return;
 	if (!text) return;
 	TTermView *view = (TTermView *)term->fWindow;
 	if (view->pWindow)
 	{
-		view->pWindow->setTitle(text);
+		view->pWindow->setTitle((char *)text);
 		view->pWindow->frame->draw();
 	}
 }

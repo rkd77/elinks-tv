@@ -9,8 +9,8 @@ void print_screen_status(struct session *);
 
 void update_status(void);
 
-char *
+unsigned char *
 get_download_msg(struct download *download, struct terminal *term,
-	         int wide, int full, char *separator);
+	         int wide, int full, unsigned char *separator);
 
 #endif
