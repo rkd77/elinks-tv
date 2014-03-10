@@ -28,7 +28,7 @@ char *elinks_home = NULL;
 int first_use = 0;
 
 static inline void
-strip_trailing_dir_sep(char *path)
+strip_trailing_dir_sep(unsigned char *path)
 {
 	int i;
 
@@ -39,18 +39,18 @@ strip_trailing_dir_sep(char *path)
 	path[i + 1] = 0;
 }
 
-static char *
-test_confdir(char *home, char *path,
-	     char *error_message)
+static unsigned char *
+test_confdir(unsigned char *home, unsigned char *path,
+	     unsigned char *error_message)
 {
 	struct stat st;
-	char *confdir;
+	unsigned char *confdir;
 
 	if (!path || !*path) return NULL;
 
 	if (home && *home && !dir_sep(*path))
 		confdir = straconcat(home, STRING_DIR_SEP, path,
-				     (char *) NULL);
+				     (unsigned char *) NULL);
 	else
 		confdir = stracpy(path);
 
@@ -86,11 +86,11 @@ test_confdir(char *home, char *path,
 }
 
 /* TODO: Check possibility to use <libgen.h> dirname. */
-static char *
-elinks_dirname(char *path)
+static unsigned char *
+elinks_dirname(unsigned char *path)
 {
 	int i;
-	char *dir;
+	unsigned char *dir;
 
 	if (!path) return NULL;
 
@@ -106,12 +106,12 @@ elinks_dirname(char *path)
 	return dir;
 }
 
-static char *
+static unsigned char *
 get_home(void)
 {
-	char *home_elinks;
-	char *envhome = (char *)getenv("HOME");
-	char *home = NULL;
+	unsigned char *home_elinks;
+	unsigned char *envhome = (unsigned char *)getenv("HOME");
+	unsigned char *home = NULL;
 
 	if (!home && envhome)
 		home = stracpy(envhome);
@@ -124,24 +124,24 @@ get_home(void)
 		strip_trailing_dir_sep(home);
 
 	home_elinks = test_confdir(home,
-				   get_cmd_opt_str((const char *)"config-dir"),
+				   get_cmd_opt_str((const unsigned char *)"config-dir"),
 				   N_("Commandline options -config-dir set to %s, "
 				      "but could not create directory %s."));
 	if (home_elinks) goto end;
 
-	home_elinks = test_confdir(home, (char *)getenv("ELINKS_CONFDIR"),
+	home_elinks = test_confdir(home, (unsigned char *)getenv("ELINKS_CONFDIR"),
 				   N_("ELINKS_CONFDIR set to %s, "
 				      "but could not create directory %s."));
 	if (home_elinks) goto end;
 
-	home_elinks = test_confdir(home, (char *)".elinks", NULL);
+	home_elinks = test_confdir(home, (unsigned char *)".elinks", NULL);
 	if (home_elinks) goto end;
 
-	home_elinks = test_confdir(home, (char *)"elinks", NULL);
+	home_elinks = test_confdir(home, (unsigned char *)"elinks", NULL);
 
 end:
 	if (home_elinks)
-		add_to_strn(&home_elinks, (const char *)STRING_DIR_SEP);
+		add_to_strn(&home_elinks, (const unsigned char *)STRING_DIR_SEP);
 	mem_free_if(home);
 
 	return home_elinks;

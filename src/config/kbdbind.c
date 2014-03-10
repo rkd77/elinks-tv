@@ -29,7 +29,7 @@
 
 
 #define ACTION_(map, name, action, caption, flags)	\
-	{ (const char *)name, ACT_##map##_##action, KEYMAP_ID, (const char *)caption, flags }
+	{ (const unsigned char *)name, ACT_##map##_##action, KEYMAP_ID, (const unsigned char *)caption, flags }
 
 #undef KEYMAP_ID
 #define KEYMAP_ID KEYMAP_MAIN
@@ -230,7 +230,7 @@ kbd_act_lookup(int keymap_id, action_id_T action_id)
 }
 
 struct keybinding *
-kbd_nm_lookup(int keymap_id, char *name)
+kbd_nm_lookup(int keymap_id, unsigned char *name)
 {
 	action_id_T action_id = get_action_from_string(keymap_id, name);
 
@@ -240,7 +240,7 @@ kbd_nm_lookup(int keymap_id, char *name)
 }
 
 static struct keybinding *
-kbd_stroke_lookup(int keymap_id, const char *keystroke_str)
+kbd_stroke_lookup(int keymap_id, const unsigned char *keystroke_str)
 {
 	struct term_event_keyboard kbd;
 
@@ -252,9 +252,9 @@ kbd_stroke_lookup(int keymap_id, const char *keystroke_str)
 
 
 static struct keymap keymap_table[] = {
-	{ (const char *)"main", KEYMAP_MAIN, (const char *)N_("Main mapping") },
-	{ (const char *)"edit", KEYMAP_EDIT, (const char *)N_("Edit mapping") },
-	{ (const char *)"menu", KEYMAP_MENU, (const char *)N_("Menu mapping") },
+	{ (const unsigned char *)"main", KEYMAP_MAIN, (const unsigned char *)N_("Main mapping") },
+	{ (const unsigned char *)"edit", KEYMAP_EDIT, (const unsigned char *)N_("Edit mapping") },
+	{ (const unsigned char *)"menu", KEYMAP_MENU, (const unsigned char *)N_("Menu mapping") },
 };
 
 
@@ -264,7 +264,7 @@ static struct keymap keymap_table[] = {
 
 static const struct action *
 get_action_from_keystroke(int keymap_id,
-                          const char *keystroke_str)
+                          const unsigned char *keystroke_str)
 {
 	struct keybinding *keybinding = kbd_stroke_lookup(keymap_id,
 	                                                  keystroke_str);
@@ -272,9 +272,9 @@ get_action_from_keystroke(int keymap_id,
 	return keybinding ? get_action(keymap_id, keybinding->action_id) : NULL;
 }
 
-char *
+unsigned char *
 get_action_name_from_keystroke(int keymap_id,
-                               const char *keystroke_str)
+                               const unsigned char *keystroke_str)
 {
 	const struct action *action = get_action_from_keystroke(keymap_id,
 								keystroke_str);
@@ -283,7 +283,7 @@ get_action_name_from_keystroke(int keymap_id,
 }
 
 action_id_T
-get_action_from_string(int keymap_id, char *str)
+get_action_from_string(int keymap_id, unsigned char *str)
 {
 	const struct action *action;
 
@@ -307,7 +307,7 @@ get_action(int keymap_id, action_id_T action_id)
 	return NULL;
 }
 
-char *
+unsigned char *
 get_action_name(int keymap_id, action_id_T action_id)
 {
 	const struct action *action = get_action(keymap_id, action_id);
@@ -315,7 +315,7 @@ get_action_name(int keymap_id, action_id_T action_id)
 	return action ? action->str : NULL;
 }
 
-static char *
+static unsigned char *
 get_action_desc(int keymap_id, action_id_T action_id)
 {
 	const struct action *action = get_action(keymap_id, action_id);
@@ -334,7 +334,7 @@ get_keymap(int keymap_id)
 }
 
 static int
-get_keymap_id(char *keymap_str)
+get_keymap_id(unsigned char *keymap_str)
 {
 	int keymap_id;
 
@@ -345,51 +345,51 @@ get_keymap_id(char *keymap_str)
 	return KEYMAP_INVALID;
 }
 
-char *
+unsigned char *
 get_keymap_name(int keymap_id)
 {
-	return (char *)get_keymap(keymap_id)->str;
+	return (unsigned char *)get_keymap(keymap_id)->str;
 }
 
 
 struct named_key {
-	const char *str;
+	const unsigned char *str;
 	term_event_key_T num;
 };
 
 static const struct named_key key_table[] = {
-	{ (const char *)"Enter",	KBD_ENTER },
-	{ (const char *)"Space",	' ' },
-	{ (const char *)"Backspace",	KBD_BS },
-	{ (const char *)"Tab",	KBD_TAB },
-	{ (const char *)"Escape",	KBD_ESC },
-	{ (const char *)"Left",	KBD_LEFT },
-	{ (const char *)"Right",	KBD_RIGHT },
-	{ (const char *)"Up",		KBD_UP },
-	{ (const char *)"Down",	KBD_DOWN },
-	{ (const char *)"Insert",	KBD_INS },
-	{ (const char *)"Delete",	KBD_DEL },
-	{ (const char *)"Home",	KBD_HOME },
-	{ (const char *)"End",	KBD_END },
-	{ (const char *)"PageUp",	KBD_PAGE_UP },
-	{ (const char *)"PageDown",	KBD_PAGE_DOWN },
-	{ (const char *)"F1",		KBD_F1 },
-	{ (const char *)"F2",		KBD_F2 },
-	{ (const char *)"F3",		KBD_F3 },
-	{ (const char *)"F4",		KBD_F4 },
-	{ (const char *)"F5",		KBD_F5 },
-	{ (const char *)"F6",		KBD_F6 },
-	{ (const char *)"F7",		KBD_F7 },
-	{ (const char *)"F8",		KBD_F8 },
-	{ (const char *)"F9",		KBD_F9 },
-	{ (const char *)"F10",	KBD_F10 },
-	{ (const char *)"F11",	KBD_F11 },
-	{ (const char *)"F12",	KBD_F12 },
+	{ (const unsigned char *)"Enter",	KBD_ENTER },
+	{ (const unsigned char *)"Space",	' ' },
+	{ (const unsigned char *)"Backspace",	KBD_BS },
+	{ (const unsigned char *)"Tab",	KBD_TAB },
+	{ (const unsigned char *)"Escape",	KBD_ESC },
+	{ (const unsigned char *)"Left",	KBD_LEFT },
+	{ (const unsigned char *)"Right",	KBD_RIGHT },
+	{ (const unsigned char *)"Up",		KBD_UP },
+	{ (const unsigned char *)"Down",	KBD_DOWN },
+	{ (const unsigned char *)"Insert",	KBD_INS },
+	{ (const unsigned char *)"Delete",	KBD_DEL },
+	{ (const unsigned char *)"Home",	KBD_HOME },
+	{ (const unsigned char *)"End",	KBD_END },
+	{ (const unsigned char *)"PageUp",	KBD_PAGE_UP },
+	{ (const unsigned char *)"PageDown",	KBD_PAGE_DOWN },
+	{ (const unsigned char *)"F1",		KBD_F1 },
+	{ (const unsigned char *)"F2",		KBD_F2 },
+	{ (const unsigned char *)"F3",		KBD_F3 },
+	{ (const unsigned char *)"F4",		KBD_F4 },
+	{ (const unsigned char *)"F5",		KBD_F5 },
+	{ (const unsigned char *)"F6",		KBD_F6 },
+	{ (const unsigned char *)"F7",		KBD_F7 },
+	{ (const unsigned char *)"F8",		KBD_F8 },
+	{ (const unsigned char *)"F9",		KBD_F9 },
+	{ (const unsigned char *)"F10",	KBD_F10 },
+	{ (const unsigned char *)"F11",	KBD_F11 },
+	{ (const unsigned char *)"F12",	KBD_F12 },
 	{ NULL, KBD_UNDEF }
 };
 
 term_event_key_T
-read_key(const char *key_str)
+read_key(const unsigned char *key_str)
 {
 	const struct named_key *key;
 
@@ -410,7 +410,7 @@ read_key(const char *key_str)
  * This function does not support ::KBD_MOD_PASTE, because keystrokes
  * that include it should never be bound to actions.  */
 int
-parse_keystroke(const char *s, struct term_event_keyboard *kbd)
+parse_keystroke(const unsigned char *s, struct term_event_keyboard *kbd)
 {
 	kbd->modifier = KBD_MOD_NONE;
 	while (1) {
@@ -474,8 +474,8 @@ void
 add_keystroke_to_string(struct string *str, struct term_event_keyboard *kbd,
                         int escape)
 {
-	char key_buffer[3] = "\\x";
-	const char *key_string = NULL;
+	unsigned char key_buffer[3] = "\\x";
+	const unsigned char *key_string = NULL;
 	const struct named_key *key;
 
 	if (kbd->key == KBD_UNDEF) return;
@@ -483,11 +483,11 @@ add_keystroke_to_string(struct string *str, struct term_event_keyboard *kbd,
 	/* Don't map KBD_MOD_PASTE to "Paste-" because parse_keystroke
 	 * would not understand the result.  */
 	if (kbd->modifier & KBD_MOD_SHIFT)
-		add_to_string(str, (const char *)"Shift-");
+		add_to_string(str, (const unsigned char *)"Shift-");
 	if (kbd->modifier & KBD_MOD_CTRL)
-		add_to_string(str, (const char *)"Ctrl-");
+		add_to_string(str, (const unsigned char *)"Ctrl-");
 	if (kbd->modifier & KBD_MOD_ALT)
-		add_to_string(str, (const char *)"Alt-");
+		add_to_string(str, (const unsigned char *)"Alt-");
 
 	for (key = key_table; key->str; key++) {
 		if (kbd->key == key->num) {
@@ -516,7 +516,7 @@ add_keystroke_action_to_string(struct string *string, action_id_T action_id,
 		add_keystroke_to_string(string, &keybinding->kbd, 0);
 }
 
-char *
+unsigned char *
 get_keystroke(action_id_T action_id, int keymap_id)
 {
 	struct string keystroke;
@@ -544,7 +544,7 @@ add_actions_to_string(struct string *string, action_id_T action_ids[],
 	for (i = 0; action_ids[i] != ACT_MAIN_NONE; i++) {
 		struct keybinding *keybinding = kbd_act_lookup(keymap_id, action_ids[i]);
 		int keystrokelen = string->length;
-		char *desc = get_action_desc(keymap_id, action_ids[i]);
+		unsigned char *desc = get_action_desc(keymap_id, action_ids[i]);
 
 		if (!keybinding) continue;
 
@@ -586,8 +586,8 @@ free_keymaps(struct module *xxx)
  */
 
 #ifdef CONFIG_SCRIPTING
-static char *
-bind_key_to_event(char *ckmap, const char *ckey, int event)
+static unsigned char *
+bind_key_to_event(unsigned char *ckmap, const unsigned char *ckey, int event)
 {
 	struct term_event_keyboard kbd;
 	action_id_T action_id;
@@ -609,8 +609,8 @@ bind_key_to_event(char *ckmap, const char *ckey, int event)
 }
 
 int
-bind_key_to_event_name(char *ckmap, const char *ckey,
-		       char *event_name, char **err)
+bind_key_to_event_name(unsigned char *ckmap, const unsigned char *ckey,
+		       unsigned char *event_name, unsigned char **err)
 {
 	int event_id;
 
@@ -852,33 +852,33 @@ add_default_keybindings(void)
  */
 
 struct action_alias {
-	const char *str;
+	const unsigned char *str;
 	action_id_T action_id;
 };
 
 static const struct action_alias main_action_aliases[] = {
-	{ (const char *)"back",		ACT_MAIN_HISTORY_MOVE_BACK },
-	{ (const char *)"down",		ACT_MAIN_MOVE_LINK_NEXT },
-	{ (const char *)"download",		ACT_MAIN_LINK_DOWNLOAD },
-	{ (const char *)"download-image",	ACT_MAIN_LINK_DOWNLOAD_IMAGE },
-	{ (const char *)"end",		ACT_MAIN_MOVE_DOCUMENT_END },
-	{ (const char *)"enter",		ACT_MAIN_LINK_FOLLOW },
-	{ (const char *)"enter-reload",	ACT_MAIN_LINK_FOLLOW_RELOAD },
-	{ (const char *)"home",		ACT_MAIN_MOVE_DOCUMENT_START },
-	{ (const char *)"next-frame",		ACT_MAIN_FRAME_NEXT },
-	{ (const char *)"page-down",		ACT_MAIN_MOVE_PAGE_DOWN },
-	{ (const char *)"page-up",		ACT_MAIN_MOVE_PAGE_UP },
-	{ (const char *)"previous-frame",	ACT_MAIN_FRAME_PREV },
-	{ (const char *)"resume-download",	ACT_MAIN_LINK_DOWNLOAD_RESUME },
-	{ (const char *)"unback",		ACT_MAIN_HISTORY_MOVE_FORWARD },
-	{ (const char *)"up",			ACT_MAIN_MOVE_LINK_PREV },
-	{ (const char *)"zoom-frame",		ACT_MAIN_FRAME_MAXIMIZE },
+	{ (const unsigned char *)"back",		ACT_MAIN_HISTORY_MOVE_BACK },
+	{ (const unsigned char *)"down",		ACT_MAIN_MOVE_LINK_NEXT },
+	{ (const unsigned char *)"download",		ACT_MAIN_LINK_DOWNLOAD },
+	{ (const unsigned char *)"download-image",	ACT_MAIN_LINK_DOWNLOAD_IMAGE },
+	{ (const unsigned char *)"end",		ACT_MAIN_MOVE_DOCUMENT_END },
+	{ (const unsigned char *)"enter",		ACT_MAIN_LINK_FOLLOW },
+	{ (const unsigned char *)"enter-reload",	ACT_MAIN_LINK_FOLLOW_RELOAD },
+	{ (const unsigned char *)"home",		ACT_MAIN_MOVE_DOCUMENT_START },
+	{ (const unsigned char *)"next-frame",		ACT_MAIN_FRAME_NEXT },
+	{ (const unsigned char *)"page-down",		ACT_MAIN_MOVE_PAGE_DOWN },
+	{ (const unsigned char *)"page-up",		ACT_MAIN_MOVE_PAGE_UP },
+	{ (const unsigned char *)"previous-frame",	ACT_MAIN_FRAME_PREV },
+	{ (const unsigned char *)"resume-download",	ACT_MAIN_LINK_DOWNLOAD_RESUME },
+	{ (const unsigned char *)"unback",		ACT_MAIN_HISTORY_MOVE_FORWARD },
+	{ (const unsigned char *)"up",			ACT_MAIN_MOVE_LINK_PREV },
+	{ (const unsigned char *)"zoom-frame",		ACT_MAIN_FRAME_MAXIMIZE },
 
 	{ NULL, 0 }
 };
 
 static const struct action_alias edit_action_aliases[] = {
-	{ (const char *)"edit",		ACT_EDIT_OPEN_EXTERNAL },
+	{ (const unsigned char *)"edit",		ACT_EDIT_OPEN_EXTERNAL },
 
 	{ NULL, 0 }
 };
@@ -890,7 +890,7 @@ static const struct action_alias *action_aliases[KEYMAP_MAX] = {
 };
 
 static action_id_T
-get_aliased_action(int keymap_id, char *action_str)
+get_aliased_action(int keymap_id, unsigned char *action_str)
 {
 	assert(keymap_id >= 0 && keymap_id < KEYMAP_MAX);
 
@@ -907,8 +907,8 @@ get_aliased_action(int keymap_id, char *action_str)
 
 /* Return 0 when ok, something strange otherwise. */
 int
-bind_do(char *keymap_str, const char *keystroke_str,
-	char *action_str, int is_system_conf)
+bind_do(unsigned char *keymap_str, const unsigned char *keystroke_str,
+	unsigned char *action_str, int is_system_conf)
 {
 	int keymap_id;
 	action_id_T action_id;
@@ -930,11 +930,11 @@ bind_do(char *keymap_str, const char *keystroke_str,
 	return 0;
 }
 
-char *
-bind_act(char *keymap_str, const char *keystroke_str)
+unsigned char *
+bind_act(unsigned char *keymap_str, const unsigned char *keystroke_str)
 {
 	int keymap_id;
-	char *action;
+	unsigned char *action;
 	struct keybinding *keybinding;
 
 	keymap_id = get_keymap_id(keymap_str);
@@ -949,15 +949,15 @@ bind_act(char *keymap_str, const char *keystroke_str)
 		return NULL;
 
 	keybinding->flags |= KBDB_WATERMARK;
-	return straconcat((const char *)"\"", action, "\"", (char *) NULL);
+	return straconcat((const unsigned char *)"\"", action, "\"", (unsigned char *) NULL);
 }
 
 static void
 single_bind_config_string(struct string *file, int keymap_id,
 			  struct keybinding *keybinding)
 {
-	char *keymap_str = get_keymap_name(keymap_id);
-	char *action_str = get_action_name(keymap_id, keybinding->action_id);
+	unsigned char *keymap_str = get_keymap_name(keymap_id);
+	unsigned char *action_str = get_action_name(keymap_id, keybinding->action_id);
 
 	if (!keymap_str || !action_str || action_str[0] == ' ')
 		return;
@@ -968,11 +968,11 @@ single_bind_config_string(struct string *file, int keymap_id,
 	}
 
 	/* TODO: Maybe we should use string.write.. */
-	add_to_string(file, (const char *)"bind \"");
+	add_to_string(file, (const unsigned char *)"bind \"");
 	add_to_string(file, keymap_str);
-	add_to_string(file, (const char *)"\" \"");
+	add_to_string(file, (const unsigned char *)"\" \"");
 	add_keystroke_to_string(file, &keybinding->kbd, 1);
-	add_to_string(file, (const char *)"\" = \"");
+	add_to_string(file, (const unsigned char *)"\" = \"");
 	add_to_string(file, action_str);
 	add_char_to_string(file, '\"');
 	add_char_to_string(file, '\n');

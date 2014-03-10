@@ -26,15 +26,15 @@ periodic_save_handler(void *xxx)
 	static int periodic_save_event_id = EVENT_NONE;
 	milliseconds_T interval;
 
-	if (get_cmd_opt_bool((const char *)"anonymous")) return;
+	if (get_cmd_opt_bool((const unsigned char *)"anonymous")) return;
 
 	/* Don't trigger anything at startup */
 	if (periodic_save_event_id == EVENT_NONE)
-		set_event_id(periodic_save_event_id, (char *)"periodic-saving");
+		set_event_id(periodic_save_event_id, (unsigned char *)"periodic-saving");
 	else
 		trigger_event(periodic_save_event_id);
 
-	interval = sec_to_ms(get_opt_int((const char *)"infofiles.save_interval", NULL));
+	interval = sec_to_ms(get_opt_int((const unsigned char *)"infofiles.save_interval", NULL));
 	if (!interval) {
 		/* We should get here only if @periodic_save_handler
 		 * is being called from @periodic_save_change_hook or
@@ -51,7 +51,7 @@ static int
 periodic_save_change_hook(struct session *ses, struct option *current,
 			  struct option *changed)
 {
-	if (get_cmd_opt_bool((const char *)"anonymous")) return 0;
+	if (get_cmd_opt_bool((const unsigned char *)"anonymous")) return 0;
 
 	kill_timer(&periodic_save_timer);
 
@@ -64,7 +64,7 @@ static void
 init_timer(struct module *module)
 {
 	static const struct change_hook_info timer_change_hooks[] = {
-		{ (const char *)"infofiles.save_interval", periodic_save_change_hook },
+		{ (const unsigned char *)"infofiles.save_interval", periodic_save_change_hook },
 		{ NULL,	NULL },
 	};
 

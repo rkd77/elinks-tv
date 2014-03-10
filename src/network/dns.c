@@ -85,7 +85,7 @@ static void done_dns_lookup(struct dnsquery *query, enum dns_result res);
 /* DNS cache management: */
 
 static struct dnsentry *
-find_in_dns_cache(char *name)
+find_in_dns_cache(unsigned char *name)
 {
 	struct dnsentry *dnsentry;
 
@@ -99,7 +99,7 @@ find_in_dns_cache(char *name)
 }
 
 static void
-add_to_dns_cache(char *name, struct sockaddr_storage *addr, int addrno)
+add_to_dns_cache(unsigned char *name, struct sockaddr_storage *addr, int addrno)
 {
 	int namelen = strlen((const char *)name);
 	struct dnsentry *dnsentry;
@@ -139,7 +139,7 @@ del_dns_cache_entry(struct dnsentry *dnsentry)
 /* Synchronous DNS lookup management: */
 
 enum dns_result
-do_real_lookup(char *name, struct sockaddr_storage **addrs, int *addrno,
+do_real_lookup(unsigned char *name, struct sockaddr_storage **addrs, int *addrno,
 	       int in_thread)
 {
 #ifdef CONFIG_IPV6
@@ -262,7 +262,7 @@ write_dns_data(int h, void *data, size_t datalen)
 static void
 async_dns_writer(void *data, int h)
 {
-	char *name = (char *) data;
+	unsigned char *name = (unsigned char *) data;
 	struct sockaddr_storage *addrs;
 	int addrno, i;
 
@@ -355,7 +355,7 @@ init_async_dns_lookup(struct dnsquery *dnsquery, int force_async)
 	dnsquery->h = -1;
 	return 0;
 
-	if (!force_async && !get_opt_bool((const char *)"connection.async_dns", NULL)) {
+	if (!force_async && !get_opt_bool((const unsigned char *)"connection.async_dns", NULL)) {
 		dnsquery->h = -1;
 		return 0;
 	}
@@ -474,7 +474,7 @@ done:
 }
 
 static enum dns_result
-init_dns_lookup(char *name, void **queryref,
+init_dns_lookup(unsigned char *name, void **queryref,
 		dns_callback_T done, void *data)
 {
 	struct dnsquery *query;
@@ -500,7 +500,7 @@ init_dns_lookup(char *name, void **queryref,
 
 
 enum dns_result
-find_host(char *name, void **queryref,
+find_host(unsigned char *name, void **queryref,
 	  dns_callback_T done, void *data, int no_cache)
 {
 	struct dnsentry *dnsentry;

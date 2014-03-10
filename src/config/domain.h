@@ -14,14 +14,14 @@ struct domain_tree {
 
 	int len;
 
-	char name[1]; /* Must be at end of struct. */
+	unsigned char name[1]; /* Must be at end of struct. */
 };
 
 extern LIST_OF(struct domain_tree) domain_trees;
 
-struct option *get_domain_tree(char *);
+struct option *get_domain_tree(unsigned char *);
 
-struct option *get_domain_option_from_session(char *,
+struct option *get_domain_option_from_session(unsigned char *,
                                               struct session *);
 
 void done_domain_trees(void);
