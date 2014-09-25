@@ -175,11 +175,11 @@ short color_values[] = {
 
 bool initialized = false;
 
-class TFelinks: public TApplication
+class TElinksTV: public TApplication
 {
 public:
-	TFelinks();
-	~TFelinks();
+	TElinksTV();
+	~TElinksTV();
 	static TMenuBar* initMenuBar(TRect r);
 	static TStatusLine* initStatusLine(TRect r);
 	void handleEvent(TEvent &event);
@@ -193,11 +193,11 @@ public:
 class TTermView;
 class TTermScrollBar;
 
-class TFelinksWindow: public TWindow
+class TElinksTVWindow: public TWindow
 {
 public:
-	TFelinksWindow(TRect& bounds, char* str, int num);
-	~TFelinksWindow();
+	TElinksTVWindow(TRect& bounds, char* str, int num);
+	~TElinksTVWindow();
 	void handleEvent(TEvent &event);
 	void setTitle(char *text);
 	void dragView(TEvent& event, uchar mode, TRect& limits, TPoint minSize, TPoint maxSize);
@@ -209,7 +209,7 @@ public:
 class TTermView: public TView
 {
 public:
-	TTermView(TRect& bounds, TFelinksWindow *p, TTermScrollBar *pion1, TTermScrollBar *poziom1);
+	TTermView(TRect& bounds, TElinksTVWindow *p, TTermScrollBar *pion1, TTermScrollBar *poziom1);
 	~TTermView();
 	void handleEvent(TEvent &event);
 	char *getMouseSequence(TEvent &event);
@@ -217,7 +217,7 @@ public:
 	void draw();
 	void changePion(int ny);
 	void changePoziom(int nx);
-	TFelinksWindow *pWindow;
+	TElinksTVWindow *pWindow;
 	TTermScrollBar *pion, *poziom;
 	struct terminal *term;
 	struct session *ses;
@@ -234,7 +234,7 @@ public:
 	TTermView *pWindow;
 };
 
-TVCodePageCallBack TFelinks::oldCPCallBack = NULL;
+TVCodePageCallBack TElinksTV::oldCPCallBack = NULL;
 
 typedef unsigned char para[2];
 
@@ -383,7 +383,7 @@ static void ourRemapString(unsigned char *out, unsigned char *in, unsigned short
 	}
 }
 
-void TFelinks::cpCallBack(unsigned short *map)
+void TElinksTV::cpCallBack(unsigned short *map)
 {
 	TDeskTop::defaultBkgrnd = 199;
 	ourRemapString((unsigned char *)TFrame::zoomIcon, (unsigned char *)TFrame::ozoomIcon, map);
@@ -397,15 +397,15 @@ void TFelinks::cpCallBack(unsigned short *map)
 	if (oldCPCallBack) oldCPCallBack(map);
 }
 
-TFelinks *mainFelinks = NULL;
+TElinksTV *mainElinksTV = NULL;
 
-TFelinks::TFelinks(): TProgInit(&TFelinks::initStatusLine, &TFelinks::initMenuBar,
-	&TFelinks::initDeskTop)/*, windowCommands(getCommands()*)*/
+TElinksTV::TElinksTV(): TProgInit(&TElinksTV::initStatusLine, &TElinksTV::initMenuBar,
+	&TElinksTV::initDeskTop)/*, windowCommands(getCommands()*)*/
 {
-	mainFelinks = this;
+	mainElinksTV = this;
 }
 
-TFelinks::~TFelinks()
+TElinksTV::~TElinksTV()
 {
 	terminate_all_subsystems();
 	program.terminate = 1;
@@ -426,12 +426,12 @@ ushort executeDialog( TDialog* pD, void* data=0 )
 	return c;
 }
 
-void TFelinks::aboutDlgBox()
+void TElinksTV::aboutDlgBox()
 {
 	TDialog *aboutBox = new TDialog(TRect(0, 0, 39, 12), "About");
 	aboutBox->insert(
 	new TStaticText(TRect(9, 2, 30, 9),
-	"\003Felinks www browser\n\n"       // These strings will be
+	"\003ElinksTV www browser\n\n"       // These strings will be
 	"\003 \n\n"             // concatenated by the compiler.
 	"\003Copyright (c) 2014\n\n"      // The \003 centers the line.
 	"\003Witold Filipczyk"
@@ -659,19 +659,19 @@ static char *getKeySequence(TEvent &event)
 	return (char *)buffer;
 }
 
-void TFelinks::createNewWindow()
+void TElinksTV::createNewWindow()
 {
 	TRect r = deskTop->getExtent();
 	//r.grow(-1, -1);
 
-	TFelinksWindow *w = new TFelinksWindow(r, (char *)"felinks", 0);
+	TElinksTVWindow *w = new TElinksTVWindow(r, (char *)"elinks-tv", 0);
 	if (w)
 	{
 		deskTop->insert(w);
 	}
 }
 
-void TFelinks::handleEvent(TEvent &event)
+void TElinksTV::handleEvent(TEvent &event)
 {
 	TApplication::handleEvent(event);
 	if (event.what == evCommand)
@@ -740,7 +740,7 @@ void TFelinks::handleEvent(TEvent &event)
 	}
 }
 
-TStatusLine* TFelinks::initStatusLine(TRect r)
+TStatusLine* TElinksTV::initStatusLine(TRect r)
 {
 	r.a.y = r.b.y - 1;
 	return new TStatusLine(r,
@@ -771,7 +771,7 @@ static char *tylda(const char *msgid)
 	return bufor;
 }
 
-TMenuBar* TFelinks::initMenuBar(TRect r)
+TMenuBar* TElinksTV::initMenuBar(TRect r)
 {
 	r.b.y = r.a.y + 1;    // set bottom line 1 line below top line
 	return new TMenuBar( r,
@@ -854,7 +854,7 @@ TMenuBar* TFelinks::initMenuBar(TRect r)
 	);
 }
 
-TTermScrollBar *TFelinksWindow::standardScrollBar2(unsigned short aOptions)
+TTermScrollBar *TElinksTVWindow::standardScrollBar2(unsigned short aOptions)
 {
 	TRect r = getExtent();
 	if ((aOptions & sbVertical) != 0)
@@ -950,7 +950,7 @@ redraw_screen(struct terminal *term)
 int thread = 1;
 pthread_t pth;
 
-TFelinksWindow::TFelinksWindow(TRect& bounds, char *str, int num):
+TElinksTVWindow::TElinksTVWindow(TRect& bounds, char *str, int num):
 TWindowInit(&TWindow::initFrame), TWindow(bounds, str, num)
 {
 	eventMask = evMouseDown | evMouseUp | evKeyDown | evCommand | evBroadcast;
@@ -973,29 +973,29 @@ TWindowInit(&TWindow::initFrame), TWindow(bounds, str, num)
 
 }
 
-TFelinksWindow::~TFelinksWindow()
+TElinksTVWindow::~TElinksTVWindow()
 {
 }
 
-void TFelinksWindow::handleEvent(TEvent& event)
+void TElinksTVWindow::handleEvent(TEvent& event)
 {
 	TWindow::handleEvent(event);
 }
 
-void TFelinksWindow::setTitle(char *text)
+void TElinksTVWindow::setTitle(char *text)
 {
 	DeleteArray((char *)title);
 	TVIntl::freeSt(intlTitle);
 	title = newStr(text);
 }
 
-void TFelinksWindow::dragView(TEvent& event, uchar mode, TRect& limits, TPoint minSize, TPoint maxSize)
+void TElinksTVWindow::dragView(TEvent& event, uchar mode, TRect& limits, TPoint minSize, TPoint maxSize)
 {
 	TWindow::dragView(event, mode, limits, minSize, maxSize);
 	tw->zmienRozmiar(size);
 }
 
-void TFelinksWindow::zoom()
+void TElinksTVWindow::zoom()
 {
 	TWindow::zoom();
 	tw->zmienRozmiar(size);
@@ -1004,7 +1004,7 @@ void TFelinksWindow::zoom()
 int terminalLines;
 int terminalColumns;
 
-TTermView::TTermView(TRect &r, TFelinksWindow *p, TTermScrollBar *pion1, TTermScrollBar *poziom1) : TView(r), pWindow(p),
+TTermView::TTermView(TRect &r, TElinksTVWindow *p, TTermScrollBar *pion1, TTermScrollBar *poziom1) : TView(r), pWindow(p),
 pion(pion1), poziom(poziom1)
 {
 	eventMask |= evMouseUp;
@@ -1561,11 +1561,11 @@ void exit_prog(struct session *ses, int ask)
 {
 	if (ask)
 	{
-		message(mainFelinks, evCommand, cmQuit2, NULL);
+		message(mainElinksTV, evCommand, cmQuit2, NULL);
 	}
 	else
 	{
-		message(mainFelinks, evCommand, cmQuit, NULL);
+		message(mainElinksTV, evCommand, cmQuit, NULL);
 	}
 }
 
@@ -1597,12 +1597,12 @@ int main(int argc, char **argv)
 	ac = argc;
 	av = argv;
 
-	if (linux_console_8859_2) TFelinks::oldCPCallBack = TVCodePage::SetCallBack(TFelinks::cpCallBack);
+	if (linux_console_8859_2) TElinksTV::oldCPCallBack = TVCodePage::SetCallBack(TElinksTV::cpCallBack);
 	BINDTEXTDOMAIN("elinks", LOCALEDIR);
 	TEXTDOMAIN("elinks");
 	main2(argc, argv);
 	select_loop_prepare();
-	TFelinks app;
+	TElinksTV app;
 	app.run();
 	return 0;
 }

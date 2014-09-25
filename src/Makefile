@@ -40,7 +40,7 @@ vernum.o: $(LIB_O_NAME)
 main.o: main.cc
 	$(CXX) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) -c $<
 
-felinks$(EXEEXT): $(LIB_O_NAME) vernum.o main.o
+elinks-tv$(EXEEXT): $(LIB_O_NAME) vernum.o main.o
 	$(call cmd,link)
 
 # Place the TAGS file in the source directory so that, if the same
@@ -62,7 +62,7 @@ tags:
 
 .PHONY: TAGS tags
 
-PROGS = felinks$(EXEEXT)
+PROGS = elinks-tv$(EXEEXT)
 CLEAN = main.o vernum.o TAGS tags
 
 include $(top_srcdir)/Makefile.lib
